@@ -3,7 +3,6 @@ import { validateRegister, validateLogin } from '@/validators/auth.validator';
 import { AuthController } from '@/controllers/auth.controller';
 import { AuthMiddleware } from '@/middlewares/auth.middleware';
 import { uploader } from '@/libs/uploader';
-import passport from 'passport';
 
 export class AuthRouter {
   private router: Router;
@@ -40,20 +39,6 @@ export class AuthRouter {
     this.router.post(
       `${this.path}/resend-verification`,
       this.auth.resendVerificationController,
-    );
-
-    // Google login routes
-    this.router.get(
-      `${this.path}/google`,
-      passport.authenticate('google', { scope: ['profile', 'email'] }),
-    );
-
-    this.router.get(
-      `${this.path}/google/callback`,
-      passport.authenticate('google', {
-        successRedirect: '/dashboard', // Redirect jika sukses (ubah sesuai kebutuhan)
-        failureRedirect: '/login', // Redirect jika gagal (ubah sesuai kebutuhan)
-      }),
     );
   }
 

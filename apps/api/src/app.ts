@@ -14,7 +14,6 @@ import { PORT } from './config';
 import { AuthRouter } from './routers/auth.router';
 import { ErrorMiddleware } from './middlewares/error.middleware';
 import { UserRouter } from './routers/user.router';
-import './libs/passport'; // Import konfigurasi Passport
 
 export default class App {
   private app: Express;
