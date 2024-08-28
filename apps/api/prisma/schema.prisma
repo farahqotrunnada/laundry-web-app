@@ -16,7 +16,7 @@ model User {
   password       String?
   googleId       String?  @unique
   phone_number   Int?
-  avatarFilename String?
+  avatarFilename String?  @default("avatarempty.jpg")
   is_verified    Boolean  @default(false)
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt

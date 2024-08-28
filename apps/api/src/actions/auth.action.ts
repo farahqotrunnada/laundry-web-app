@@ -28,7 +28,7 @@ class AuthAction {
       const salt = await genSalt(10);
       const hashedPass = await hash(password, salt);
 
-      const newUser = await prisma.$transaction(async (transaction) => {
+      const newUser = await prisma.$transaction(async (transaction: any) => {
         return await transaction.user.create({
           data: {
             email,
@@ -179,6 +179,55 @@ class AuthAction {
       throw new HttpException(
         500,
         `Error resending verification email: ${(error as Error).message}`,
+      );
+    }
+  };
+
+  registerWithEmailAction = async (
+    email: string,
+    first_name: string,
+    last_name: string,
+    phone_number: number,
+  ) => {
+    try {
+      const isEmailRegisterd = await userAction.findUserByEmail(email);
+
+      if (isEmailRegisterd)
+        throw new HttpException(500, 'Email is already registered');
+
+      const newUser = await prisma.$transaction(async (transaction: any) => {
+        return await transaction.user.create({
+          data: {
+            email,
+            first_name,
+            last_name,
+            phone_number: Number(phone_number),
+            is_verified: false,
+          },
+        });
+      });
+
+      return newUser;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  setPassword = async (userId: number, password: string) => {
+    try {
+      const salt = await genSalt(10);
+      const hashedPass = await hash(password, salt);
+
+      const updatedUser = await prisma.user.update({
+        where: { user_id: userId },
+        data: { password: hashedPass },
+      });
+
+      return updatedUser;
+    } catch (error) {
+      throw new HttpException(
+        500,
+        `Error setting password: ${(error as Error).message}`,
       );
     }
   };
