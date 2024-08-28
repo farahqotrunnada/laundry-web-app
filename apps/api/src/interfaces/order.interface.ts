@@ -5,10 +5,7 @@ export interface IOrderItem {
 
 export interface ICreateOrder {
   user_id: number;
-  address_id: number;
-  pickup_time: Date;
-  latitude: number;
-  longitude: number;
+  nearestOutlet: number;
 }
 
 export interface IProcessOrder {
