@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import authAction from '@/actions/auth.action';
 import { HttpException } from '@/exceptions/http.exception';
+import { sendVerificationEmail } from '@/utils/emailUtil';
 
 interface JwtPayload {
   userId: number;
@@ -27,7 +28,7 @@ export class AuthController {
         avatarFileName,
       );
 
-      await authAction.sendVerificationEmail(user);
+      await sendVerificationEmail(user);
 
       res.status(201).json({
         message:
@@ -110,7 +111,7 @@ export class AuthController {
         phone_number,
       );
 
-      await authAction.sendVerificationEmail(user);
+      await sendVerificationEmail(user);
 
       res.status(201).json({
         message:
