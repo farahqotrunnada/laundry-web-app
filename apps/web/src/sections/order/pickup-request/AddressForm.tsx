@@ -48,7 +48,7 @@ export default function AddressForm({
 }: AddressFormProps) {
   const router = useRouter();
   const [addresses, setAddresses] = useState<{ id: string; name: string }[]>([]);
-  const [closestOutlet, setClosestOutlet] = useState<string>('Calculating...');
+  const [closestOutlet, setClosestOutlet] = useState<string>('Retrieving...');
   const [cost, setCost] = useState<string>('Calculating...');
 
   useEffect(() => {
