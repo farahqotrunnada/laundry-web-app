@@ -69,7 +69,7 @@ export default function AddressForm({
     // Simulate calculation of closest outlet and cost
     // Replace with real calculation logic based on selected address
     const closestOutlet = 'Outlet 1'; // Placeholder value
-    const cost = '$10.00'; // Placeholder value
+    const cost = '$0'; // Placeholder value
 
     setClosestOutlet(closestOutlet);
     setCost(cost);
