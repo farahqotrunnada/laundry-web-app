@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 
 // project-imports
 import AddressForm, { UserAddressData } from './PickupForm';
-import Review from './Review';
+import Review from './ReviewOrder';
 import MainCard from 'components/MainCard';
 import AnimateButton from 'components/@extended/AnimateButton';
 
@@ -33,7 +33,7 @@ function getStepContent(
   userId: number
 ) {
   const stepContentStyle: CSSProperties = {
-    padding: '5px', // consistent padding
+    padding: '5px',
   };
 
   switch (step) {
