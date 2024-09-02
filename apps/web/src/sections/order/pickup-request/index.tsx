@@ -2,6 +2,7 @@
 
 import { useState, ReactNode, CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 // material-ui
 import Button from '@mui/material/Button';
@@ -12,7 +13,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 // project-imports
-import AddressForm, { UserAddressData } from './PickupForm';
+import AddressForm, {UserAddressData, ClosestOutletAddressData, initialUserAddressData, initialClosestOutletData} from './PickupForm';
 import Review from './ReviewOrder';
 import MainCard from 'components/MainCard';
 import AnimateButton from 'components/@extended/AnimateButton';
@@ -26,10 +27,12 @@ function getStepContent(
   handleNext: () => void,
   handleBack: () => void,
   setErrorIndex: (i: number | null) => void,
-  userAddressData: UserAddressData,
-  setUserAddressData: (d: UserAddressData) => void,
-  closestOutlet: string,
+  chosenAddress: UserAddressData,
+  setChosenAddress: (d: UserAddressData) => void,
+  closestOutlet: ClosestOutletAddressData,
+  setClosestOutlet: (d: ClosestOutletAddressData) => void,
   cost: string,
+  setCost: (d: string) => void,
   userId: number
 ) {
   const stepContentStyle: CSSProperties = {
@@ -44,8 +47,12 @@ function getStepContent(
             userId={userId}
             handleNext={handleNext}
             setErrorIndex={setErrorIndex}
-            userAddressData={userAddressData}
-            setUserAddressData={setUserAddressData}
+            chosenAddress={chosenAddress}
+            setChosenAddress={setChosenAddress}
+            closestOutlet= {closestOutlet}
+            setClosestOutlet= {setClosestOutlet}
+            cost = {cost}
+            setCost = {setCost}
           />
         </div>
       );
@@ -53,7 +60,7 @@ function getStepContent(
       return (
         <div style={stepContentStyle}>
           <Review
-            userAddressData={userAddressData}
+            chosenAddress={chosenAddress}
             closestOutlet={closestOutlet}
             cost={cost}
           />
@@ -66,19 +73,41 @@ function getStepContent(
 
 export default function PickupRequest() {
   const [activeStep, setActiveStep] = useState(0);
-  const [userAddressData, setUserAddressData] = useState<UserAddressData>({});
+  // const [chosenAddressId, setChosenAddressId] = useState<number>(0);
+  const [chosenAddress, setChosenAddress] = useState<UserAddressData>(initialUserAddressData);
+  const [closestOutlet, setClosestOutlet] = useState<ClosestOutletAddressData>(initialClosestOutletData);
+  const [cost, setCost] = useState<string>('Calculating...');
   const [errorIndex, setErrorIndex] = useState<number | null>(null);
 
   const router = useRouter(); // Initialize useRouter for navigation
 
-  const closestOutlet = 'Retrieving...'; // Replace with actual closest outlet logic
-  const cost = 'Calculating...'; // Replace with actual cost calculation logic
+  const userId = 1; // REPLACE with actual userId
 
-  const userId = 1; // Replace with actual userId
+  const handleNext = async () => {
+    if (activeStep === steps.length - 1) {
+      try {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/order/pickup-request`, {
+          user_id: userId,
+          user_address_id: chosenAddress.user_address_id, // Assuming address holds the selected address ID
+          nearestOutlet: closestOutlet.closest_outlet_id, // Assuming closestOutlet holds the outlet ID
+        });
 
-  const handleNext = () => {
-    setActiveStep(activeStep + 1);
-    setErrorIndex(null);
+        if (response.status === 201) {
+          // Proceed to the next step
+          setActiveStep(activeStep + 1);
+          setErrorIndex(null);
+        } else {
+          // Handle error cases
+          setErrorIndex(activeStep);
+        }
+      } catch (error) {
+        console.error('Failed to create pickup request:', error);
+        setErrorIndex(activeStep);
+      }
+    } else {
+      setActiveStep(activeStep + 1);
+      setErrorIndex(null);
+    }
   };
 
   const handleBack = () => {
@@ -131,7 +160,7 @@ export default function PickupRequest() {
           </>
         ) : (
           <>
-            {getStepContent(activeStep, handleNext, handleBack, setErrorIndex, userAddressData, setUserAddressData, closestOutlet, cost, userId)}
+            {getStepContent(activeStep, handleNext, handleBack, setErrorIndex, chosenAddress, setChosenAddress, closestOutlet, setClosestOutlet, cost, setCost, userId)}
             {activeStep === steps.length - 1 && (
               <Stack direction="row" justifyContent={activeStep !== 0 ? 'space-between' : 'flex-end'}>
                 {activeStep !== 0 && (
