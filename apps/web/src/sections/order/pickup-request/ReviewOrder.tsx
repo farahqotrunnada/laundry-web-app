@@ -25,7 +25,9 @@ export default function Review({ chosenAddress, closestOutlet, cost }: ReviewPro
       <List disablePadding>
         {/* Review Selected Address */}
         <ListItem sx={{ py: 1, px: 0, flexDirection: 'column', alignItems: 'flex-start' }}>
-          <ListItemText primary="Selected Address" sx={{ fontWeight: 'bold' }}/>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+            Selected Address
+          </Typography>
           <Typography variant="body2">
             {chosenAddress.user_address_name}
           </Typography>
@@ -39,7 +41,9 @@ export default function Review({ chosenAddress, closestOutlet, cost }: ReviewPro
 
         {/* Review Closest Outlet */}
         <ListItem sx={{ py: 1, px: 0, flexDirection: 'column', alignItems: 'flex-start' }}>
-          <ListItemText primary="Closest Outlet" sx={{ fontWeight: 'bold' }}/>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+            Closest Outlet
+          </Typography>
           <Typography variant="body2">
             {closestOutlet.closest_outlet_name}
           </Typography>

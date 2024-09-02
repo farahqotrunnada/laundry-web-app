@@ -2,7 +2,6 @@
 
 import { useState, ReactNode, CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 
 // material-ui
 import Button from '@mui/material/Button';
@@ -17,6 +16,8 @@ import AddressForm, {UserAddressData, ClosestOutletAddressData, initialUserAddre
 import Review from './ReviewOrder';
 import MainCard from 'components/MainCard';
 import AnimateButton from 'components/@extended/AnimateButton';
+import instance from 'utils/axiosIntance';
+import axios from 'axios';
 
 // step options
 const steps = ['Order details', 'Review your order'];
@@ -73,7 +74,6 @@ function getStepContent(
 
 export default function PickupRequest() {
   const [activeStep, setActiveStep] = useState(0);
-  // const [chosenAddressId, setChosenAddressId] = useState<number>(0);
   const [chosenAddress, setChosenAddress] = useState<UserAddressData>(initialUserAddressData);
   const [closestOutlet, setClosestOutlet] = useState<ClosestOutletAddressData>(initialClosestOutletData);
   const [cost, setCost] = useState<string>('Calculating...');
@@ -86,7 +86,8 @@ export default function PickupRequest() {
   const handleNext = async () => {
     if (activeStep === steps.length - 1) {
       try {
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/order/pickup-request`, {
+        const response = await instance().post('/order/pickup-request', {
+        // const response = await axios.post('http://localhost:8000/api/order/pickup-request', {
           user_id: userId,
           user_address_id: chosenAddress.user_address_id, // Assuming address holds the selected address ID
           nearestOutlet: closestOutlet.closest_outlet_id, // Assuming closestOutlet holds the outlet ID
@@ -144,7 +145,7 @@ export default function PickupRequest() {
               Thank you for your order.
             </Typography>
             <Typography variant="subtitle1">
-              Your order number is #2001539 {/* Replace with dynamic transaction ID */}
+              We are processing your laundry pickup request.
             </Typography>
             <Stack direction="row" justifyContent="flex-end">
               <AnimateButton>

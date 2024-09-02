@@ -19,11 +19,16 @@ import { useRouter } from 'next/navigation';
 // project-imports
 import AnimateButton from 'components/@extended/AnimateButton';
 import MainCard from 'components/MainCard'; // Import MainCard for styling
+import instance from 'utils/axiosIntance';
 
 // Validation schema
 const validationSchema = yup.object({
   chosenAddress: yup.object({
-    user_address_id: yup.number().required('Address is required'),
+    user_address_id: yup
+      .number()
+      .typeError('Address is required') // Handles cases where the value might not be a number
+      .required('Address is required')
+      .min(1, 'Address is required'),
   }),
 });
 
@@ -54,7 +59,7 @@ export const initialUserAddressData: UserAddressData = {
 
 export const initialClosestOutletData: ClosestOutletAddressData = {
   closest_outlet_id: 0,
-  closest_outlet_name: '',
+  closest_outlet_name: 'Retrieving...',
   street_address: '',
   city: '',
   province: '',
@@ -86,14 +91,12 @@ export default function AddressForm({
 }: AddressFormProps) {
   const router = useRouter();
   const [addresses, setAddresses] = useState<UserAddressData[]>([]);
-  // const [closestOutlet, setClosestOutlet] = useState<ClosestOutletAddressData>(initialClosestOutletData);
-  // const [cost, setCost] = useState<string>('Calculating...');
 
   useEffect(() => {
     // Fetch addresses from API
     const fetchAddresses = async () => {
       try {
-        // const response = await axios.get(`${process.env.BE_BASE_URL}/users/${userId}/addresses`);
+        // const response = await instance().get('/users/${userId}/addresses');
         // setAddresses(response.data.data);
         setAddresses([
             {
@@ -124,17 +127,10 @@ export default function AddressForm({
   const calculateClosestOutletAndCost = (user_address_id: number) => {
     // Simulate calculation of closest outlet and cost
     // REPLACE with real calculation logic based on selected address
-    let closestOutlet = {
-        closest_outlet_id: 0,
-        closest_outlet_name: 'Retrieving...',
-        street_address: '',
-        city: '',
-        province: '',
-        postal_code: ''
-      }; // Placeholder value
-    let cost = '$0'; // Placeholder value
+    let closestOutlet = initialClosestOutletData;
+    let cost = '$0';
     
-    if (user_address_id=1) {
+    if (user_address_id===1) {
       closestOutlet = {
           closest_outlet_id: 1,
           closest_outlet_name: 'Outlet Terdekat 1',
@@ -142,8 +138,18 @@ export default function AddressForm({
           city: 'C1',
           province: 'P1',
           postal_code: 'PC123'
-        }; // Placeholder value
-      cost = '$5'; // Placeholder value
+        };
+      cost = '$5';
+    } else if (user_address_id===2) {
+      closestOutlet = {
+          closest_outlet_id: 2,
+          closest_outlet_name: 'Outlet Terdekat 2',
+          street_address: 'Jl2',
+          city: 'C1',
+          province: 'P1',
+          postal_code: 'PC123'
+        };
+      cost = '$99';
     }
 
     setClosestOutlet(closestOutlet);
@@ -155,7 +161,7 @@ export default function AddressForm({
     if (value === 'add-new') {
       router.push('/address'); // Navigate to the add new address page
     } else {
-      const selectedAddressId = event.target.value;
+      const selectedAddressId = parseInt(value, 10);
       const selectedAddress = addresses.find(address => address.user_address_id === selectedAddressId) || initialUserAddressData;
       
       formik.setFieldValue("chosenAddress", selectedAddress);
@@ -165,7 +171,7 @@ export default function AddressForm({
 
   const formik = useFormik({
     initialValues: {
-      chosenAddress: initialUserAddressData,
+      chosenAddress: chosenAddress,
     },
     validationSchema,
     onSubmit: (values) => {
@@ -196,8 +202,8 @@ export default function AddressForm({
                   onChange={handleAddressChange}
                   error={formik.touched.chosenAddress?.user_address_id && Boolean(formik.errors.chosenAddress?.user_address_id)}
                 >
-                  <MenuItem disabled value="" sx={{ color: 'text.secondary' }}>
-                    Select You Address
+                  <MenuItem disabled value="0" sx={{ color: 'text.secondary' }}>
+                    Select Your Address
                   </MenuItem>
                   {/* Add New Address option */}
                   <MenuItem value="add-new">
