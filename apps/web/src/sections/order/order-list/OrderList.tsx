@@ -213,7 +213,7 @@ export default function OrderList({ customerId }: { customerId: string }) {
   const [data, setData] = useState<OrderStatus[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  const theme = useTheme();
+//   const theme = useTheme();
 
   useEffect(() => {
     const fetchOrderStatuses = async () => {
