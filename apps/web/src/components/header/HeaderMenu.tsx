@@ -63,7 +63,7 @@ function TabPanel({ children, value, index, ...other }: TabPanelProps) {
 function a11yProps(index: number) {
   return {
     id: `profile-tab-${index}`,
-    'aria-controls': `profile-tabpanel-${index}`,
+    'aria-controls': `profile-tabpanel-${index}`
   };
 }
 
@@ -102,15 +102,12 @@ export default function HeaderMenu({ user, avatarUrl }: HeaderMenuProps) {
           p: 0.25,
           borderRadius: 1,
           '&:hover': {
-            bgcolor:
-              theme.palette.mode === ThemeMode.DARK
-                ? 'secondary.light'
-                : 'secondary.lighter',
+            bgcolor: theme.palette.mode === ThemeMode.DARK ? 'secondary.light' : 'secondary.lighter'
           },
           '&:focus-visible': {
             outline: `2px solid ${theme.palette.secondary.dark}`,
-            outlineOffset: 2,
-          },
+            outlineOffset: 2
+          }
         }}
         aria-label="open profile"
         onClick={handleClick}
@@ -129,19 +126,14 @@ export default function HeaderMenu({ user, avatarUrl }: HeaderMenuProps) {
             {
               name: 'offset',
               options: {
-                offset: [0, 9],
-              },
-            },
-          ],
+                offset: [0, 9]
+              }
+            }
+          ]
         }}
       >
         {({ TransitionProps }) => (
-          <Transitions
-            type="grow"
-            position="top-right"
-            in={open}
-            {...TransitionProps}
-          >
+          <Transitions type="grow" position="top-right" in={open} {...TransitionProps}>
             <Paper
               sx={{
                 boxShadow: theme.customShadows.z1,
@@ -149,30 +141,21 @@ export default function HeaderMenu({ user, avatarUrl }: HeaderMenuProps) {
                 minWidth: 240,
                 maxWidth: 290,
                 [theme.breakpoints.down('md')]: {
-                  maxWidth: 250,
+                  maxWidth: 250
                 },
-                borderRadius: 1.5,
+                borderRadius: 1.5
               }}
             >
               <ClickAwayListener onClickAway={handleClose}>
                 <MainCard border={false} content={false}>
                   <CardContent sx={{ px: 2.5, pt: 3 }}>
-                    <Grid
-                      container
-                      justifyContent="space-between"
-                      alignItems="center"
-                    >
+                    <Grid container justifyContent="space-between" alignItems="center">
                       <Grid item>
-                        <Stack
-                          direction="row"
-                          spacing={1.25}
-                          alignItems="center"
-                        >
+                        <Stack direction="row" spacing={1.25} alignItems="center">
                           <Avatar alt={user.firstName} src={avatarUrl} />
                           <Stack>
                             <Typography variant="subtitle1">
-                              {capitalize(user.firstName)}{' '}
-                              {capitalize(user.lastName)}
+                              {capitalize(user.firstName)} {capitalize(user.lastName)}
                             </Typography>
                             <Typography variant="body2" color="secondary">
                               Basic User
@@ -182,12 +165,7 @@ export default function HeaderMenu({ user, avatarUrl }: HeaderMenuProps) {
                       </Grid>
                       <Grid item>
                         <Tooltip title="Logout">
-                          <IconButton
-                            size="large"
-                            color="error"
-                            sx={{ p: 1 }}
-                            onClick={handleLogoutClick}
-                          >
+                          <IconButton size="large" color="error" sx={{ p: 1 }} onClick={handleLogoutClick}>
                             <Logout variant="Bulk" />
                           </IconButton>
                         </Tooltip>
@@ -196,26 +174,16 @@ export default function HeaderMenu({ user, avatarUrl }: HeaderMenuProps) {
                   </CardContent>
 
                   <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs
-                      variant="fullWidth"
-                      value={value}
-                      onChange={handleChange}
-                      aria-label="profile tabs"
-                    >
+                    <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="profile tabs">
                       <Tab
                         sx={{
                           display: 'flex',
                           flexDirection: 'row',
                           justifyContent: 'center',
                           alignItems: 'center',
-                          textTransform: 'capitalize',
+                          textTransform: 'capitalize'
                         }}
-                        icon={
-                          <Profile
-                            size={18}
-                            style={{ marginBottom: 0, marginRight: '10px' }}
-                          />
-                        }
+                        icon={<Profile size={18} style={{ marginBottom: 0, marginRight: '10px' }} />}
                         label="Profile"
                         {...a11yProps(0)}
                       />
@@ -225,14 +193,9 @@ export default function HeaderMenu({ user, avatarUrl }: HeaderMenuProps) {
                           flexDirection: 'row',
                           justifyContent: 'center',
                           alignItems: 'center',
-                          textTransform: 'capitalize',
+                          textTransform: 'capitalize'
                         }}
-                        icon={
-                          <Setting2
-                            size={18}
-                            style={{ marginBottom: 0, marginRight: '10px' }}
-                          />
-                        }
+                        icon={<Setting2 size={18} style={{ marginBottom: 0, marginRight: '10px' }} />}
                         label="Setting"
                         {...a11yProps(1)}
                       />

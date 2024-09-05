@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -29,76 +29,61 @@ import {
   ColumnFiltersState,
   getFilteredRowModel,
   getPaginationRowModel,
+  SortingState,
+  getSortedRowModel
 } from '@tanstack/react-table';
 
 // project import
 import ScrollX from 'components/ScrollX';
 import MainCard from 'components/MainCard';
-import {
-  TablePagination,
-  HeaderSort,
-  DebouncedInput,
-} from 'components/third-party/react-table';
-import instance from 'utils/axiosIntance';
-
-// types
-interface OrderStatus {
-  transaction_id: number;
-  status: string;
-  created_at: string;
-  updated_at: string;
-}
+import { TablePagination, HeaderSort, DebouncedInput } from 'components/third-party/react-table';
+import { Chip } from '@mui/material';
+import { formatDate } from 'utils/dateUtils';
+import useOrderDetail, { OrderDetail } from 'hooks/model/useOrderDetail';
 
 interface ReactTableProps {
-  columns: ColumnDef<OrderStatus>[];
-  data: OrderStatus[];
+  columns: ColumnDef<OrderDetail>[];
+  data: OrderDetail[];
   title?: string;
   selectedDate: Date | null;
   setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>;
 }
 
-// ==============================|| REACT TABLE ||============================== //
-
-function ReactTable({
-  columns,
-  data,
-  title,
-  selectedDate,
-  setSelectedDate,
-}: ReactTableProps) {
+function ReactTable({ columns, data, title, selectedDate, setSelectedDate }: ReactTableProps) {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'transaction_id', desc: false }]);
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState('');
+
   const table = useReactTable({
     data,
     columns,
     state: {
+      sorting,
       columnFilters,
       rowSelection,
-      globalFilter,
+      globalFilter
     },
     enableRowSelection: true,
+    onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    debugTable: true,
+    debugTable: true
   });
 
   return (
     <MainCard content={false} title={title}>
       <Box sx={{ p: 3, pb: 0 }}>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          spacing={1}
-        >
+        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
           <Typography variant="h5">Order List</Typography>
         </Stack>
       </Box>
@@ -115,7 +100,7 @@ function ReactTable({
           placeholder={`Search ${data.length} records...`}
           sx={{
             width: matchDownSM ? '100%' : '48%', // 48% untuk setengah lebar di desktop
-            flexBasis: matchDownSM ? '100%' : '48%', // memastikan setengah lebar di mobile
+            flexBasis: matchDownSM ? '100%' : '48%' // memastikan setengah lebar di mobile
           }}
         />
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -123,14 +108,9 @@ function ReactTable({
             label="Filter by Date"
             value={selectedDate}
             onChange={(newValue) => setSelectedDate(newValue)}
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                sx: {
-                  width: matchDownSM ? '100%' : '48%', // 48% untuk setengah lebar di desktop
-                  flexBasis: matchDownSM ? '100%' : '48%', // memastikan setengah lebar di mobile
-                },
-              },
+            sx={{
+              width: matchDownSM ? '100%' : '48%', // 48% untuk setengah lebar di desktop
+              flexBasis: matchDownSM ? '100%' : '48%' // memastikan setengah lebar di mobile
             }}
           />
         </LocalizationProvider>
@@ -140,54 +120,32 @@ function ReactTable({
           <TableContainer>
             <Table>
               <TableHead>
-                {table
-                  .getHeaderGroups()
-                  .map((headerGroup: HeaderGroup<any>) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <TableCell
-                          key={header.id}
-                          {...header.column.columnDef.meta}
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
-                          {header.isPlaceholder ? null : (
-                            <Stack
-                              direction="row"
-                              spacing={1}
-                              alignItems="center"
-                            >
-                              <Box>
-                                {flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext(),
-                                )}
-                              </Box>
-                              {header.column.getCanSort() && (
-                                <HeaderSort column={header.column} />
-                              )}
-                            </Stack>
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
+                {table.getHeaderGroups().map((headerGroup: HeaderGroup<any>) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableCell key={header.id} {...header.column.columnDef.meta} onClick={header.column.getToggleSortingHandler()}>
+                        {header.isPlaceholder ? null : (
+                          <Stack direction="row" spacing={1} alignItems="center">
+                            <Box>{flexRender(header.column.columnDef.header, header.getContext())}</Box>
+                            {header.column.getCanSort() && <HeaderSort column={header.column} />}
+                          </Stack>
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
               </TableHead>
               <TableBody>
                 {table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} {...cell.column.columnDef.meta}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))}
-                <TableRow
-                  sx={{ '&:hover': { bgcolor: 'transparent !important' } }}
-                >
+                <TableRow sx={{ '&:hover': { bgcolor: 'transparent !important' } }}>
                   <TableCell sx={{ p: 2, py: 3 }} colSpan={9}>
                     <TablePagination
                       {...{
@@ -195,7 +153,7 @@ function ReactTable({
                         setPageIndex: table.setPageIndex,
                         getState: table.getState,
                         getPageCount: table.getPageCount,
-                        initialPageSize: 4,
+                        initialPageSize: 10
                       }}
                     />
                   </TableCell>
@@ -210,78 +168,57 @@ function ReactTable({
 }
 
 export default function OrderList({ customerId }: { customerId: string }) {
-  const [data, setData] = useState<OrderStatus[]>([]);
+  const { data: order, error } = useOrderDetail(customerId);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-//   const theme = useTheme();
+  const filteredOrder = useMemo(() => {
+    if (!selectedDate) return order;
+    return order?.filter((order: OrderDetail) => {
+      const orderDate = new Date(order.created_at);
+      const selected = new Date(selectedDate);
+      return orderDate.toDateString() === selected.toDateString();
+    });
+  }, [order, selectedDate]);
 
-  useEffect(() => {
-    const fetchOrderStatuses = async () => {
-      try {
-        const response = await instance().get(
-          `/customers/${customerId}/orders`,
-        );
-        const filteredData = response.data.data.filter((order: OrderStatus) => {
-          if (!selectedDate) return true;
-          const orderDate = new Date(order.created_at);
-          const selected = new Date(selectedDate);
-          return orderDate.toDateString() === selected.toDateString();
-        });
-        setData(filteredData);
-      } catch (error) {
-        console.error('Failed to fetch order statuses:', error);
-      }
-    };
-
-    fetchOrderStatuses();
-  }, [customerId, selectedDate]);
-
-  const columns = useMemo<ColumnDef<OrderStatus>[]>(
+  const columns = useMemo<ColumnDef<OrderDetail>[]>(
     () => [
       {
         header: 'Transaction ID',
         accessorKey: 'transaction_id',
-        cell: ({ row }) => (
-          <Typography variant="subtitle1">
-            {row.original.transaction_id}
-          </Typography>
-        ),
+        cell: ({ row }) => <Typography variant="subtitle1">{row.original.transaction_id}</Typography>
       },
       {
         header: 'Status',
         accessorKey: 'status',
-        cell: ({ row }) => (
-          <Typography variant="subtitle1">{row.original.status}</Typography>
-        ),
+        cell: (props) => {
+          switch (props.getValue()) {
+            default:
+              return <Chip color="warning" label="Menunggu Penjemputan Driver" size="small" variant="light" />;
+          }
+        }
       },
       {
         header: 'Created At',
         accessorKey: 'created_at',
-        cell: ({ row }) => (
-          <Typography variant="subtitle1">
-            {new Date(row.original.created_at).toLocaleString()}
-          </Typography>
-        ),
+        cell: ({ row }) => <Typography>{formatDate(row.original.created_at)}</Typography>
       },
       {
         header: 'Updated At',
         accessorKey: 'updated_at',
-        cell: ({ row }) => (
-          <Typography variant="subtitle1">
-            {new Date(row.original.updated_at).toLocaleString()}
-          </Typography>
-        ),
-      },
+        cell: ({ row }) => <Typography>{formatDate(row.original.updated_at)}</Typography>
+      }
     ],
-    [],
+    []
   );
+
+  if (!filteredOrder || error) return <div>Error: {error}</div>;
 
   return (
     <MainCard content={false}>
       <ScrollX>
         <ReactTable
           columns={columns}
-          data={data}
+          data={filteredOrder}
           title="Order Details"
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}

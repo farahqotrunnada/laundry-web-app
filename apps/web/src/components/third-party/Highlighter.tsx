@@ -40,12 +40,7 @@ export default function Highlighter({ codeString, codeHighlight }: Props) {
               </IconButton>
             </Tooltip>
           </CopyToClipboard>
-          <Divider
-            orientation="vertical"
-            variant="middle"
-            flexItem
-            sx={{ mx: 1 }}
-          />
+          <Divider orientation="vertical" variant="middle" flexItem sx={{ mx: 1 }} />
           <Tooltip title="Show the source" placement="top-end">
             <IconButton
               sx={{ fontSize: '0.875rem' }}
@@ -58,9 +53,7 @@ export default function Highlighter({ codeString, codeHighlight }: Props) {
           </Tooltip>
         </Box>
       </CardActions>
-      <Collapse in={highlight}>
-        {highlight && <SyntaxHighlight>{codeString}</SyntaxHighlight>}
-      </Collapse>
+      <Collapse in={highlight}>{highlight && <SyntaxHighlight>{codeString}</SyntaxHighlight>}</Collapse>
     </>
   );
 }

@@ -12,7 +12,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 // project-imports
-import AddressForm, {UserAddressData, ClosestOutletAddressData, initialUserAddressData, initialClosestOutletData} from './PickupForm';
+import AddressForm, { UserAddressData, ClosestOutletAddressData, initialUserAddressData, initialClosestOutletData } from './PickupForm';
 import Review from './ReviewOrder';
 import MainCard from 'components/MainCard';
 import AnimateButton from 'components/@extended/AnimateButton';
@@ -36,7 +36,7 @@ function getStepContent(
   userId: number
 ) {
   const stepContentStyle: CSSProperties = {
-    padding: '5px',
+    padding: '5px'
   };
 
   switch (step) {
@@ -49,21 +49,17 @@ function getStepContent(
             setErrorIndex={setErrorIndex}
             chosenAddress={chosenAddress}
             setChosenAddress={setChosenAddress}
-            closestOutlet= {closestOutlet}
-            setClosestOutlet= {setClosestOutlet}
-            cost = {cost}
-            setCost = {setCost}
+            closestOutlet={closestOutlet}
+            setClosestOutlet={setClosestOutlet}
+            cost={cost}
+            setCost={setCost}
           />
         </div>
       );
     case 1:
       return (
         <div style={stepContentStyle}>
-          <Review
-            chosenAddress={chosenAddress}
-            closestOutlet={closestOutlet}
-            cost={cost}
-          />
+          <Review chosenAddress={chosenAddress} closestOutlet={closestOutlet} cost={cost} />
         </div>
       );
     default:
@@ -88,7 +84,7 @@ export default function PickupRequest() {
         const response = await instance().post('/order/pickup-request', {
           user_id: userId,
           user_address_id: chosenAddress.user_address_id, // Assuming address holds the selected address ID
-          nearestOutlet: closestOutlet.closest_outlet_id, // Assuming closestOutlet holds the outlet ID
+          nearestOutlet: closestOutlet.closest_outlet_id // Assuming closestOutlet holds the outlet ID
         });
 
         if (response.status === 201) {
@@ -115,7 +111,7 @@ export default function PickupRequest() {
 
   return (
     <MainCard title="Pickup Request">
-      <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5, direction: "row", maxWidth: '600px', mx: 'auto'}}>
+      <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5, direction: 'row', maxWidth: '600px', mx: 'auto' }}>
         {steps.map((label, index) => {
           const labelProps: { error?: boolean; optional?: ReactNode } = {};
 
@@ -159,7 +155,19 @@ export default function PickupRequest() {
           </>
         ) : (
           <>
-            {getStepContent(activeStep, handleNext, handleBack, setErrorIndex, chosenAddress, setChosenAddress, closestOutlet, setClosestOutlet, cost, setCost, userId)}
+            {getStepContent(
+              activeStep,
+              handleNext,
+              handleBack,
+              setErrorIndex,
+              chosenAddress,
+              setChosenAddress,
+              closestOutlet,
+              setClosestOutlet,
+              cost,
+              setCost,
+              userId
+            )}
             {activeStep === steps.length - 1 && (
               <Stack direction="row" justifyContent={activeStep !== 0 ? 'space-between' : 'flex-end'}>
                 {activeStep !== 0 && (

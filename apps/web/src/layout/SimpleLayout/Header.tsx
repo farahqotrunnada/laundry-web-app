@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import { useTheme, alpha } from '@mui/material/styles';
@@ -9,7 +9,6 @@ import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
-import { getCookie } from 'cookies-next';
 import Links from '@mui/material/Link';
 import IconButton from 'components/@extended/IconButton';
 import { ExportSquare, HambergerMenu } from 'iconsax-react';
@@ -17,54 +16,27 @@ import { ExportSquare, HambergerMenu } from 'iconsax-react';
 // project imports
 import AnimateButton from 'components/@extended/AnimateButton';
 import Logo from 'components/logo';
-import { useAppDispatch } from 'libs/hooks';
-import { logout, loadUser } from 'libs/auth/authSlices';
 import { ThemeDirection } from 'config';
-import { isTokenExpired } from 'utils/authUtils/isTokenExpired';
-import { refreshToken } from 'utils/authUtils/refreshToken';
 
 // components
 import ElevationScroll from 'components/header/ElevationScroll';
 import HeaderMenu from 'components/header/HeaderMenu';
 import DrawerMenu from 'components/header/DrawerMenu';
 import Notification from 'components/header/Notification';
+import useUser from 'hooks/useUser';
 
 export default function Header() {
   const theme = useTheme();
   const matchDownMd = useMediaQuery(theme.breakpoints.down('md'));
-  const dispatch = useAppDispatch();
-  const { user, loginStatus } = useSelector((state: any) => state.auth);
+  const user = useUser();
+  const { loginStatus } = useSelector((state: any) => state.auth);
 
   const [drawerToggle, setDrawerToggle] = useState<boolean>(false);
 
-  const avatarUrl = `http://localhost:8000/static/avatar/${user.avatarFilename}`;
-
-  useEffect(() => {
-    const accessToken = getCookie('access-token') as string;
-    console.log('Access Token on page load:', accessToken);
-
-    if (accessToken) {
-      if (isTokenExpired(accessToken)) {
-        refreshToken().then((newToken) => {
-          if (newToken) {
-            dispatch(loadUser());
-          } else {
-            dispatch(logout());
-          }
-        });
-      } else {
-        dispatch(loadUser());
-      }
-    } else {
-      dispatch(logout());
-    }
-  }, [dispatch]);
+  const avatarUrl = `http://localhost:8000/static/avatar/${user?.avatarFilename}`;
 
   const drawerToggler = (open: boolean) => (event: any) => {
-    if (
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
-    ) {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
     setDrawerToggle(open);
@@ -73,7 +45,7 @@ export default function Header() {
   const url = '/login';
 
   const linksSx = {
-    textDecoration: 'none',
+    textDecoration: 'none'
   };
 
   return (
@@ -83,18 +55,12 @@ export default function Header() {
           bgcolor: alpha(theme.palette.background.default, 0.1),
           backdropFilter: 'blur(8px)',
           color: theme.palette.text.primary,
-          boxShadow: 'none',
+          boxShadow: 'none'
         }}
       >
         <Container maxWidth="xl" disableGutters={matchDownMd}>
-          <Toolbar
-            sx={{ height: '64px', px: { xs: 1.5, sm: 4, md: 0, lg: 0 }, py: 0 }}
-          >
-            <Stack
-              direction="row"
-              sx={{ flexGrow: 1, display: { xs: 'none', md: 'block' } }}
-              alignItems="center"
-            >
+          <Toolbar sx={{ height: '64px', px: { xs: 1.5, sm: 4, md: 0, lg: 0 }, py: 0 }}>
+            <Stack direction="row" sx={{ flexGrow: 1, display: { xs: 'none', md: 'block' } }} alignItems="center">
               <Box sx={{ display: 'inline-block' }}>
                 <Logo reverse to="/" />
               </Box>
@@ -105,9 +71,9 @@ export default function Header() {
               sx={{
                 '& .header-link': {
                   fontWeight: 500,
-                  '&:hover': { color: theme.palette.primary.main },
+                  '&:hover': { color: theme.palette.primary.main }
                 },
-                display: { xs: 'none', md: 'flex' },
+                display: { xs: 'none', md: 'flex' }
               }}
               spacing={3}
             >
@@ -139,35 +105,17 @@ export default function Header() {
               >
                 Locations
               </Links>
-              <Links
-                className="header-link"
-                color="secondary.main"
-                component={Link}
-                href="/#"
-                underline="none"
-              >
+              <Links className="header-link" color="secondary.main" component={Link} href="/#" underline="none">
                 FAQ
               </Links>
-              <Links
-                className="header-link"
-                color="secondary.main"
-                href="/#"
-                target="_blank"
-                underline="none"
-              >
+              <Links className="header-link" color="secondary.main" href="/#" target="_blank" underline="none">
                 Promotions
               </Links>
-              <Links
-                className="header-link"
-                color="secondary.main"
-                href="/#"
-                target="_blank"
-                underline="none"
-              >
+              <Links className="header-link" color="secondary.main" href="/#" target="_blank" underline="none">
                 Contact Us
               </Links>
 
-              {loginStatus.isLogin ? (
+              {loginStatus.isLogin && user ? (
                 <>
                   <Notification />
                   <HeaderMenu user={user} avatarUrl={avatarUrl} />
@@ -196,45 +144,28 @@ export default function Header() {
                 width: '100%',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                display: { xs: 'flex', md: 'none' },
+                display: { xs: 'flex', md: 'none' }
               }}
             >
               <Box sx={{ display: 'inline-block' }}>
                 <Logo reverse to="/" sx={{ paddingTop: 1.5 }} />
               </Box>
               <Stack direction="row" spacing={2}>
-                {loginStatus.isLogin ? (
+                {loginStatus.isLogin && user ? (
                   <>
                     <Notification />
                     <HeaderMenu user={user} avatarUrl={avatarUrl} />
                   </>
                 ) : (
-                  <Button
-                    variant="contained"
-                    color="success"
-                    component={Link}
-                    href={url}
-                    sx={{ mt: 0.25 }}
-                  >
+                  <Button variant="contained" color="success" component={Link} href={url} sx={{ mt: 0.25 }}>
                     SIGN IN
                   </Button>
                 )}
-
-                <IconButton
-                  size="large"
-                  color="secondary"
-                  onClick={drawerToggler(true)}
-                  sx={{ p: 1 }}
-                >
+                <IconButton size="large" color="secondary" onClick={drawerToggler(true)} sx={{ p: 1 }}>
                   <HambergerMenu />
                 </IconButton>
               </Stack>
-              <DrawerMenu
-                drawerToggle={drawerToggle}
-                drawerToggler={drawerToggler}
-                linksSx={linksSx}
-                url={url}
-              />
+              <DrawerMenu drawerToggle={drawerToggle} drawerToggler={drawerToggler} linksSx={linksSx} url={url} />
             </Box>
           </Toolbar>
         </Container>

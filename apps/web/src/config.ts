@@ -19,38 +19,38 @@ const roboto = Roboto({
   subsets: ['latin'],
   fallback: ['sans-serif'],
   weight: ['300', '400', '500', '700'],
-  adjustFontFallback: false,
+  adjustFontFallback: false
 });
 
 export enum ThemeMode {
   LIGHT = 'light',
   DARK = 'dark',
-  AUTO = 'auto',
+  AUTO = 'auto'
 }
 
 export enum MenuOrientation {
   VERTICAL = 'vertical',
-  HORIZONTAL = 'horizontal',
+  HORIZONTAL = 'horizontal'
 }
 
 export enum ThemeDirection {
   LTR = 'ltr',
-  RTL = 'rtl',
+  RTL = 'rtl'
 }
 
 export enum NavActionType {
   FUNCTION = 'function',
-  LINK = 'link',
+  LINK = 'link'
 }
 
 export enum Gender {
   MALE = 'Male',
-  FEMALE = 'Female',
+  FEMALE = 'Female'
 }
 
 export enum DropzopType {
   default = 'DEFAULT',
-  standard = 'STANDARD',
+  standard = 'STANDARD'
 }
 
 // ==============================|| THEME CONFIG ||============================== //
@@ -65,7 +65,7 @@ const config: DefaultConfigProps = {
   mode: ThemeMode.LIGHT,
   presetColor: 'default',
   themeDirection: ThemeDirection.LTR,
-  themeContrast: false,
+  themeContrast: false
 };
 
 export default config;
