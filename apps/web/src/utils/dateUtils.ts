@@ -3,7 +3,7 @@ export const formatDate = (data: string | Date) => {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
+    day: 'numeric'
   } as Intl.DateTimeFormatOptions;
 
   return new Date(data).toLocaleDateString('id-ID', options);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -20,63 +20,57 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 // third-party
-import {
-  flexRender,
-  useReactTable,
-  ColumnDef,
-  HeaderGroup,
-  getCoreRowModel,
-  ColumnFiltersState,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  SortingState,
-  getSortedRowModel
-} from '@tanstack/react-table';
+import { flexRender, useReactTable, ColumnDef, HeaderGroup, getCoreRowModel, PaginationState } from '@tanstack/react-table';
 
 // project import
 import ScrollX from 'components/ScrollX';
 import MainCard from 'components/MainCard';
-import { TablePagination, HeaderSort, DebouncedInput } from 'components/third-party/react-table';
-import { Chip } from '@mui/material';
+import { TablePagination, DebouncedInput } from 'components/third-party/react-table';
+import { Alert, Chip } from '@mui/material';
 import { formatDate } from 'utils/dateUtils';
-import useOrderDetail, { OrderDetail } from 'hooks/model/useOrderDetail';
+import useCustomerOrder, { CustomerOrder } from 'api/customer-order';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Ethereum } from 'iconsax-react';
 
 interface ReactTableProps {
-  columns: ColumnDef<OrderDetail>[];
-  data: OrderDetail[];
+  columns: ColumnDef<CustomerOrder>[];
+  data: CustomerOrder[];
   title?: string;
-  selectedDate: Date | null;
-  setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>;
+  date: Date | null;
+  setDate: React.Dispatch<React.SetStateAction<Date | null>>;
+  search: string;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
+  pageCount: number;
+  pagination: PaginationState;
+  onPaginationChange: React.Dispatch<React.SetStateAction<PaginationState>>;
 }
 
-function ReactTable({ columns, data, title, selectedDate, setSelectedDate }: ReactTableProps) {
+function ReactTable({
+  columns,
+  data,
+  title,
+  date,
+  setDate,
+  search,
+  setSearch,
+  pageCount,
+  pagination,
+  onPaginationChange
+}: ReactTableProps) {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('sm'));
-
-  const [sorting, setSorting] = useState<SortingState>([{ id: 'transaction_id', desc: false }]);
-
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [rowSelection, setRowSelection] = useState({});
-  const [globalFilter, setGlobalFilter] = useState('');
 
   const table = useReactTable({
     data,
     columns,
     state: {
-      sorting,
-      columnFilters,
-      rowSelection,
-      globalFilter
+      pagination
     },
+    pageCount,
+    manualPagination: true,
     enableRowSelection: true,
-    onSortingChange: setSorting,
-    onRowSelectionChange: setRowSelection,
-    onGlobalFilterChange: setGlobalFilter,
-    onColumnFiltersChange: setColumnFilters,
+    onPaginationChange: onPaginationChange,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     debugTable: true
   });
 
@@ -95,19 +89,20 @@ function ReactTable({ columns, data, title, selectedDate, setSelectedDate }: Rea
         sx={{ padding: 2.5 }}
       >
         <DebouncedInput
-          value={globalFilter ?? ''}
-          onFilterChange={(value) => setGlobalFilter(String(value))}
+          value={search}
+          onFilterChange={(value) => setSearch(value as string)}
           placeholder={`Search ${data.length} records...`}
           sx={{
             width: matchDownSM ? '100%' : '48%', // 48% untuk setengah lebar di desktop
             flexBasis: matchDownSM ? '100%' : '48%' // memastikan setengah lebar di mobile
           }}
         />
+
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DatePicker
             label="Filter by Date"
-            value={selectedDate}
-            onChange={(newValue) => setSelectedDate(newValue)}
+            value={date}
+            onChange={(newValue) => setDate(newValue)}
             sx={{
               width: matchDownSM ? '100%' : '48%', // 48% untuk setengah lebar di desktop
               flexBasis: matchDownSM ? '100%' : '48%' // memastikan setengah lebar di mobile
@@ -123,11 +118,10 @@ function ReactTable({ columns, data, title, selectedDate, setSelectedDate }: Rea
                 {table.getHeaderGroups().map((headerGroup: HeaderGroup<any>) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => (
-                      <TableCell key={header.id} {...header.column.columnDef.meta} onClick={header.column.getToggleSortingHandler()}>
+                      <TableCell key={header.id} {...header.column.columnDef.meta}>
                         {header.isPlaceholder ? null : (
                           <Stack direction="row" spacing={1} alignItems="center">
                             <Box>{flexRender(header.column.columnDef.header, header.getContext())}</Box>
-                            {header.column.getCanSort() && <HeaderSort column={header.column} />}
                           </Stack>
                         )}
                       </TableCell>
@@ -153,7 +147,7 @@ function ReactTable({ columns, data, title, selectedDate, setSelectedDate }: Rea
                         setPageIndex: table.setPageIndex,
                         getState: table.getState,
                         getPageCount: table.getPageCount,
-                        initialPageSize: 10
+                        initialPageSize: pagination.pageSize
                       }}
                     />
                   </TableCell>
@@ -168,19 +162,35 @@ function ReactTable({ columns, data, title, selectedDate, setSelectedDate }: Rea
 }
 
 export default function OrderList({ customerId }: { customerId: string }) {
-  const { data: order, error } = useOrderDetail(customerId);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const filteredOrder = useMemo(() => {
-    if (!selectedDate) return order;
-    return order?.filter((order: OrderDetail) => {
-      const orderDate = new Date(order.created_at);
-      const selected = new Date(selectedDate);
-      return orderDate.toDateString() === selected.toDateString();
-    });
-  }, [order, selectedDate]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: Number(searchParams.get('page') || '0'),
+    pageSize: Number(searchParams.get('limit') || '10')
+  });
 
-  const columns = useMemo<ColumnDef<OrderDetail>[]>(
+  const limit = pagination.pageSize;
+  const skip = pagination.pageIndex * pagination.pageSize;
+  const selectedDate = searchParams.get('date') ? new Date(searchParams.get('date')!) : null;
+
+  const [search, setSearch] = useState<string>('');
+  const [date, setDate] = useState<Date | null>(selectedDate);
+  const { data, count, error, loading } = useCustomerOrder(customerId, search, limit, skip, date);
+
+  useEffect(() => {
+    const current = new URLSearchParams(window.location.search);
+
+    current.set('search', search);
+    current.set('page', String(pagination.pageIndex + 1));
+    current.set('limit', String(pagination.pageSize));
+    date && current.set('date', date.toISOString());
+
+    router.push(`${pathname}?${current}`);
+  }, [pagination, pathname, router, date, search]);
+
+  const columns = useMemo<ColumnDef<CustomerOrder>[]>(
     () => [
       {
         header: 'Transaction ID',
@@ -211,17 +221,30 @@ export default function OrderList({ customerId }: { customerId: string }) {
     []
   );
 
-  if (!filteredOrder || error) return <div>Error: {error}</div>;
+  if (loading) return <span>loading</span>;
+
+  if (error) {
+    return (
+      <Alert color="error" icon={<Ethereum variant="Bold" />}>
+        {error}
+      </Alert>
+    );
+  }
 
   return (
     <MainCard content={false}>
       <ScrollX>
         <ReactTable
           columns={columns}
-          data={filteredOrder}
+          data={data || []}
           title="Order Details"
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
+          date={date}
+          setDate={setDate}
+          search={search}
+          setSearch={setSearch}
+          pagination={pagination}
+          onPaginationChange={setPagination}
+          pageCount={count ? Math.round(count / limit) : 0}
         />
       </ScrollX>
     </MainCard>

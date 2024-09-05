@@ -27,7 +27,7 @@ const order: NavItemType = {
           id: 'order-list',
           title: 'List Orders',
           type: 'item',
-          url: '/order/customer/1',
+          url: '/customers/1/orders',
           breadcrumbs: false
         }
       ]

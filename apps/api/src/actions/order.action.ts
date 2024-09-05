@@ -1,10 +1,6 @@
 import prisma from '@/prisma';
-import { v4 as uuidv4 } from 'uuid'; // Import UUID library for generating transaction_id
-import {
-  ICreateOrder,
-  IProcessOrder,
-  IOrderStatus,
-} from '@/interfaces/order.interface';
+import { ICreateOrder, IProcessOrder, IOrderStatus } from '@/interfaces/order.interface';
+import moment from 'moment';
 
 class OrderAction {
   // Function to generate a transaction ID with 4 random numbers and 4 random letters
@@ -35,7 +31,7 @@ class OrderAction {
 
       // Check if the transaction_id already exists in the database
       const existingOrder = await prisma.order.findUnique({
-        where: { transaction_id },
+        where: { transaction_id }
       });
 
       // If no existing order with the same transaction_id, it's unique
@@ -62,8 +58,8 @@ class OrderAction {
           driver_id: 0,
           status: 'Menunggu Penjemputan Driver',
           total_weight: 0,
-          total_cost: 0,
-        },
+          total_cost: 0
+        }
       });
 
       return newOrder;
@@ -79,8 +75,8 @@ class OrderAction {
         where: { order_id },
         data: {
           driver_id,
-          status: 'Laundry Sedang Menuju Outlet',
-        },
+          status: 'Laundry Sedang Menuju Outlet'
+        }
       });
 
       return updatedOrder;
@@ -100,8 +96,8 @@ class OrderAction {
         data: {
           status: 'Laundry Telah Sampai Outlet',
           total_weight,
-          total_cost,
-        },
+          total_cost
+        }
       });
 
       // Insert items into the OrderItem table
@@ -110,8 +106,8 @@ class OrderAction {
           data: {
             order_id,
             item_id: item.item_id,
-            quantity: item.quantity,
-          },
+            quantity: item.quantity
+          }
         });
       }
 
@@ -122,17 +118,59 @@ class OrderAction {
   };
 
   // List orders for a customer
-  getOrdersForCustomer = async (customer_id: number) => {
+  getOrdersForCustomer = async (customer_id: number, search: string, skip: number, limit: number, date: string) => {
     try {
       const orders = await prisma.order.findMany({
-        where: { customer_id },
+        where: {
+          customer_id,
+          ...(search && {
+            transaction_id: {
+              contains: search,
+              mode: 'insensitive'
+            }
+          }),
+          ...(date && {
+            created_at: {
+              gte: moment(date).toISOString(),
+              lte: moment(date).add(1, 'days').toISOString()
+            }
+          })
+        },
         orderBy: {
-          created_at: 'desc',
+          created_at: 'desc'
         },
         include: {
           OrderItems: true,
-          Payments: true,
+          Payments: true
         },
+        skip: skip,
+        take: limit
+      });
+
+      return orders;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  getTotalOrdersForCustomer = async (customer_id: number, search: string, date: string) => {
+    try {
+      const orders = await prisma.order.count({
+        where: {
+          customer_id,
+          ...(search && {
+            transaction_id: {
+              contains: search,
+              mode: 'insensitive'
+            }
+          }),
+          ...(date && {
+            created_at: {
+              gte: moment(date).toISOString(),
+              lte: moment(date).add(1, 'days').toISOString()
+            }
+          })
+        }
       });
 
       return orders;
@@ -148,19 +186,16 @@ class OrderAction {
 
       const order = await prisma.order.findUnique({
         where: { order_id },
-        include: { Payments: true },
+        include: { Payments: true }
       });
 
       const orderTime = order?.updated_at;
 
       // Check if 2 days have passed since the order was delivered
-      if (
-        orderTime &&
-        currentTime.getTime() - orderTime.getTime() >= 2 * 24 * 60 * 60 * 1000
-      ) {
+      if (orderTime && currentTime.getTime() - orderTime.getTime() >= 2 * 24 * 60 * 60 * 1000) {
         const updatedOrder = await prisma.order.update({
           where: { order_id },
-          data: { status: 'Laundry Telah Diterima Customer' },
+          data: { status: 'Laundry Telah Diterima Customer' }
         });
 
         return updatedOrder;
@@ -182,11 +217,11 @@ class OrderAction {
           transaction_id: true,
           status: true,
           created_at: true,
-          updated_at: true,
+          updated_at: true
         },
         orderBy: {
-          created_at: 'desc',
-        },
+          created_at: 'desc'
+        }
       });
 
       return orders;
