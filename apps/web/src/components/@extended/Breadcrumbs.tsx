@@ -1,6 +1,6 @@
 'use client';
 
-import { CSSProperties, ReactElement, useEffect, useState } from 'react';
+import { CSSProperties, ReactElement, useState } from 'react';
 
 // next
 import NextLink from 'next/link';
@@ -15,7 +15,7 @@ import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
 
 // project import
 import MainCard from 'components/MainCard';
-import navigation from 'menu-items';
+// import navigation from 'menu-items';
 import { ThemeDirection } from 'config';
 
 // assets
@@ -90,19 +90,19 @@ export default function Breadcrumbs({
     customLocation = '/apps/customer/customer-card';
   }
 
-  useEffect(() => {
-    navigation?.items?.map((menu: NavItemType) => {
-      if (menu.type && menu.type === 'group') {
-        if (menu?.url && menu.url === customLocation) {
-          setMain(menu);
-          setItem(menu);
-        } else {
-          getCollapse(menu as { children: NavItemType[]; type?: string });
-        }
-      }
-      return false;
-    });
-  });
+  // useEffect(() => {
+  //   navigation?.items?.map((menu: NavItemType) => {
+  //     if (menu.type && menu.type === 'group') {
+  //       if (menu?.url && menu.url === customLocation) {
+  //         setMain(menu);
+  //         setItem(menu);
+  //       } else {
+  //         getCollapse(menu as { children: NavItemType[]; type?: string });
+  //       }
+  //     }
+  //     return false;
+  //   });
+  // });
 
   // set active item state
   const getCollapse = (menu: NavItemType) => {
@@ -172,7 +172,12 @@ export default function Breadcrumbs({
                 <Typography
                   variant="body1"
                   color="text.primary"
-                  sx={{ textDecoration: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                  sx={{
+                    textDecoration: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
                 >
                   {icons && <Home3 style={iconSX} />}
                   {icon && !icons && <Home3 variant="Bold" style={{ ...iconSX, marginRight: 0 }} />}
@@ -213,7 +218,12 @@ export default function Breadcrumbs({
           <Typography
             color="text.secondary"
             variant="h6"
-            sx={{ textDecoration: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            sx={{
+              textDecoration: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center'
+            }}
           >
             {icons && <Home3 style={iconSX} />}
             {icon && !icons && <Home3 variant="Bold" style={{ ...iconSX, marginRight: 0 }} />}
@@ -235,7 +245,11 @@ export default function Breadcrumbs({
               <Typography
                 key={index}
                 variant="body1"
-                sx={{ textDecoration: 'none', fontWeight: 500, ...(link.to && { fontWeight: 400, cursor: 'pointer' }) }}
+                sx={{
+                  textDecoration: 'none',
+                  fontWeight: 500,
+                  ...(link.to && { fontWeight: 400, cursor: 'pointer' })
+                }}
                 color={link.to ? 'text.secondary' : 'text.primary'}
               >
                 {link.icon && <CollapseIcon style={iconSX} />}

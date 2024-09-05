@@ -148,7 +148,7 @@ export default function Header() {
               }}
             >
               <Box sx={{ display: 'inline-block' }}>
-                <Logo reverse to="/" sx={{ paddingTop: 1.5 }} />
+                <Logo reverse to="/" sx={{ paddingTop: 0 }} />
               </Box>
               <Stack direction="row" spacing={2}>
                 {loginStatus.isLogin && user ? (

@@ -9,13 +9,5 @@ import Image from 'next/image';
 
 export default function LogoMain({ reverse }: { reverse?: boolean }) {
   const theme = useTheme();
-  return (
-    <Image
-      src={theme.palette.mode === ThemeMode.DARK ? logo : logo}
-      alt="icon logo"
-      width={60}
-      height={60}
-      style={{ width: '100%', height: '100%' }}
-    />
-  );
+  return <Image src={theme.palette.mode === ThemeMode.DARK ? logo : logo} alt="icon logo" width="68" />;
 }
