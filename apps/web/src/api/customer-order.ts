@@ -24,12 +24,12 @@ export interface CustomerOrder {
   Payments: any[];
 }
 
-const useCustomerOrder = (id: string, search: string, limit: number, skip: number, date: Date | null) => {
+const useCustomerOrder = (id: string, search: string, pagination: PaginationState, date: Date | null) => {
   const params = new URLSearchParams();
 
   params.append('search', search);
-  params.append('skip', skip.toString());
-  params.append('limit', limit.toString());
+  params.append('page', pagination.pageIndex.toString());
+  params.append('limit', pagination.pageSize.toString());
   params.append('date', date ? date.toUTCString() : '');
 
   const { data, error, isLoading } = useSWR<CustomerOrderListResponse>(`/customers/${id}/orders?${params}`, fetcher);

@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ICreateOrder, IProcessOrder } from '@/interfaces/order.interface';
 import OrderAction from '@/actions/order.action';
-import moment from 'moment';
 
 export class OrderController {
   // Handle creating a pickup request
@@ -66,11 +65,12 @@ export class OrderController {
     try {
       const customer_id = Number(req.params.customer_id);
 
-      const skip = Number(req.query.skip) || 0;
-      const limit = Number(req.query.limit) || 10;
-
       const search = req.query.search as string;
       const date = req.query.date as string;
+
+      const page = Number(req.query.page) || 0;
+      const limit = Math.min(Number(req.query.limit) || 10, 100);
+      const skip = page * limit;
 
       const [orders, count] = await Promise.all([
         OrderAction.getOrdersForCustomer(customer_id, search, skip, limit, date),

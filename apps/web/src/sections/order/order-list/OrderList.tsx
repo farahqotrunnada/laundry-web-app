@@ -171,13 +171,11 @@ export default function OrderList({ customerId }: { customerId: string }) {
     pageSize: Number(searchParams.get('limit') || '10')
   });
 
-  const limit = pagination.pageSize;
-  const skip = pagination.pageIndex * pagination.pageSize;
   const selectedDate = searchParams.get('date') ? new Date(searchParams.get('date')!) : null;
 
   const [search, setSearch] = useState<string>('');
   const [date, setDate] = useState<Date | null>(selectedDate);
-  const { data, count, error, loading } = useCustomerOrder(customerId, search, limit, skip, date);
+  const { data, count, error, loading } = useCustomerOrder(customerId, search, pagination, date);
 
   useEffect(() => {
     const current = new URLSearchParams(window.location.search);
@@ -244,7 +242,7 @@ export default function OrderList({ customerId }: { customerId: string }) {
           setSearch={setSearch}
           pagination={pagination}
           onPaginationChange={setPagination}
-          pageCount={count ? Math.round(count / limit) : 0}
+          pageCount={count ? Math.round(count / pagination.pageSize) : 0}
         />
       </ScrollX>
     </MainCard>
