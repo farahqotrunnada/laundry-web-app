@@ -12,12 +12,11 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 // project-imports
-import AddressForm, {UserAddressData, ClosestOutletAddressData, initialUserAddressData, initialClosestOutletData} from './PickupForm';
+import AddressForm, { UserAddressData, ClosestOutletAddressData, initialUserAddressData, initialClosestOutletData } from './PickupForm';
 import Review from './ReviewOrder';
 import MainCard from 'components/MainCard';
 import AnimateButton from 'components/@extended/AnimateButton';
 import instance from 'utils/axiosIntance';
-import axios from 'axios';
 
 // step options
 const steps = ['Order details', 'Review your order'];
@@ -37,7 +36,7 @@ function getStepContent(
   userId: number
 ) {
   const stepContentStyle: CSSProperties = {
-    padding: '5px',
+    padding: '5px'
   };
 
   switch (step) {
@@ -50,21 +49,17 @@ function getStepContent(
             setErrorIndex={setErrorIndex}
             chosenAddress={chosenAddress}
             setChosenAddress={setChosenAddress}
-            closestOutlet= {closestOutlet}
-            setClosestOutlet= {setClosestOutlet}
-            cost = {cost}
-            setCost = {setCost}
+            closestOutlet={closestOutlet}
+            setClosestOutlet={setClosestOutlet}
+            cost={cost}
+            setCost={setCost}
           />
         </div>
       );
     case 1:
       return (
         <div style={stepContentStyle}>
-          <Review
-            chosenAddress={chosenAddress}
-            closestOutlet={closestOutlet}
-            cost={cost}
-          />
+          <Review chosenAddress={chosenAddress} closestOutlet={closestOutlet} cost={cost} />
         </div>
       );
     default:
@@ -87,10 +82,9 @@ export default function PickupRequest() {
     if (activeStep === steps.length - 1) {
       try {
         const response = await instance().post('/order/pickup-request', {
-        // const response = await axios.post('http://localhost:8000/api/order/pickup-request', {
           user_id: userId,
           user_address_id: chosenAddress.user_address_id, // Assuming address holds the selected address ID
-          nearestOutlet: closestOutlet.closest_outlet_id, // Assuming closestOutlet holds the outlet ID
+          nearestOutlet: closestOutlet.closest_outlet_id // Assuming closestOutlet holds the outlet ID
         });
 
         if (response.status === 201) {
@@ -117,7 +111,7 @@ export default function PickupRequest() {
 
   return (
     <MainCard title="Pickup Request">
-      <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5, direction: "row", maxWidth: '600px', mx: 'auto'}}>
+      <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5, direction: 'row', maxWidth: '600px', mx: 'auto' }}>
         {steps.map((label, index) => {
           const labelProps: { error?: boolean; optional?: ReactNode } = {};
 
@@ -145,13 +139,13 @@ export default function PickupRequest() {
               Thank you for your order.
             </Typography>
             <Typography variant="subtitle1">
-              We are processing your laundry pickup request.
+              We are processing your request. We will send you an update when your driver has arrived to pickup your laundry.
             </Typography>
             <Stack direction="row" justifyContent="flex-end">
               <AnimateButton>
                 <Button
                   variant="contained"
-                  onClick={() => router.push('/order/order-status')} // Navigate to order status
+                  onClick={() => router.push('/order-details')} // Navigate to order status
                   sx={{ my: 3, ml: 1 }}
                 >
                   Go to Order Status
@@ -161,7 +155,19 @@ export default function PickupRequest() {
           </>
         ) : (
           <>
-            {getStepContent(activeStep, handleNext, handleBack, setErrorIndex, chosenAddress, setChosenAddress, closestOutlet, setClosestOutlet, cost, setCost, userId)}
+            {getStepContent(
+              activeStep,
+              handleNext,
+              handleBack,
+              setErrorIndex,
+              chosenAddress,
+              setChosenAddress,
+              closestOutlet,
+              setClosestOutlet,
+              cost,
+              setCost,
+              userId
+            )}
             {activeStep === steps.length - 1 && (
               <Stack direction="row" justifyContent={activeStep !== 0 ? 'space-between' : 'flex-end'}>
                 {activeStep !== 0 && (

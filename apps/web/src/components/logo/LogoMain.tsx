@@ -1,18 +1,21 @@
 // material-ui
 import { useTheme } from '@mui/material/styles';
 
-const logo = 'assets/images/logo.png';
+const logo = '/assets/images/logo.png';
 import { ThemeMode } from 'config';
+import Image from 'next/image';
 
 // ==============================|| LOGO SVG ||============================== //
 
 export default function LogoMain({ reverse }: { reverse?: boolean }) {
   const theme = useTheme();
   return (
-    <img
+    <Image
       src={theme.palette.mode === ThemeMode.DARK ? logo : logo}
       alt="icon logo"
-      width="72"
+      width="40"
+      height="40"
+      style={{ height: 'auto', width: 'auto' }}
     />
   );
 }

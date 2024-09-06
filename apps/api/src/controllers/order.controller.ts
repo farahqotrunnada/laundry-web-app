@@ -4,23 +4,19 @@ import OrderAction from '@/actions/order.action';
 
 export class OrderController {
   // Handle creating a pickup request
-  createPickupRequest = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  createPickupRequest = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { user_id, user_address_id, nearestOutlet }: ICreateOrder = req.body;
 
       const newOrder = await OrderAction.createPickupRequest({
         user_id,
         user_address_id,
-        nearestOutlet,
+        nearestOutlet
       });
 
       return res.status(201).json({
         message: 'Pickup request created successfully',
-        data: newOrder,
+        data: newOrder
       });
     } catch (error) {
       next(error);
@@ -36,7 +32,7 @@ export class OrderController {
 
       return res.status(200).json({
         message: 'Order picked up successfully',
-        data: updatedOrder,
+        data: updatedOrder
       });
     } catch (error) {
       next(error);
@@ -46,19 +42,44 @@ export class OrderController {
   // Handle processing an order and inputting item details
   processOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { order_id, items, total_weight, total_cost }: IProcessOrder =
-        req.body;
+      const { order_id, items, total_weight, total_cost }: IProcessOrder = req.body;
 
       const updatedOrder = await OrderAction.processOrder({
         order_id,
         items,
         total_weight,
-        total_cost,
+        total_cost
       });
 
       return res.status(200).json({
         message: 'Order processed successfully',
-        data: updatedOrder,
+        data: updatedOrder
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getAllOrders = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const search = req.query.search as string;
+      const date = req.query.date as string;
+
+      const page = Number(req.query.page) || 0;
+      const limit = Math.min(Number(req.query.limit) || 10, 100);
+      const skip = page * limit;
+
+      const [orders, count] = await Promise.all([
+        OrderAction.getAllOrders(search, skip, limit, date),
+        OrderAction.getTotalOrders(search, date)
+      ]);
+
+      return res.status(200).json({
+        message: 'Orders fetched successfully',
+        data: {
+          orders,
+          count
+        }
       });
     } catch (error) {
       next(error);
@@ -66,21 +87,26 @@ export class OrderController {
   };
 
   // Handle fetching all orders for a customer
-  getOrdersForCustomer = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  getOrdersForCustomer = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { customer_id } = req.params;
+      const customer_id = Number(req.params.customer_id);
 
-      const orders = await OrderAction.getOrdersForCustomer(
-        Number(customer_id),
-      );
+      const search = req.query.search as string;
+      const date = req.query.date as string;
+
+      const page = Number(req.query.page) || 0;
+      const limit = Math.min(Number(req.query.limit) || 10, 100);
+      const skip = page * limit;
+
+      const [orders, count] = await Promise.all([
+        OrderAction.getOrdersForCustomer(customer_id, search, skip, limit, date),
+        OrderAction.getTotalOrdersForCustomer(customer_id, search, date)
+      ]);
 
       return res.status(200).json({
         message: 'Orders fetched successfully',
         data: orders,
+        count: count
       });
     } catch (error) {
       next(error);
@@ -88,11 +114,7 @@ export class OrderController {
   };
 
   // Handle auto-confirming an order after 2 days
-  autoConfirmOrder = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  autoConfirmOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { order_id } = req.params;
 
@@ -100,7 +122,7 @@ export class OrderController {
 
       return res.status(200).json({
         message: 'Order auto-confirmed successfully',
-        data: updatedOrder,
+        data: updatedOrder
       });
     } catch (error) {
       next(error);
@@ -108,21 +130,15 @@ export class OrderController {
   };
 
   // Handle fetching the status of all orders for a customer
-  getOrderStatusList = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  getOrderStatusList = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { customer_id } = req.params;
 
-      const orderStatuses = await OrderAction.getOrderStatusList(
-        Number(customer_id),
-      );
+      const orderStatuses = await OrderAction.getOrderStatusList(Number(customer_id));
 
       return res.status(200).json({
         message: 'Order statuses fetched successfully',
-        data: orderStatuses,
+        data: orderStatuses
       });
     } catch (error) {
       next(error);

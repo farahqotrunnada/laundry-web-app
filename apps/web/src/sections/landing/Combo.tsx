@@ -23,41 +23,29 @@ const Technologies = [
     icon: laundryPickup,
     title: 'Laundry Pickup Service',
     description:
-      'We provide door-to-door laundry pickup and delivery without any minimum spend. Just schedule a pickup, and we’ll handle the rest.',
+      'We provide door-to-door laundry pickup and delivery without any minimum spend. Just schedule a pickup, and we’ll handle the rest.'
   },
   {
     icon: expressWash,
     title: 'Express Wash & Fold',
-    description:
-      'Need your laundry done in a hurry? Our Express Wash & Fold service guarantees a 24-hour turnaround time.',
+    description: 'Need your laundry done in a hurry? Our Express Wash & Fold service guarantees a 24-hour turnaround time.'
   },
   {
     icon: dryCleaning,
     title: 'Dry Cleaning Service',
     description:
-      'Keep your delicate garments pristine with our premium dry cleaning service, expertly handling everything from suits to silk dresses with care and precision.',
-  },
+      'Keep your delicate garments pristine with our premium dry cleaning service, expertly handling everything from suits to silk dresses with care and precision.'
+  }
 ];
 
 // ==============================|| LANDING - COMBO PAGE ||============================== //
 
 export default function ComboPage() {
   return (
-    <Container>
-      <Grid
-        container
-        spacing={3}
-        alignItems="center"
-        justifyContent="center"
-        sx={{ mt: { md: 15, xs: 2.5 }, mb: { md: 10, xs: 2.5 } }}
-      >
+    <Container id="services">
+      <Grid container spacing={3} alignItems="center" justifyContent="center" sx={{ mt: { md: 15, xs: 2.5 }, mb: { md: 10, xs: 2.5 } }}>
         <Grid item xs={12}>
-          <Grid
-            container
-            spacing={2}
-            justifyContent="center"
-            sx={{ textAlign: 'center', marginBottom: 3 }}
-          >
+          <Grid container spacing={2} justifyContent="center" sx={{ textAlign: 'center', marginBottom: 3 }}>
             <Grid item xs={12}>
               <motion.div
                 initial={{ opacity: 0, translateY: 550 }}
@@ -66,12 +54,10 @@ export default function ComboPage() {
                   type: 'spring',
                   stiffness: 150,
                   damping: 30,
-                  delay: 0.2,
+                  delay: 0.2
                 }}
               >
-                <Typography variant="h2">
-                  What's Included in the Service?
-                </Typography>
+                <Typography variant="h2">What&apos;s Included in the Service?</Typography>
               </motion.div>
             </Grid>
             <Grid item xs={12} md={7}>
@@ -82,12 +68,11 @@ export default function ComboPage() {
                   type: 'spring',
                   stiffness: 150,
                   damping: 30,
-                  delay: 0.4,
+                  delay: 0.4
                 }}
               >
                 <Typography>
-                  LaundryXpert provides easy pickup, expert care, and delivery.
-                  Simple, reliable laundry services tailored to you.
+                  LaundryXpert provides easy pickup, expert care, and delivery. Simple, reliable laundry services tailored to you.
                 </Typography>
               </motion.div>
             </Grid>
@@ -107,11 +92,7 @@ export default function ComboPage() {
                         <Typography>{tech.description}</Typography>
                       </Grid>
                       <Grid item xs={12}>
-                        <CardMedia
-                          component="img"
-                          image={tech.icon}
-                          sx={{ width: '100%' }}
-                        />
+                        <CardMedia component="img" image={tech.icon} sx={{ width: '100%' }} />
                       </Grid>
                     </Grid>
                   </MainCard>

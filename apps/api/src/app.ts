@@ -2,12 +2,15 @@ import express, { json, urlencoded, Express } from 'express';
 import cors from 'cors';
 import session from 'express-session';
 import passport, { initialize } from 'passport';
+import path from 'path';
 import { PORT } from './config';
 import { AuthRouter } from './routers/auth.router';
 import { ErrorMiddleware } from './middlewares/error.middleware';
 import { UserRouter } from './routers/user.router';
 import './libs/passport';
 import { OrderRouter } from './routers/order.router';
+import cookieParser from 'cookie-parser';
+import { CustomerRouter } from './routers/customer.router';
 
 export default class App {
   private app: Express;
@@ -23,24 +26,29 @@ export default class App {
     this.app.use(
       cors({
         origin: String(process.env.FE_BASE_URL),
-        credentials: true,
-      }),
+        credentials: true
+      })
     );
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
+
+    this.app.use(cookieParser());
 
     // Setup session middleware
     this.app.use(
       session({
         secret: String(process.env.API_KEY),
         resave: false,
-        saveUninitialized: true,
-      }),
+        saveUninitialized: true
+      })
     );
 
     // Initialize passport
     this.app.use(passport.initialize());
     this.app.use(passport.session());
+
+    // Tambahan middleware untuk menyajikan file statis
+    this.app.use('/static', express.static(path.join(__dirname, '../public')));
   }
 
   private handleError(): void {
@@ -48,7 +56,7 @@ export default class App {
   }
 
   private routes(): void {
-    const routers = [new AuthRouter(), new UserRouter(), new OrderRouter()];
+    const routers = [new AuthRouter(), new UserRouter(), new OrderRouter(), new CustomerRouter()];
 
     routers.forEach((router) => {
       this.app.use('/api', router.getRouter());

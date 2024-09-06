@@ -1,34 +1,29 @@
 import { OrderController } from '@/controllers/order.controller';
+import { AuthMiddleware } from '@/middlewares/auth.middleware';
 import { Router } from 'express';
 
 export class OrderRouter {
-  public router: Router = Router();
-  public orderController = new OrderController();
+  private router: Router;
+  private path: string;
+  private guard: AuthMiddleware;
+  private controller: OrderController;
 
   constructor() {
+    this.router = Router();
+    this.path = '/orders';
+    this.controller = new OrderController();
+    this.guard = new AuthMiddleware();
+
     this.initializeRoutes();
   }
 
   private initializeRoutes(): void {
-    // Order routes
-    this.router.post(
-      '/order/pickup-request',
-      this.orderController.createPickupRequest,
-    );
-    this.router.post('/order/pickup', this.orderController.pickupOrder);
-    this.router.post('/order/process', this.orderController.processOrder);
-    this.router.get(
-      '/customers/:customer_id/orders',
-      this.orderController.getOrdersForCustomer,
-    );
-    this.router.post(
-      '/order/auto-confirm/:order_id',
-      this.orderController.autoConfirmOrder,
-    );
-    this.router.get(
-      '/customers/:customer_id/order-statuses',
-      this.orderController.getOrderStatusList,
-    );
+    this.router.get(`${this.path}`, this.guard.verifyAccessToken, this.controller.getAllOrders);
+
+    this.router.post(`${this.path}/pickup`, this.guard.verifyAccessToken, this.controller.pickupOrder);
+    this.router.post(`${this.path}/process`, this.guard.verifyAccessToken, this.controller.processOrder);
+    this.router.post(`${this.path}/pickup-request`, this.guard.verifyAccessToken, this.controller.createPickupRequest);
+    this.router.post(`${this.path}/auto-confirm/:order_id`, this.guard.verifyAccessToken, this.controller.autoConfirmOrder);
   }
 
   getRouter(): Router {

@@ -1,18 +1,20 @@
 // project-imports
 import Hero from 'sections/landing/Hero';
+import RequestPickupButton from 'sections/landing/RequestPickup';
+
 // import Technologies from 'sections/landing/Technologies';
 import Combo from 'sections/landing/Combo';
 import Apps from 'sections/landing/Apps';
 import Testimonial from 'sections/landing/Testimonial';
 import Partner from 'sections/landing/Partner';
 import ContactUs from 'sections/landing/ContactUs';
-import SimpleLayout from 'layout/SimpleLayout';
+import AppLayout from 'layout/AppLayout';
 
 // ==============================|| LANDING PAGE ||============================== //
 
 export default function Landing() {
   return (
-    <SimpleLayout>
+    <AppLayout>
       <Hero />
       {/* <Technologies /> */}
       <Combo />
@@ -20,6 +22,7 @@ export default function Landing() {
       <Testimonial />
       <Partner />
       <ContactUs />
-    </SimpleLayout>
+      <RequestPickupButton />
+    </AppLayout>
   );
 }

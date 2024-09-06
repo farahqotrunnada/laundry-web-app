@@ -115,7 +115,6 @@ export type CustomizationProps = {
   themeDirection: ThemeDirection;
   themeContrast: boolean;
   onChangeContainer: (container: string) => void;
-  onChangeLocalization: (lang: I18n) => void;
   onChangeMode: (mode: ThemeMode) => void;
   onChangePresetColor: (theme: PresetColor) => void;
   onChangeDirection: (direction: ThemeDirection) => void;
