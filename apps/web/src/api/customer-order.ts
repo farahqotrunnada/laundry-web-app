@@ -2,13 +2,7 @@ import { PaginationState } from '@tanstack/react-table';
 import useSWR from 'swr';
 import { fetcher } from 'utils/axios';
 
-export interface CustomerOrderListResponse {
-  message: string;
-  data: CustomerOrder[];
-  count: number;
-}
-
-export interface CustomerOrder {
+export interface Order {
   order_id: number;
   transaction_id: string;
   customer_id: number;
@@ -24,7 +18,7 @@ export interface CustomerOrder {
   Payments: any[];
 }
 
-const useCustomerOrder = (id: string, search: string, pagination: PaginationState, date: Date | null) => {
+const useOrders = (search: string, pagination: PaginationState, date: Date | null) => {
   const params = new URLSearchParams();
 
   params.append('search', search);
@@ -32,7 +26,13 @@ const useCustomerOrder = (id: string, search: string, pagination: PaginationStat
   params.append('limit', pagination.pageSize.toString());
   params.append('date', date ? date.toUTCString() : '');
 
-  const { data, error, isLoading } = useSWR<CustomerOrderListResponse>(`/customers/${id}/orders?${params}`, fetcher);
+  const { data, error, isLoading } = useSWR<{
+    message: string;
+    data: {
+      orders: Order[];
+      count: number;
+    };
+  }>(`/orders?${params}`, fetcher);
 
   return {
     ...data,
@@ -41,4 +41,4 @@ const useCustomerOrder = (id: string, search: string, pagination: PaginationStat
   };
 };
 
-export default useCustomerOrder;
+export default useOrders;

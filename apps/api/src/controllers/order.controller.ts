@@ -60,6 +60,32 @@ export class OrderController {
     }
   };
 
+  getAllOrders = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const search = req.query.search as string;
+      const date = req.query.date as string;
+
+      const page = Number(req.query.page) || 0;
+      const limit = Math.min(Number(req.query.limit) || 10, 100);
+      const skip = page * limit;
+
+      const [orders, count] = await Promise.all([
+        OrderAction.getAllOrders(search, skip, limit, date),
+        OrderAction.getTotalOrders(search, date)
+      ]);
+
+      return res.status(200).json({
+        message: 'Orders fetched successfully',
+        data: {
+          orders,
+          count
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   // Handle fetching all orders for a customer
   getOrdersForCustomer = async (req: Request, res: Response, next: NextFunction) => {
     try {

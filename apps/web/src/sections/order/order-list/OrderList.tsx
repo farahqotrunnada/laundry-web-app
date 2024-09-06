@@ -28,13 +28,13 @@ import MainCard from 'components/MainCard';
 import { TablePagination, DebouncedInput } from 'components/third-party/react-table';
 import { Alert, Chip } from '@mui/material';
 import { formatDate } from 'utils/dateUtils';
-import useCustomerOrder, { CustomerOrder } from 'api/customer-order';
+import useOrders, { Order } from 'api/customer-order';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Ethereum } from 'iconsax-react';
 
 interface ReactTableProps {
-  columns: ColumnDef<CustomerOrder>[];
-  data: CustomerOrder[];
+  columns: ColumnDef<Order>[];
+  data: Order[];
   title?: string;
   date: Date | null;
   setDate: React.Dispatch<React.SetStateAction<Date | null>>;
@@ -161,21 +161,35 @@ function ReactTable({
   );
 }
 
-export default function OrderList({ customerId }: { customerId: string }) {
+export default function OrderList() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const paramsDate = searchParams.get('date') ? new Date(searchParams.get('date')!) : null;
+  const paramPage = Number(searchParams.get('page') || '0');
+  const paramLimit = Math.min(Number(searchParams.get('limit') || '10'), 100);
+
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: Number(searchParams.get('page') || '0'),
-    pageSize: Number(searchParams.get('limit') || '10')
+    pageIndex: paramPage,
+    pageSize: paramLimit
   });
 
-  const selectedDate = searchParams.get('date') ? new Date(searchParams.get('date')!) : null;
-
   const [search, setSearch] = useState<string>('');
-  const [date, setDate] = useState<Date | null>(selectedDate);
-  const { data, count, error, loading } = useCustomerOrder(customerId, search, pagination, date);
+  const [date, setDate] = useState<Date | null>(paramsDate);
+  const { data, error, loading } = useOrders(search, pagination, date);
+  const { orders, count } = useMemo(() => {
+    if (data) {
+      return {
+        orders: data.orders,
+        count: data.count
+      };
+    }
+    return {
+      orders: [],
+      count: 0
+    };
+  }, [data]);
 
   useEffect(() => {
     const current = new URLSearchParams(window.location.search);
@@ -188,7 +202,7 @@ export default function OrderList({ customerId }: { customerId: string }) {
     router.push(`${pathname}?${current}`);
   }, [pagination, pathname, router, date, search]);
 
-  const columns = useMemo<ColumnDef<CustomerOrder>[]>(
+  const columns = useMemo<ColumnDef<Order>[]>(
     () => [
       {
         header: 'Transaction ID',
@@ -234,7 +248,7 @@ export default function OrderList({ customerId }: { customerId: string }) {
       <ScrollX>
         <ReactTable
           columns={columns}
-          data={data || []}
+          data={orders || []}
           title="Order Details"
           date={date}
           setDate={setDate}

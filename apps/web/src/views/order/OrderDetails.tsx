@@ -6,11 +6,11 @@ import OrderList from 'sections/order/order-list/OrderList';
 
 // ==============================|| Pickup Request ||============================== //
 
-export default function OrderDetailsPage({ customerId }: { customerId: string }) {
+export default function OrderDetailsPage() {
   return (
     <Grid container spacing={2.5} justifyContent="center">
       <Grid item xs={12}>
-        <OrderList customerId={customerId} />
+        <OrderList />
       </Grid>
     </Grid>
   );

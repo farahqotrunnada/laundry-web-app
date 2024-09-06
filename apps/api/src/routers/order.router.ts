@@ -18,6 +18,8 @@ export class OrderRouter {
   }
 
   private initializeRoutes(): void {
+    this.router.get(`${this.path}`, this.guard.verifyAccessToken, this.controller.getAllOrders);
+
     this.router.post(`${this.path}/pickup`, this.guard.verifyAccessToken, this.controller.pickupOrder);
     this.router.post(`${this.path}/process`, this.guard.verifyAccessToken, this.controller.processOrder);
     this.router.post(`${this.path}/pickup-request`, this.guard.verifyAccessToken, this.controller.createPickupRequest);

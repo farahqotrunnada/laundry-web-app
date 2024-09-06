@@ -12,23 +12,28 @@ const icons = {
 // ==============================|| MENU ITEMS - ORDER ||============================== //
 
 const order: NavItemType = {
+  type: 'group',
   id: 'transaction',
   title: 'Transaction',
-  type: 'group',
   children: [
     {
-      id: 'order',
-      title: 'Order',
       type: 'collapse',
+      id: 'orders',
+      title: 'Manage Orders',
       icon: icons.order,
       breadcrumbs: false,
       children: [
         {
-          id: 'order-list',
-          title: 'List Orders',
           type: 'item',
-          url: '/customers/1/orders',
-          breadcrumbs: false
+          id: 'list-orders',
+          title: 'List All Orders',
+          url: '/dashboard/orders'
+        },
+        {
+          type: 'item',
+          id: 'create-order',
+          title: 'Create New Order',
+          url: '/dashboard/orders/create'
         }
       ]
     }

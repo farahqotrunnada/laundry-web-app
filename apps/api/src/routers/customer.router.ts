@@ -18,8 +18,8 @@ export class CustomerRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.get(`${this.path}/:customer_id/orders`, this.guard.verifyAccessToken, this.controller.getOrdersForCustomer);
-    this.router.get(`${this.path}/:customer_id/order-statuses`, this.guard.verifyAccessToken, this.controller.getOrderStatusList);
+    // this.router.get(`${this.path}/:customer_id/orders`, this.guard.verifyAccessToken, this.controller.getOrdersForCustomer);
+    // this.router.get(`${this.path}/:customer_id/order-statuses`, this.guard.verifyAccessToken, this.controller.getOrderStatusList);
   }
 
   getRouter(): Router {

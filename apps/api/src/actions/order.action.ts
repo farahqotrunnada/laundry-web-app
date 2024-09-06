@@ -117,6 +117,65 @@ class OrderAction {
     }
   };
 
+  getAllOrders = async (search: string, skip: number, limit: number, date: string) => {
+    try {
+      const orders = await prisma.order.findMany({
+        where: {
+          ...(search && {
+            transaction_id: {
+              contains: search,
+              mode: 'insensitive'
+            }
+          }),
+          ...(date && {
+            created_at: {
+              gte: moment(date).toISOString(),
+              lte: moment(date).add(1, 'days').toISOString()
+            }
+          })
+        },
+        orderBy: {
+          created_at: 'desc'
+        },
+        include: {
+          OrderItems: true,
+          Payments: true
+        },
+        skip: skip,
+        take: limit
+      });
+
+      return orders;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  getTotalOrders = async (search: string, date: string) => {
+    try {
+      const orders = await prisma.order.count({
+        where: {
+          ...(search && {
+            transaction_id: {
+              contains: search,
+              mode: 'insensitive'
+            }
+          }),
+          ...(date && {
+            created_at: {
+              gte: moment(date).toISOString(),
+              lte: moment(date).add(1, 'days').toISOString()
+            }
+          })
+        }
+      });
+
+      return orders;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   // List orders for a customer
   getOrdersForCustomer = async (customer_id: number, search: string, skip: number, limit: number, date: string) => {
     try {
