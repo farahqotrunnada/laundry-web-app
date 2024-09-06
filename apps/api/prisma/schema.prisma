@@ -1,90 +1,111 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
 }
 
 model User {
-  user_id        Int      @id @default(autoincrement())
-  first_name     String?
-  last_name      String?
-  email          String   @unique
-  password       String?
-  googleId       String?  @unique
-  phone_number   String?
-  avatarFilename String?  @default("avatarempty.jpg")
-  is_verified    Boolean  @default(false)
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+    user_id        Int      @id @default(autoincrement())
+    first_name     String?
+    last_name      String?
+    email          String   @unique
+    password       String?
+    googleId       String?  @unique
+    phone_number   String?
+    avatarFilename String?  @default("avatarempty.jpg")
+    is_verified    Boolean  @default(false)
+    created_at     DateTime @default(now())
+    updated_at     DateTime @updatedAt
 
-  // Relation with UserAddress model
-  addresses UserAddress[] // A user can have multiple addresses
-  orders    Order[]
+    orders    Order[]
+    Delivery  Delivery[]
+    addresses UserAddress[]
 }
 
 model UserAddress {
-  user_address_id Int      @id @default(autoincrement())
-  user_id         Int
-  is_primary      Boolean
-  name            String
-  street_address  String
-  city            String
-  province        String
-  postal_code     String
-  latitude        Decimal
-  longitude       Decimal
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+    user_address_id Int      @id @default(autoincrement())
+    user_id         Int
+    is_primary      Boolean
+    name            String
+    street_address  String
+    city            String
+    province        String
+    postal_code     String
+    latitude        Decimal
+    longitude       Decimal
+    created_at      DateTime @default(now())
+    updated_at      DateTime @updatedAt
 
-  // Relation with User model
-  user   User    @relation(fields: [user_id], references: [user_id])
-  // Relation with Order model (One UserAddress can have multiple Orders)
-  orders Order[]
+    user   User    @relation(fields: [user_id], references: [user_id])
+    orders Order[]
 
-  @@index([user_id])
+    @@index([user_id])
 }
 
 model Order {
-  order_id        Int         @id @default(autoincrement())
-  transaction_id  String      @unique
-  customer_id     Int
-  user_address_id Int
-  outlet_id       Int
-  driver_id       Int
-  status          String
-  total_weight    Float
-  total_cost      Float
-  created_at      DateTime    @default(now())
-  updated_at      DateTime    @updatedAt
-  OrderItems      OrderItem[]
-  Payments        Payment[]
-  UserAddress     UserAddress @relation(fields: [user_address_id], references: [user_address_id])
-  Customer        User        @relation(fields: [customer_id], references: [user_id])
+    order_id        Int      @id @default(autoincrement())
+    transaction_id  String   @unique
+    customer_id     Int
+    user_address_id Int
+    outlet_id       Int
+    status          String
+    total_weight    Float
+    total_cost      Float
+    created_at      DateTime @default(now())
+    updated_at      DateTime @updatedAt
+
+    OrderItems OrderItem[]
+    Payments   Payment?
+    Delivery   Delivery?
+
+    UserAddress UserAddress @relation(fields: [user_address_id], references: [user_address_id])
+    Customer    User        @relation(fields: [customer_id], references: [user_id])
+
+    @@index([transaction_id])
+}
+
+enum DeliveryStatus {
+    Ongoing
+    Completed
+}
+
+model Delivery {
+    delivery_id Int            @id @default(autoincrement())
+    order_id    Int            @unique
+    driver_id   Int            @unique
+    status      DeliveryStatus @default(Ongoing)
+    created_at  DateTime       @default(now())
+    updated_at  DateTime       @updatedAt
+
+    Order  Order @relation(fields: [order_id], references: [order_id])
+    Driver User  @relation(fields: [driver_id], references: [user_id])
+
+    @@index([order_id, driver_id])
 }
 
 model OrderItem {
-  order_item_id Int      @id @default(autoincrement())
-  order_id      Int
-  item_id       Int
-  quantity      Int
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  Order         Order    @relation(fields: [order_id], references: [order_id])
+    order_item_id Int      @id @default(autoincrement())
+    order_id      Int
+    item_id       Int
+    quantity      Int
+    created_at    DateTime @default(now())
+    updated_at    DateTime @updatedAt
+    Order         Order    @relation(fields: [order_id], references: [order_id])
 }
 
 model Payment {
-  payment_id     Int      @id @default(autoincrement())
-  invoice_id     String   @unique
-  order_id       Int
-  payment_method String
-  payment_status String
-  amount         Float
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+    payment_id     Int      @id @default(autoincrement())
+    invoice_id     String   @unique
+    order_id       Int      @unique
+    payment_method String
+    payment_status String
+    amount         Float
+    created_at     DateTime @default(now())
+    updated_at     DateTime @updatedAt
 
-  Order Order @relation(fields: [order_id], references: [order_id])
+    Order Order @relation(fields: [order_id], references: [order_id])
 }

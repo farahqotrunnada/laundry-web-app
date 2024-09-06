@@ -55,7 +55,6 @@ class OrderAction {
           customer_id: user_id,
           user_address_id: user_address_id,
           outlet_id: nearestOutlet,
-          driver_id: 0,
           status: 'Menunggu Penjemputan Driver',
           total_weight: 0,
           total_cost: 0
