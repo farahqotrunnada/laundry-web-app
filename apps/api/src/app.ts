@@ -10,6 +10,7 @@ import { UserRouter } from './routers/user.router';
 import './libs/passport';
 import { OrderRouter } from './routers/order.router';
 import cookieParser from 'cookie-parser';
+import { CustomerRouter } from './routers/customer.router';
 
 export default class App {
   private app: Express;
@@ -25,8 +26,8 @@ export default class App {
     this.app.use(
       cors({
         origin: String(process.env.FE_BASE_URL),
-        credentials: true,
-      }),
+        credentials: true
+      })
     );
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
@@ -38,8 +39,8 @@ export default class App {
       session({
         secret: String(process.env.API_KEY),
         resave: false,
-        saveUninitialized: true,
-      }),
+        saveUninitialized: true
+      })
     );
 
     // Initialize passport
@@ -55,7 +56,7 @@ export default class App {
   }
 
   private routes(): void {
-    const routers = [new AuthRouter(), new UserRouter(), new OrderRouter()];
+    const routers = [new AuthRouter(), new UserRouter(), new OrderRouter(), new CustomerRouter()];
 
     routers.forEach((router) => {
       this.app.use('/api', router.getRouter());
