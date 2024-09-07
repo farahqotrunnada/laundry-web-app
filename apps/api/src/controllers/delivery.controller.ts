@@ -48,8 +48,10 @@ export default class DeliveryController {
 
       return res.status(200).json({
         message: 'Deliveries fetched successfully',
-        data: deliveries,
-        count: count
+        data: {
+          deliveries,
+          count
+        }
       });
     } catch (error) {
       next(error);

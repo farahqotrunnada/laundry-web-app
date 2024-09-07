@@ -28,7 +28,7 @@ import MainCard from 'components/MainCard';
 import { TablePagination, DebouncedInput } from 'components/third-party/react-table';
 import { Alert, Chip } from '@mui/material';
 import { formatDate } from 'utils/dateUtils';
-import useOrders, { Order } from 'api/customer-order';
+import useOrders, { Order } from 'hooks/useOrders';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Ethereum } from 'iconsax-react';
 
