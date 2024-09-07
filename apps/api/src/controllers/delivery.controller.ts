@@ -17,14 +17,28 @@ export default class DeliveryController {
         .shape({
           date: yup
             .date()
-            .transform((value, originalValue) => moment(originalValue))
+            .transform((value, original) => (moment(original).isValid() ? value : undefined))
             .optional(),
           status: yup.string().oneOf(['Ongoing', 'Completed']).optional()
         })
         .validate(req.query);
 
-      const page = Number(req.query.page) || 0;
-      const limit = Math.min(Number(req.query.limit) || 10, 100);
+      const { page, limit } = await yup
+        .object()
+        .shape({
+          page: yup
+            .number()
+            .transform((value) => (Number.isNaN(value) ? 0 : value))
+            .default(0)
+            .required(),
+          limit: yup
+            .number()
+            .transform((value) => (Number.isNaN(value) ? 10 : Math.min(value, 100)))
+            .default(10)
+            .required()
+        })
+        .validate(req.query);
+
       const skip = page * limit;
 
       const [deliveries, count] = await Promise.all([
