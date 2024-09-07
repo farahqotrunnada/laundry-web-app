@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { ICreateOrder, IProcessOrder } from '@/interfaces/order.interface';
 import OrderAction from '@/actions/order.action';
+import * as yup from 'yup';
+import moment from 'moment';
 
 export class OrderController {
   // Handle creating a pickup request
@@ -62,11 +64,33 @@ export class OrderController {
 
   getAllOrders = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const search = req.query.search as string;
-      const date = req.query.date as string;
+      const { search, date } = await yup
+        .object()
+        .shape({
+          search: yup.string().optional(),
+          date: yup
+            .date()
+            .transform((value, original) => (moment(original).isValid() ? value : undefined))
+            .optional()
+        })
+        .validate(req.query);
 
-      const page = Number(req.query.page) || 0;
-      const limit = Math.min(Number(req.query.limit) || 10, 100);
+      const { page, limit } = await yup
+        .object()
+        .shape({
+          page: yup
+            .number()
+            .transform((value, original) => (Number.isNaN(value) ? 0 : value))
+            .default(0)
+            .required(),
+          limit: yup
+            .number()
+            .transform((value, original) => (Number.isNaN(value) ? 10 : Math.min(value, 100)))
+            .default(10)
+            .required()
+        })
+        .validate(req.query);
+
       const skip = page * limit;
 
       const [orders, count] = await Promise.all([
@@ -89,13 +113,40 @@ export class OrderController {
   // Handle fetching all orders for a customer
   getOrdersForCustomer = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const customer_id = Number(req.params.customer_id);
+      const { customer_id } = await yup
+        .object()
+        .shape({
+          customer_id: yup.number().required()
+        })
+        .validate(req.params);
 
-      const search = req.query.search as string;
-      const date = req.query.date as string;
+      const { search, date } = await yup
+        .object()
+        .shape({
+          search: yup.string().optional(),
+          date: yup
+            .date()
+            .transform((value, original) => (moment(original).isValid() ? value : undefined))
+            .optional()
+        })
+        .validate(req.query);
 
-      const page = Number(req.query.page) || 0;
-      const limit = Math.min(Number(req.query.limit) || 10, 100);
+      const { page, limit } = await yup
+        .object()
+        .shape({
+          page: yup
+            .number()
+            .transform((value, original) => (Number.isNaN(value) ? 0 : value))
+            .default(0)
+            .required(),
+          limit: yup
+            .number()
+            .transform((value, original) => (Number.isNaN(value) ? 10 : Math.min(value, 100)))
+            .default(10)
+            .required()
+        })
+        .validate(req.query);
+
       const skip = page * limit;
 
       const [orders, count] = await Promise.all([

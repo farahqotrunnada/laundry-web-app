@@ -117,22 +117,12 @@ class OrderAction {
     }
   };
 
-  getAllOrders = async (search: string, skip: number, limit: number, date: string) => {
+  getAllOrders = async (search: string | undefined, skip: number, limit: number, date: Date | undefined) => {
     try {
       const orders = await prisma.order.findMany({
         where: {
-          ...(search && {
-            transaction_id: {
-              contains: search,
-              mode: 'insensitive'
-            }
-          }),
-          ...(date && {
-            created_at: {
-              gte: moment(date).toISOString(),
-              lte: moment(date).add(1, 'days').toISOString()
-            }
-          })
+          transaction_id: search ? { contains: search, mode: 'insensitive' } : {},
+          created_at: date ? { gte: moment(date).toISOString(), lte: moment(date).add(1, 'days').toISOString() } : {}
         },
         orderBy: {
           created_at: 'desc'
@@ -151,22 +141,12 @@ class OrderAction {
     }
   };
 
-  getTotalOrders = async (search: string, date: string) => {
+  getTotalOrders = async (search: string | undefined, date: Date | undefined) => {
     try {
       const orders = await prisma.order.count({
         where: {
-          ...(search && {
-            transaction_id: {
-              contains: search,
-              mode: 'insensitive'
-            }
-          }),
-          ...(date && {
-            created_at: {
-              gte: moment(date).toISOString(),
-              lte: moment(date).add(1, 'days').toISOString()
-            }
-          })
+          transaction_id: search ? { contains: search, mode: 'insensitive' } : {},
+          created_at: date ? { gte: moment(date).toISOString(), lte: moment(date).add(1, 'days').toISOString() } : {}
         }
       });
 
@@ -177,23 +157,13 @@ class OrderAction {
   };
 
   // List orders for a customer
-  getOrdersForCustomer = async (customer_id: number, search: string, skip: number, limit: number, date: string) => {
+  getOrdersForCustomer = async (customer_id: number, search: string | undefined, skip: number, limit: number, date: Date | undefined) => {
     try {
       const orders = await prisma.order.findMany({
         where: {
           customer_id,
-          ...(search && {
-            transaction_id: {
-              contains: search,
-              mode: 'insensitive'
-            }
-          }),
-          ...(date && {
-            created_at: {
-              gte: moment(date).toISOString(),
-              lte: moment(date).add(1, 'days').toISOString()
-            }
-          })
+          transaction_id: search ? { contains: search, mode: 'insensitive' } : {},
+          created_at: date ? { gte: moment(date).toISOString(), lte: moment(date).add(1, 'days').toISOString() } : {}
         },
         orderBy: {
           created_at: 'desc'
@@ -212,23 +182,13 @@ class OrderAction {
     }
   };
 
-  getTotalOrdersForCustomer = async (customer_id: number, search: string, date: string) => {
+  getTotalOrdersForCustomer = async (customer_id: number, search: string | undefined, date: Date | undefined) => {
     try {
       const orders = await prisma.order.count({
         where: {
           customer_id,
-          ...(search && {
-            transaction_id: {
-              contains: search,
-              mode: 'insensitive'
-            }
-          }),
-          ...(date && {
-            created_at: {
-              gte: moment(date).toISOString(),
-              lte: moment(date).add(1, 'days').toISOString()
-            }
-          })
+          transaction_id: search ? { contains: search, mode: 'insensitive' } : {},
+          created_at: date ? { gte: moment(date).toISOString(), lte: moment(date).add(1, 'days').toISOString() } : {}
         }
       });
 
