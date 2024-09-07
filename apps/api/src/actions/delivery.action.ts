@@ -1,6 +1,6 @@
-import prisma from '@/prisma';
 import { DeliveryStatus } from '@prisma/client';
 import moment from 'moment';
+import prisma from '@/prisma';
 
 export default class DeliveryAction {
   getAllDeliveries = async (status: DeliveryStatus | undefined, skip: number, limit: number, date: Date | undefined) => {

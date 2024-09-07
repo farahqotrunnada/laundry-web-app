@@ -1,15 +1,9 @@
-// assets
 import { Box } from 'iconsax-react';
-
-// types
 import { NavItemType } from 'types/menu';
 
-// icons
 const icons = {
   order: Box
 };
-
-// ==============================|| MENU ITEMS - ORDER ||============================== //
 
 const order: NavItemType = {
   type: 'group',
@@ -21,12 +15,12 @@ const order: NavItemType = {
       id: 'orders',
       title: 'Manage Orders',
       icon: icons.order,
-      breadcrumbs: false,
+
       children: [
         {
           type: 'item',
           id: 'list-orders',
-          title: 'List All Orders',
+          title: 'All Orders',
           url: '/dashboard/orders'
         },
         {

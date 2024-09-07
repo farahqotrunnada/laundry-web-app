@@ -1,19 +1,16 @@
 'use client';
 
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { TableState, Updater } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
 
-// material-ui
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import MenuItem from '@mui/material/MenuItem';
 import Pagination from '@mui/material/Pagination';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-
-// third-party
-import { TableState, Updater } from '@tanstack/react-table';
 
 interface TablePaginationProps {
   setPageSize: (updater: Updater<number>) => void;
@@ -22,8 +19,6 @@ interface TablePaginationProps {
   getPageCount: () => number;
   initialPageSize?: number;
 }
-
-// ==============================|| TABLE PAGINATION ||============================== //
 
 export default function TablePagination({ getPageCount, setPageIndex, setPageSize, getState, initialPageSize }: TablePaginationProps) {
   const [open, setOpen] = useState(false);
@@ -37,8 +32,7 @@ export default function TablePagination({ getPageCount, setPageIndex, setPageSiz
       });
   }
 
-  // eslint-disable-next-line
-  useEffect(() => setPageSize(initialPageSize || 10), []);
+  useEffect(() => setPageSize(initialPageSize || 10), [setPageSize, initialPageSize]);
 
   const handleClose = () => {
     setOpen(false);

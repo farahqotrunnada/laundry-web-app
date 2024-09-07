@@ -2,31 +2,37 @@ import { PaginationState } from '@tanstack/react-table';
 import { fetcher } from 'utils/axios';
 import useSWR from 'swr';
 
-export interface Delivery {
-  delivery_id: number;
+export interface Order {
   order_id: number;
+  transaction_id: string;
+  customer_id: number;
+  user_address_id: number;
+  outlet_id: number;
   driver_id: number;
-  status: 'Ongoing' | 'Completed';
+  status: string;
+  total_weight: number;
+  total_cost: number;
   created_at: Date;
   updated_at: Date;
+  OrderItems: any[];
+  Payments: any[];
 }
 
-const useDeliveries = (search: string, pagination: PaginationState, date: Date | null, status: string | undefined) => {
+const useUserOrders = (user_id: number, search: string, pagination: PaginationState, date: Date | null) => {
   const params = new URLSearchParams();
 
   params.append('search', search);
   params.append('page', pagination.pageIndex.toString());
   params.append('limit', pagination.pageSize.toString());
   params.append('date', date ? date.toUTCString() : '');
-  params.append('status', status ? status : '');
 
   const { data, error, isLoading } = useSWR<{
     message: string;
     data: {
-      deliveries: Delivery[];
+      orders: Order[];
       count: number;
     };
-  }>(`/deliveries?${params}`, fetcher);
+  }>(`/customers/${user_id}/orders?${params}`, fetcher);
 
   return {
     ...data,
@@ -35,4 +41,4 @@ const useDeliveries = (search: string, pagination: PaginationState, date: Date |
   };
 };
 
-export default useDeliveries;
+export default useUserOrders;

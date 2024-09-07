@@ -1,27 +1,23 @@
-import prisma from '@/prisma';
-import { ICreateOrder, IProcessOrder, IOrderStatus } from '@/interfaces/order.interface';
+import { ICreateOrder, IOrderStatus, IProcessOrder } from '@/interfaces/order.interface';
+
 import moment from 'moment';
+import prisma from '@/prisma';
 
 class OrderAction {
-  // Function to generate a transaction ID with 4 random numbers and 4 random letters
   generateTransactionId = () => {
-    // Generate 4 random digits
     const numbers = Array(4)
       .fill(null)
-      .map(() => Math.floor(Math.random() * 10)) // Random digit 0-9
+      .map(() => Math.floor(Math.random() * 10))
       .join('');
 
-    // Generate 4 random uppercase letters
     const letters = Array(4)
       .fill(null)
-      .map(() => String.fromCharCode(65 + Math.floor(Math.random() * 26))) // Random letter A-Z
+      .map(() => String.fromCharCode(65 + Math.floor(Math.random() * 26)))
       .join('');
 
-    // Combine and return in the desired format
     return `#${numbers}${letters}`;
   };
 
-  // Function to generate a unique transaction ID
   generateUniqueTransactionId = async () => {
     let unique = false;
     let transaction_id = '';
@@ -29,12 +25,10 @@ class OrderAction {
     while (!unique) {
       transaction_id = this.generateTransactionId();
 
-      // Check if the transaction_id already exists in the database
       const existingOrder = await prisma.order.findUnique({
         where: { transaction_id }
       });
 
-      // If no existing order with the same transaction_id, it's unique
       if (!existingOrder) {
         unique = true;
       }
@@ -43,11 +37,10 @@ class OrderAction {
     return transaction_id;
   };
 
-  // Create a new pickup request
   createPickupRequest = async (order: ICreateOrder) => {
     try {
       const { user_id, nearestOutlet, user_address_id } = order;
-      // Generate a unique transaction ID
+
       const transaction_id = await this.generateUniqueTransactionId();
       const newOrder = await prisma.order.create({
         data: {
@@ -67,13 +60,11 @@ class OrderAction {
     }
   };
 
-  // Driver can pick up the order
   pickupOrder = async (order_id: number, driver_id: number) => {
     try {
       const updatedOrder = await prisma.order.update({
         where: { order_id },
         data: {
-          driver_id,
           status: 'Laundry Sedang Menuju Outlet'
         }
       });
@@ -84,12 +75,10 @@ class OrderAction {
     }
   };
 
-  // Admin creates an order and inputs item details
   processOrder = async (data: IProcessOrder) => {
     try {
       const { order_id, items, total_weight, total_cost } = data;
 
-      // Update the order status to "Laundry Telah Sampai Outlet"
       const updatedOrder = await prisma.order.update({
         where: { order_id },
         data: {
@@ -99,7 +88,6 @@ class OrderAction {
         }
       });
 
-      // Insert items into the OrderItem table
       for (const item of items) {
         await prisma.orderItem.create({
           data: {
@@ -155,7 +143,6 @@ class OrderAction {
     }
   };
 
-  // List orders for a customer
   getOrdersForCustomer = async (customer_id: number, search: string | undefined, skip: number, limit: number, date: Date | undefined) => {
     try {
       const orders = await prisma.order.findMany({
@@ -197,7 +184,6 @@ class OrderAction {
     }
   };
 
-  // Auto-confirm the order after 2 days
   autoConfirmOrder = async (order_id: number) => {
     try {
       const currentTime = new Date();
@@ -209,7 +195,6 @@ class OrderAction {
 
       const orderTime = order?.updated_at;
 
-      // Check if 2 days have passed since the order was delivered
       if (orderTime && currentTime.getTime() - orderTime.getTime() >= 2 * 24 * 60 * 60 * 1000) {
         const updatedOrder = await prisma.order.update({
           where: { order_id },
@@ -225,7 +210,6 @@ class OrderAction {
     }
   };
 
-  // Get the list of orders and their statuses for the customer
   getOrderStatusList = async (customer_id: number): Promise<IOrderStatus[]> => {
     try {
       const orders = await prisma.order.findMany({

@@ -1,5 +1,5 @@
-import { OrderController } from '@/controllers/order.controller';
 import { AuthMiddleware } from '@/middlewares/auth.middleware';
+import { OrderController } from '@/controllers/order.controller';
 import { Router } from 'express';
 
 export class CustomerRouter {
@@ -18,7 +18,7 @@ export class CustomerRouter {
   }
 
   private initializeRoutes(): void {
-    // this.router.get(`${this.path}/:customer_id/orders`, this.guard.verifyAccessToken, this.controller.getOrdersForCustomer);
+    this.router.get(`${this.path}/:customer_id/orders`, this.guard.verifyAccessToken, this.controller.getOrdersForCustomer);
     // this.router.get(`${this.path}/:customer_id/order-statuses`, this.guard.verifyAccessToken, this.controller.getOrderStatusList);
   }
 

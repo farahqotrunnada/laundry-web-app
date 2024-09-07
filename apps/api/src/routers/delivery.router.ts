@@ -1,5 +1,5 @@
-import DeliveryController from '@/controllers/delivery.controller';
 import { AuthMiddleware } from '@/middlewares/auth.middleware';
+import DeliveryController from '@/controllers/delivery.controller';
 import { Router } from 'express';
 
 export class DeliveryRouter {

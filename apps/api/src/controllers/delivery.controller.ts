@@ -1,6 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
-import DeliveryAction from '@/actions/delivery.action';
 import * as yup from 'yup';
+
+import { NextFunction, Request, Response } from 'express';
+
+import DeliveryAction from '@/actions/delivery.action';
+import { DeliveryStatus } from '@prisma/client';
 import moment from 'moment';
 
 export default class DeliveryController {
@@ -12,20 +15,18 @@ export default class DeliveryController {
 
   getAllDeliveries = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { date, status } = await yup
+      const { date, status, page, limit } = await yup
         .object()
         .shape({
           date: yup
             .date()
             .transform((value, original) => (moment(original).isValid() ? value : undefined))
             .optional(),
-          status: yup.string().oneOf(['Ongoing', 'Completed']).optional()
-        })
-        .validate(req.query);
-
-      const { page, limit } = await yup
-        .object()
-        .shape({
+          status: yup
+            .string()
+            .transform((value, original) => (original === '' ? undefined : value))
+            .oneOf(Object.values(DeliveryStatus))
+            .optional(),
           page: yup
             .number()
             .transform((value) => (Number.isNaN(value) ? 0 : value))

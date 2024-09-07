@@ -1,14 +1,11 @@
-import React from 'react';
+import { ClosestOutletAddressData, UserAddressData } from './PickupForm';
 
-// material-ui
+import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import React from 'react';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-
-// Types
-import { UserAddressData, ClosestOutletAddressData } from './PickupForm';
 
 interface ReviewProps {
   chosenAddress: UserAddressData;
@@ -28,9 +25,7 @@ export default function Review({ chosenAddress, closestOutlet, cost }: ReviewPro
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
             Selected Address
           </Typography>
-          <Typography variant="body2">
-            {chosenAddress.user_address_name}
-          </Typography>
+          <Typography variant="body2">{chosenAddress.name}</Typography>
           <Typography variant="body2">{chosenAddress.street_address}</Typography>
           <Typography variant="body2">
             {chosenAddress.city}, {chosenAddress.province}
@@ -44,9 +39,7 @@ export default function Review({ chosenAddress, closestOutlet, cost }: ReviewPro
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
             Closest Outlet
           </Typography>
-          <Typography variant="body2">
-            {closestOutlet.closest_outlet_name}
-          </Typography>
+          <Typography variant="body2">{closestOutlet.closest_outlet_name}</Typography>
           <Typography variant="body2">{closestOutlet.street_address}</Typography>
           <Typography variant="body2">
             {closestOutlet.city}, {closestOutlet.province}

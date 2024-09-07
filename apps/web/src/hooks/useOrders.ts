@@ -1,6 +1,6 @@
 import { PaginationState } from '@tanstack/react-table';
-import useSWR from 'swr';
 import { fetcher } from 'utils/axios';
+import useSWR from 'swr';
 
 export interface Order {
   order_id: number;

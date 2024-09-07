@@ -1,27 +1,22 @@
 'use client';
 
-import { useState, ReactNode, CSSProperties } from 'react';
+import AddressForm, { ClosestOutletAddressData, UserAddressData, initialClosestOutletData, initialUserAddressData } from './PickupForm';
+import { CSSProperties, ReactNode, useState } from 'react';
+
+import AnimateButton from 'components/@extended/AnimateButton';
+import Button from '@mui/material/Button';
+import MainCard from 'components/MainCard';
+import Review from './ReviewOrder';
+import Stack from '@mui/material/Stack';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Stepper from '@mui/material/Stepper';
+import Typography from '@mui/material/Typography';
+import instance from 'utils/axiosIntance';
 import { useRouter } from 'next/navigation';
 
-// material-ui
-import Button from '@mui/material/Button';
-import Step from '@mui/material/Step';
-import Stepper from '@mui/material/Stepper';
-import StepLabel from '@mui/material/StepLabel';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-
-// project-imports
-import AddressForm, { UserAddressData, ClosestOutletAddressData, initialUserAddressData, initialClosestOutletData } from './PickupForm';
-import Review from './ReviewOrder';
-import MainCard from 'components/MainCard';
-import AnimateButton from 'components/@extended/AnimateButton';
-import instance from 'utils/axiosIntance';
-
-// step options
 const steps = ['Order details', 'Review your order'];
 
-// Helper function to render the content for each step
 function getStepContent(
   step: number,
   handleNext: () => void,
@@ -74,25 +69,23 @@ export default function PickupRequest() {
   const [cost, setCost] = useState<string>('Calculating...');
   const [errorIndex, setErrorIndex] = useState<number | null>(null);
 
-  const router = useRouter(); // Initialize useRouter for navigation
+  const router = useRouter();
 
-  const userId = 1; // REPLACE with actual userId
+  const userId = 1;
 
   const handleNext = async () => {
     if (activeStep === steps.length - 1) {
       try {
         const response = await instance().post('/order/pickup-request', {
           user_id: userId,
-          user_address_id: chosenAddress.user_address_id, // Assuming address holds the selected address ID
-          nearestOutlet: closestOutlet.closest_outlet_id // Assuming closestOutlet holds the outlet ID
+          user_address_id: chosenAddress.user_address_id,
+          nearestOutlet: closestOutlet.closest_outlet_id
         });
 
         if (response.status === 201) {
-          // Proceed to the next step
           setActiveStep(activeStep + 1);
           setErrorIndex(null);
         } else {
-          // Handle error cases
           setErrorIndex(activeStep);
         }
       } catch (error) {
@@ -143,11 +136,7 @@ export default function PickupRequest() {
             </Typography>
             <Stack direction="row" justifyContent="flex-end">
               <AnimateButton>
-                <Button
-                  variant="contained"
-                  onClick={() => router.push('/order-details')} // Navigate to order status
-                  sx={{ my: 3, ml: 1 }}
-                >
+                <Button variant="contained" onClick={() => router.push('/orders')} sx={{ my: 3, ml: 1 }}>
                   Go to Order Status
                 </Button>
               </AnimateButton>

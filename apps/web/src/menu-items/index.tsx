@@ -1,13 +1,9 @@
-// project-imports
+import { NavItemType } from 'types/menu';
+import delivery from './delivery';
 import order from './order';
 
-// types
-import { NavItemType } from 'types/menu';
-
-// ==============================|| MENU ITEMS ||============================== //
-
 const menuItems: { items: NavItemType[] } = {
-  items: [order]
+  items: [order, delivery]
 };
 
 export default menuItems;

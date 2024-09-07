@@ -1,36 +1,32 @@
 'use client';
 
+import { Alert, Chip } from '@mui/material';
+import { ColumnDef, HeaderGroup, PaginationState, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { DebouncedInput, TablePagination } from 'components/third-party/react-table';
 import React, { useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-// material-ui
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
+import Box from '@mui/material/Box';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Ethereum } from 'iconsax-react';
+import Grid from '@mui/material/Grid';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import MainCard from 'components/MainCard';
+import { Order } from 'hooks/useOrders';
+import ScrollX from 'components/ScrollX';
+import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableContainer from '@mui/material/TableContainer';
 import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
-
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-
-// third-party
-import { flexRender, useReactTable, ColumnDef, HeaderGroup, getCoreRowModel, PaginationState } from '@tanstack/react-table';
-
-// project import
-import ScrollX from 'components/ScrollX';
-import MainCard from 'components/MainCard';
-import { TablePagination, DebouncedInput } from 'components/third-party/react-table';
-import { Alert, Chip } from '@mui/material';
 import { formatDate } from 'utils/dateUtils';
-import useOrders, { Order } from 'hooks/useOrders';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Ethereum } from 'iconsax-react';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
+import useUserOrders from 'hooks/useUserOrders';
 
 interface ReactTableProps {
   columns: ColumnDef<Order>[];
@@ -76,11 +72,6 @@ function ReactTable({
 
   return (
     <MainCard content={false} title={title}>
-      <Box sx={{ p: 3, pb: 0 }}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
-          <Typography variant="h5">Order List</Typography>
-        </Stack>
-      </Box>
       <Stack
         direction={matchDownSM ? 'column' : 'row'}
         spacing={2}
@@ -161,14 +152,20 @@ function ReactTable({
   );
 }
 
-export default function OrderList() {
+interface UserOrderTableProps {
+  user_id: number;
+}
+
+export default function UserOrderTable({ user_id }: UserOrderTableProps) {
+  const theme = useTheme();
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const paramsDate = searchParams.get('date') ? new Date(searchParams.get('date')!) : null;
-  const paramPage = Number(searchParams.get('page') || '0');
-  const paramLimit = Math.min(Number(searchParams.get('limit') || '10'), 100);
+  const paramPage = Number(searchParams.get('page') || 1);
+  const paramLimit = Math.min(Number(searchParams.get('limit') || 10), 100);
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: paramPage,
@@ -177,7 +174,7 @@ export default function OrderList() {
 
   const [search, setSearch] = useState<string>('');
   const [date, setDate] = useState<Date | null>(paramsDate);
-  const { data, error, loading } = useOrders(search, pagination, date);
+  const { data, error, loading } = useUserOrders(user_id, search, pagination, date);
   const { orders, count } = useMemo(() => {
     if (data) {
       return {
@@ -244,21 +241,35 @@ export default function OrderList() {
   }
 
   return (
-    <MainCard content={false}>
-      <ScrollX>
-        <ReactTable
-          columns={columns}
-          data={orders || []}
-          title="Order Details"
-          date={date}
-          setDate={setDate}
-          search={search}
-          setSearch={setSearch}
-          pagination={pagination}
-          onPaginationChange={setPagination}
-          pageCount={count ? Math.round(count / pagination.pageSize) : 0}
-        />
-      </ScrollX>
-    </MainCard>
+    <Box
+      sx={{
+        borderBottom: 1,
+        borderColor: 'divider',
+        width: '100%',
+        minHeight: '90vh',
+        paddingY: theme.spacing(10)
+      }}
+    >
+      <Grid container spacing={2.5} justifyContent="center">
+        <Grid item xs={12} md={8}>
+          <MainCard content={false}>
+            <ScrollX>
+              <ReactTable
+                columns={columns}
+                data={orders || []}
+                title="Order Details"
+                date={date}
+                setDate={setDate}
+                search={search}
+                setSearch={setSearch}
+                pagination={pagination}
+                onPaginationChange={setPagination}
+                pageCount={count ? Math.round(count / pagination.pageSize) : 0}
+              />
+            </ScrollX>
+          </MainCard>
+        </Grid>
+      </Grid>
+    </Box>
   );
 }

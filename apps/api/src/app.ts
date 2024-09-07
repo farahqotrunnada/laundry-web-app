@@ -1,17 +1,20 @@
-import express, { json, urlencoded, Express } from 'express';
-import cors from 'cors';
-import session from 'express-session';
-import passport, { initialize } from 'passport';
-import path from 'path';
-import { PORT } from './config';
-import { AuthRouter } from './routers/auth.router';
-import { ErrorMiddleware } from './middlewares/error.middleware';
-import { UserRouter } from './routers/user.router';
-import { UserAddressRouter } from './routers/userAddress.router';
 import './libs/passport';
-import { OrderRouter } from './routers/order.router';
-import cookieParser from 'cookie-parser';
+
+import express, { Express, json, urlencoded } from 'express';
+import passport, { initialize } from 'passport';
+
+import { AuthRouter } from './routers/auth.router';
 import { CustomerRouter } from './routers/customer.router';
+import { DeliveryRouter } from './routers/delivery.router';
+import { ErrorMiddleware } from './middlewares/error.middleware';
+import { OrderRouter } from './routers/order.router';
+import { PORT } from './config';
+import { UserAddressRouter } from './routers/userAddress.router';
+import { UserRouter } from './routers/user.router';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import path from 'path';
+import session from 'express-session';
 
 export default class App {
   private app: Express;
@@ -57,7 +60,14 @@ export default class App {
   }
 
   private routes(): void {
-    const routers = [new AuthRouter(), new UserRouter(), new UserAddressRouter(), new OrderRouter(), new CustomerRouter()];
+    const routers = [
+      new AuthRouter(),
+      new UserRouter(),
+      new UserAddressRouter(),
+      new OrderRouter(),
+      new CustomerRouter(),
+      new DeliveryRouter()
+    ];
 
     routers.forEach((router) => {
       this.app.use('/api', router.getRouter());

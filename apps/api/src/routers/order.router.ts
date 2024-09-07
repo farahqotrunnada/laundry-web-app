@@ -1,5 +1,5 @@
-import { OrderController } from '@/controllers/order.controller';
 import { AuthMiddleware } from '@/middlewares/auth.middleware';
+import { OrderController } from '@/controllers/order.controller';
 import { Router } from 'express';
 
 export class OrderRouter {

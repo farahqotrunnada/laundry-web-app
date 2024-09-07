@@ -24,16 +24,11 @@ const RequestPickup = () => {
     setOpenSnackbar(false);
   };
 
-  const url = '/pickup-request';
+  const url = '/pickups/create';
 
   return (
     <>
-      <Links
-        style={{ textDecoration: 'none' }}
-        href={loginStatus.isLogin ? url : '#'}
-        onClick={handleClick}
-        target="_blank"
-      >
+      <Links style={{ textDecoration: 'none' }} href={loginStatus.isLogin ? url : '#'} onClick={handleClick} target="_blank">
         <Button
           variant="contained"
           color="error"
@@ -45,12 +40,12 @@ const RequestPickup = () => {
             display: 'flex',
             backgroundColor: loginStatus.isLogin ? '#d32f2f' : 'gray',
             '&:hover': {
-              backgroundColor: loginStatus.isLogin ? '#b71c1c' : 'gray',
+              backgroundColor: loginStatus.isLogin ? '#b71c1c' : 'gray'
             },
             '@media (max-width:600px)': {
               bottom: 20,
-              right: 20,
-            },
+              right: 20
+            }
           }}
         >
           <ListItemIcon>
@@ -67,11 +62,7 @@ const RequestPickup = () => {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity="warning"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={handleCloseSnackbar} severity="warning" sx={{ width: '100%' }}>
           Please login to request a pickup.
         </Alert>
       </Snackbar>
