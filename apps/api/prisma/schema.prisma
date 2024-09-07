@@ -60,11 +60,12 @@ model Order {
     updated_at      DateTime @updatedAt
 
     OrderItems OrderItem[]
+    Delivery   Delivery[]
     Payments   Payment?
-    Delivery   Delivery?
 
     UserAddress UserAddress @relation(fields: [user_address_id], references: [user_address_id])
     Customer    User        @relation(fields: [customer_id], references: [user_id])
+    Outlet      Outlet      @relation(fields: [outlet_id], references: [outlet_id])
 
     @@index([transaction_id])
 }
@@ -82,7 +83,7 @@ enum DeliveryType {
 
 model Delivery {
     delivery_id Int            @id @default(autoincrement())
-    order_id    Int            @unique
+    order_id    Int
     driver_id   Int?
     created_at  DateTime       @default(now())
     updated_at  DateTime       @default(now()) @updatedAt
@@ -116,4 +117,30 @@ model Payment {
     updated_at     DateTime @updatedAt
 
     Order Order @relation(fields: [order_id], references: [order_id])
+}
+
+model Outlet {
+    outlet_id  Int      @id @default(autoincrement())
+    name       String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    OutletAddress OutletAddress?
+    Order         Order[]
+}
+
+model OutletAddress {
+    outlet_address_id Int      @id @default(autoincrement())
+    outlet_id         Int      @unique
+    name              String
+    street_address    String
+    city              String
+    province          String
+    postal_code       String
+    latitude          Decimal  @db.Decimal(11, 7)
+    longitude         Decimal  @db.Decimal(11, 7)
+    created_at        DateTime @default(now())
+    updated_at        DateTime @updatedAt
+
+    Outlet Outlet @relation(fields: [outlet_id], references: [outlet_id])
 }
