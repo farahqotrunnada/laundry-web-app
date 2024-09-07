@@ -21,9 +21,10 @@ model User {
     created_at     DateTime @default(now())
     updated_at     DateTime @updatedAt
 
+    // Relation with UserAddress model
+    addresses UserAddress[] // A user can have multiple addresses
     orders    Order[]
-    Delivery  Delivery[]
-    addresses UserAddress[]
+    Delivery  Delivery?
 }
 
 model UserAddress {
@@ -35,8 +36,8 @@ model UserAddress {
     city            String
     province        String
     postal_code     String
-    latitude        Decimal
-    longitude       Decimal
+    latitude        Decimal  @db.Decimal(11, 7)
+    longitude       Decimal  @db.Decimal(11, 7)
     created_at      DateTime @default(now())
     updated_at      DateTime @updatedAt
 
