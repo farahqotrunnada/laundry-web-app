@@ -76,7 +76,29 @@ export class AuthController {
     next: NextFunction,
   ) => {
     try {
+<<<<<<< Updated upstream
       const result = await authAction.activateUserEmail(req);
+=======
+      const { password, confirmation } = await yup
+        .object({
+          password: yup.string().required(),
+          confirmation: yup
+            .string()
+            .oneOf([yup.ref('password')])
+            .required(),
+        })
+        .validate(req.body);
+
+      const { user_id } = req.user as EmailTokenPayload;
+      const { access_token, refresh_token } = await this.authAction.setPassword(user_id, password);
+
+      res.cookie('refresh_token', refresh_token, {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 7,
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
+      });
+>>>>>>> Stashed changes
 
       if (result.message) {
         return res.status(200).json({

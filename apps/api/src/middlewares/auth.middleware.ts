@@ -18,7 +18,16 @@ export class AuthMiddleware {
 
       req.user = isTokenValid as User;
 
+<<<<<<< Updated upstream
       next();
+=======
+      const token = refresh_token as string;
+      verify(token, JWT_SECRET, (error, decoded) => {
+        if (error) throw new ApiError(401, error.message);
+        req.user = decoded;
+        next();
+      });
+>>>>>>> Stashed changes
     } catch (error) {
       next(error);
     }
