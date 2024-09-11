@@ -10,18 +10,6 @@ import axios from '@/lib/axios';
 import { useDebounceValue } from 'usehooks-ts';
 import { useToast } from '@/hooks/use-toast';
 
-const users = [
-  { user_id: '1', fullname: 'John Doe', role: 'Customer' },
-  { user_id: '2', fullname: 'Jane Doe', role: 'Customer' },
-  { user_id: '3', fullname: 'Bob Doe', role: 'Customer' },
-  { user_id: '4', fullname: 'Alice Doe', role: 'Customer' },
-  { user_id: '5', fullname: 'Jack Doe', role: 'Customer' },
-  { user_id: '6', fullname: 'Sarah Doe', role: 'Customer' },
-  { user_id: '7', fullname: 'Tom Doe', role: 'Customer' },
-  { user_id: '8', fullname: 'Tim Doe', role: 'Customer' },
-  { user_id: '9', fullname: 'Anna Doe', role: 'Customer' },
-];
-
 const roleOptions = ['Driver', 'OutletAdmin', 'WashingWorker', 'IroningWorker', 'PackingWorker'] as const;
 
 export type EmployeeForm = {
@@ -36,7 +24,7 @@ interface UserSelectProps {
   setSelected: React.Dispatch<React.SetStateAction<EmployeeForm[]>>;
 }
 
-const UserSelect = React.forwardRef<HTMLDivElement, UserSelectProps>(({ selected, setSelected }, ref) => {
+const EmployeeSelectField = React.forwardRef<HTMLDivElement, UserSelectProps>(({ selected, setSelected }, ref) => {
   const { toast } = useToast();
   const [filter, setFilter] = React.useState('');
   const [users, setUsers] = React.useState<EmployeeForm[]>([]);
@@ -82,7 +70,7 @@ const UserSelect = React.forwardRef<HTMLDivElement, UserSelectProps>(({ selected
               <TableCell className='font-medium'>{user.email}</TableCell>
               <TableCell>
                 <Select
-                  onValueChange={(value: RoleOptionType | 'Customer') => {
+                  onValueChange={(value: (typeof roleOptions)[number] | 'Customer') => {
                     if (value === 'Customer') {
                       setSelected(selected.filter((item) => item.user_id !== user.user_id));
                     } else {
@@ -120,4 +108,4 @@ const UserSelect = React.forwardRef<HTMLDivElement, UserSelectProps>(({ selected
   );
 });
 
-export default UserSelect;
+export default EmployeeSelectField;

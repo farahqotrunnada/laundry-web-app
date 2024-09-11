@@ -125,4 +125,23 @@ export default class OutletsAction {
       throw error;
     }
   };
+
+  nearest = async (customer_address_id: string) => {
+    try {
+      const outlets = await prisma.outlet.findMany({
+        // where: {
+        // customerAddress: {
+        //   customer_address_id,
+        // },
+        // },
+        orderBy: {
+          created_at: 'asc',
+        },
+      });
+
+      return outlets;
+    } catch (error) {
+      throw error;
+    }
+  };
 }

@@ -93,4 +93,28 @@ export default class OutletsController {
       next(error);
     }
   };
+
+  nearest = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { customer_address_id } = await yup
+        .object({
+          customer_address_id: yup.string().required(),
+        })
+        .validate(req.query);
+
+      const outlets = await this.outletsAction.nearest(customer_address_id);
+
+      return res.status(200).json(
+        new ApiResponse(
+          'Outlets retrieved successfully',
+          outlets.map((outlet) => ({
+            outlet,
+            distance: Math.random() * 100,
+          }))
+        )
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
 }
