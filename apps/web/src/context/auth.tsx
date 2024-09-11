@@ -36,33 +36,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = React.useState<User | null>(null);
 
   React.useEffect(() => {
-    if (token) {
-      const getUser = async () => {
-        try {
-          const { data } = await axios.get('/profile');
-          setUser(data.data);
-        } catch (error: any) {
-          toast({
-            variant: 'destructive',
-            title: 'Failed to get user profile',
-            description: error.message,
-          });
-        }
-      };
+    const getUser = async () => {
+      try {
+        const { data } = await axios.get('/profile');
+        setUser(data.data);
+      } catch (error: any) {
+        toast({
+          variant: 'destructive',
+          title: 'Failed to get user profile',
+          description: error.message,
+        });
+      }
+    };
 
-      getUser();
-    } else {
-      const refresh = async () => {
-        try {
-          const { data } = await axios.post('/auth/refresh');
-          setToken(data.data.access_token);
-        } catch (error: any) {
-          console.log('unauthenticated');
-        }
-      };
+    const refreshToken = async () => {
+      const { data } = await axios.post('/auth/refresh');
+      setToken(data.data.access_token);
+    };
 
-      refresh();
-    }
+    if (token) getUser();
+    else refreshToken();
   }, [token, toast, setToken]);
 
   const signin = async ({ email, password }: { email: string; password: string }) => {

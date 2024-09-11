@@ -2,7 +2,7 @@ import * as yup from 'yup';
 
 import { NextFunction, Request, Response } from 'express';
 
-import ApiResponse from '@/utils/api.response';
+import ApiResponse from '@/utils/response.util';
 import OutletsAction from '@/actions/outlets.action';
 import { Role } from '@prisma/client';
 

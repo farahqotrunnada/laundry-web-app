@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { AccessTokenPayload } from '@/type/jwt';
-import ApiError from '@/utils/api.error';
+import ApiError from '@/utils/error.util';
 import { Role } from '@prisma/client';
 
 export class RoleMiddleware {

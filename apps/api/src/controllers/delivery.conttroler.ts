@@ -3,7 +3,7 @@ import * as yup from 'yup';
 import { DeliveryType, ProgressType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 
-import ApiResponse from '@/utils/api.response';
+import ApiResponse from '@/utils/response.util';
 import DeliveryAction from '@/actions/delivery.action';
 
 export default class DeliveryController {

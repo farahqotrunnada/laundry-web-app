@@ -1,6 +1,6 @@
 import { Prisma, Role } from '@prisma/client';
 
-import ApiError from '@/utils/api.error';
+import ApiError from '@/utils/error.util';
 import { OPENCAGE_API } from '@/config';
 import axios from 'axios';
 import prisma from '@/libs/prisma';

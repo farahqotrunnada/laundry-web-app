@@ -1,6 +1,6 @@
 import { DeliveryType, Prisma, ProgressType } from '@prisma/client';
 
-import ApiError from '@/utils/api.error';
+import ApiError from '@/utils/error.util';
 import prisma from '@/prisma';
 
 export default class DeliveryAction {
