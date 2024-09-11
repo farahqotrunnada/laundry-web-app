@@ -5,7 +5,6 @@ import { NextFunction, Request, Response } from 'express';
 import ApiResponse from '@/utils/api.response';
 import { Role } from '@prisma/client';
 import UserAction from '@/actions/users.action';
-import { transform } from 'typescript';
 
 export default class UsersController {
   private userAction: UserAction;
