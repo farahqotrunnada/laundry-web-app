@@ -21,17 +21,17 @@ axios.interceptors.request.use(
 const intercept = () => {
   const interceptor = axios.interceptors.response.use(
     (response) => response,
-    async (error) => {
+    (error) => {
       if (error.response.status !== 401) {
         return Promise.reject((error.response && error.response.data) || 'Wrong Services');
       }
 
       axios.interceptors.response.eject(interceptor);
 
-      return await axios
+
+      return axios
         .post('/auth/refresh')
         .then(({ data }) => {
-          console.log('refreshed');
           const token = data.data.access_token;
           window.localStorage.setItem('access_token', JSON.stringify(token));
           error.response.config.headers['Authorization'] = 'Bearer ' + JSON.stringify(token);
