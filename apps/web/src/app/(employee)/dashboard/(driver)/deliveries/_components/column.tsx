@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ColumnDef } from '@tanstack/react-table';
 import DataTableColumnHeader from '@/components/table/header';
@@ -26,11 +27,23 @@ const columns: ColumnDef<
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='Delivery ID' />;
     },
+    cell: ({ row }) => {
+      return <span className='block w-32 font-medium uppercase truncate'>{row.original.delivery_id}</span>;
+    },
   },
   {
     accessorKey: 'Outlet.name',
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='Outlet Name' />;
+    },
+  },
+  {
+    accessorKey: 'type',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Type' />;
+    },
+    cell: ({ row }) => {
+      return <Badge variant='secondary'>{row.original.type}</Badge>;
     },
   },
   {
@@ -40,15 +53,12 @@ const columns: ColumnDef<
     },
   },
   {
-    accessorKey: 'type',
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Type' />;
-    },
-  },
-  {
     accessorKey: 'progress',
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='Progress' />;
+    },
+    cell: ({ row }) => {
+      return <Badge>{row.original.progress}</Badge>;
     },
   },
   {

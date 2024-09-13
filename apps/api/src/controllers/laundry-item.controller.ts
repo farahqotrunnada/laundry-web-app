@@ -14,34 +14,9 @@ export default class LaundryItemController {
 
   index = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { page, limit, id, value, key, desc } = await yup
-        .object({
-          page: yup
-            .number()
-            .transform((value) => (Number.isNaN(value) ? 1 : value))
-            .min(1)
-            .required(),
-          limit: yup
-            .number()
-            .transform((value) => (Number.isNaN(value) ? 10 : value))
-            .min(1)
-            .max(100)
-            .required(),
-          id: yup.string().optional(),
-          value: yup.string().optional(),
-          key: yup.string().optional(),
-          desc: yup.string().optional(),
-        })
-        .validate(req.query);
+      const items = await this.laundryItemAction.index();
 
-      const [items, count] = await this.laundryItemAction.index(page, limit, id, value, key, desc);
-
-      return res.status(200).json(
-        new ApiResponse('Laundry Items retrieved successfully', {
-          items: items || [],
-          count: count || 0,
-        })
-      );
+      return res.status(200).json(new ApiResponse('Laundry Items retrieved successfully', items));
     } catch (error) {
       next(error);
     }

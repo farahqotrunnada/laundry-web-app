@@ -16,3 +16,8 @@ export type User = {
   avatar_url: string;
   is_verified: boolean;
 };
+
+export type Customer = {
+  customer_id: string;
+  user_id: string;
+};

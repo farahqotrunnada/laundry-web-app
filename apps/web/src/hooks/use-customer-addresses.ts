@@ -12,9 +12,7 @@ export const useCustomerAddresses = () => {
   const { data, error, isLoading } = useSWR<{
     message: string;
     data: Address[];
-  }>('/profile/addresses', fetcher, {
-    shouldRetryOnError: false,
-  });
+  }>('/profile/addresses', fetcher);
 
   React.useEffect(() => {
     if (data) {

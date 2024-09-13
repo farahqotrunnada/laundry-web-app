@@ -62,58 +62,31 @@ export default class OrderAction {
     }
   };
 
-  customer = async (
-    user_id: string,
-    page: number,
-    limit: number,
-    id: string | undefined,
-    value: string | undefined,
-    key: string | undefined,
-    desc: string | undefined
-  ) => {
+  customer = async (user_id: string, type: 'All' | 'Ongoing' | 'Completed' | undefined) => {
     try {
-      let filter;
-      let order;
-
-      if (id && value) {
-        filter = {
-          [id as keyof Prisma.OrderSelect]: { contains: value as string, mode: 'insensitive' },
-        };
-      }
-
-      if (key && desc) {
-        order = [
-          {
-            [key as keyof Prisma.OrderSelect]: desc === 'true' ? 'desc' : 'asc',
-          },
-        ];
-      }
-
       const customer = await prisma.customer.findUnique({
         where: { user_id },
       });
-
       if (!customer) throw new ApiError(404, 'Customer not found');
 
-      const query = {
-        where: filter
-          ? {
-              AND: [
-                {
-                  customer_id: customer.customer_id,
-                },
-                filter,
-              ],
-            }
-          : { customer_id: customer.customer_id },
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: order,
-      };
+      const orders = await prisma.order.findMany({
+        where: {
+          customer_id: customer.customer_id,
+          ...(type !== 'All' && {
+            is_completed: type === 'Completed',
+          }),
+        },
+        include: {
+          Outlet: true,
+          OrderProgress: {
+            orderBy: {
+              created_at: 'desc',
+            },
+          },
+        },
+      });
 
-      const [orders, count] = await prisma.$transaction([prisma.order.findMany(query), prisma.order.count(query)]);
-
-      return [orders, count];
+      return orders;
     } catch (error) {
       throw error;
     }
@@ -123,6 +96,20 @@ export default class OrderAction {
     try {
       const order = await prisma.order.findUnique({
         where: { order_id },
+        include: {
+          OrderItem: {
+            include: {
+              LaundryItem: true,
+            },
+          },
+          Outlet: true,
+          Customer: {
+            include: {
+              User: true,
+            },
+          },
+          OrderProgress: true,
+        },
       });
 
       if (!order) throw new ApiError(404, 'Order not found');

@@ -2,6 +2,7 @@ import * as yup from 'yup';
 
 import { NextFunction, Request, Response } from 'express';
 
+import { AccessTokenPayload } from '@/type/jwt';
 import ApiResponse from '@/utils/response.util';
 import OrderAction from '@/actions/order.action';
 
@@ -44,6 +45,39 @@ export default class OrderController {
       );
     } catch (error) {
       return next(error);
+    }
+  };
+
+  customer = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { user_id } = req.user as AccessTokenPayload;
+      const { type } = await yup
+        .object({
+          type: yup.string().oneOf(['All', 'Ongoing', 'Completed']).optional(),
+        })
+        .validate(req.query);
+
+      const orders = await this.orderAction.customer(user_id, type);
+
+      return res.status(200).json(new ApiResponse('Customer orders retrieved successfully', orders));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  show = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { order_id } = await yup
+        .object({
+          order_id: yup.string().required(),
+        })
+        .validate(req.params);
+
+      const order = await this.orderAction.show(order_id);
+
+      return res.status(200).json(new ApiResponse('Order retrieved successfully', order));
+    } catch (error) {
+      next(error);
     }
   };
 }

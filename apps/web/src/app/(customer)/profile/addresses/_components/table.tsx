@@ -24,27 +24,31 @@ const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Address</TableHead>
-            <TableHead className='hidden sm:table-cell'>City</TableHead>
-            <TableHead className='hidden md:table-cell'>Region</TableHead>
+            <TableHead>Label</TableHead>
+            <TableHead className='hidden sm:table-cell'>Address</TableHead>
             <TableHead className='hidden md:table-cell'>Created At</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
+          {data.data.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={3} className='h-20 text-center'>
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+
           {data.data.map((address, idx) => (
             <TableRow key={idx}>
               <TableCell>
                 <div className='flex items-center gap-2 font-medium'>
-                  {address.address}
-                  {address.is_primary && (
-                    <Badge className='text-xs' variant='secondary'>
-                      Primary
-                    </Badge>
-                  )}
+                  {address.name}
+                  {address.is_primary && <Badge>Primary</Badge>}
                 </div>
               </TableCell>
-              <TableCell className='hidden sm:table-cell'>{address.city}</TableCell>
-              <TableCell className='hidden md:table-cell'>{address.region}</TableCell>
+              <TableCell className='hidden sm:table-cell'>
+                <p className='line-clamp-1 text-muted-foreground'>{address.formatted}</p>
+              </TableCell>
               <TableCell className='hidden md:table-cell'>{formatDate(address.created_at)}</TableCell>
             </TableRow>
           ))}

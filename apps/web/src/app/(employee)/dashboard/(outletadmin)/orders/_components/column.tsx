@@ -9,15 +9,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Order, OrderProgress } from '@/types/order';
+import { formatCurrency, formatDate } from '@/lib/utils';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ColumnDef } from '@tanstack/react-table';
 import DataTableColumnHeader from '@/components/table/header';
+import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
 import { Outlet } from '@/types/outlet';
 import { User } from '@/types/user';
-import { formatDate } from '@/lib/utils';
 
 const columns: ColumnDef<
   Order & {
@@ -32,6 +33,9 @@ const columns: ColumnDef<
     accessorKey: 'order_id',
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='Order ID' />;
+    },
+    cell: ({ row }) => {
+      return <span className='block w-32 font-medium uppercase truncate'>{row.original.order_id}</span>;
     },
   },
   {
@@ -54,14 +58,14 @@ const columns: ColumnDef<
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='Order Progress' />;
     },
-    cell: ({ row }) => {
-      return <Badge className='whitespace-nowrap'>{row.original.OrderProgress?.name}</Badge>;
-    },
   },
   {
     accessorKey: 'price',
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='Price' />;
+    },
+    cell: ({ row }) => {
+      return <Badge>{formatCurrency(row.original.price)}</Badge>;
     },
   },
   {
@@ -88,12 +92,16 @@ const columns: ColumnDef<
               <MoreHorizontal className='w-4 h-4' />
             </Button>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent align='end'>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit Outlet</DropdownMenuItem>
-            <DropdownMenuItem>Delete Outlet</DropdownMenuItem>
-            <DropdownMenuItem>View Employee</DropdownMenuItem>
+            <Link href={'/dashboard/orders/' + row.original.order_id} className='w-full'>
+              <DropdownMenuItem>View Order</DropdownMenuItem>
+            </Link>
+            <Link href={'/dashboard/orders/' + row.original.order_id + '/create'} className='w-full'>
+              <DropdownMenuItem>Add Order Items</DropdownMenuItem>
+            </Link>
           </DropdownMenuContent>
         </DropdownMenu>
       );

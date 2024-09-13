@@ -41,9 +41,7 @@ export const useDeliveries = (filter: ColumnFiltersState, pagination: Pagination
       >;
       count: number;
     };
-  }>('/deliveries?' + out, fetcher, {
-    shouldRetryOnError: false,
-  });
+  }>('/deliveries?' + out, fetcher);
 
   React.useEffect(() => {
     if (data) {

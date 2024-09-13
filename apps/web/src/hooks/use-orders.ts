@@ -47,9 +47,7 @@ export const useOrders = (filter: ColumnFiltersState, pagination: PaginationStat
       >;
       count: number;
     };
-  }>('/orders?' + out, fetcher, {
-    shouldRetryOnError: false,
-  });
+  }>('/orders?' + out, fetcher);
 
   React.useEffect(() => {
     if (data) {

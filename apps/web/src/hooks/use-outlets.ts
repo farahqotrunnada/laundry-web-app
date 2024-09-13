@@ -36,9 +36,7 @@ export const useOutlets = (filter: ColumnFiltersState, pagination: PaginationSta
       outlets: Outlet[];
       count: number;
     };
-  }>('/outlets?' + out, fetcher, {
-    shouldRetryOnError: false,
-  });
+  }>('/outlets?' + out, fetcher);
 
   React.useEffect(() => {
     if (data) {

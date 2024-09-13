@@ -35,12 +35,6 @@ const columns: ColumnDef<Outlet>[] = [
     },
   },
   {
-    accessorKey: 'city_district',
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='City District' />;
-    },
-  },
-  {
     accessorKey: 'region',
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='Region' />;
@@ -56,9 +50,9 @@ const columns: ColumnDef<Outlet>[] = [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
+            <Button variant='ghost' className='w-8 h-8 p-0'>
               <span className='sr-only'>Open menu</span>
-              <MoreHorizontal className='h-4 w-4' />
+              <MoreHorizontal className='w-4 h-4' />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>

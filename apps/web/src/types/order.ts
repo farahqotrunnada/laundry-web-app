@@ -15,3 +15,11 @@ export type Order = {
   created_at: string;
   updated_at: string;
 };
+
+export type OrderItem = {
+  order_item_id: string;
+  order_id: string;
+  laundry_item_id: string;
+  quantity: number;
+  weight: number;
+};

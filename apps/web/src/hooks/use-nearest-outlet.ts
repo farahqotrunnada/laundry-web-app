@@ -10,9 +10,7 @@ export const useNearestOutlet = (address_id: string | undefined) => {
   const { data, error, isLoading } = useSWR<{
     message: string;
     data: Outlet[];
-  }>('/outlets/nearest', fetcher, {
-    shouldRetryOnError: false,
-  });
+  }>('/outlets/nearest', fetcher);
 
   return { data, error, isLoading };
 };

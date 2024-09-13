@@ -136,6 +136,7 @@ model Order {
   outlet_id           String
   customer_id         String
   customer_address_id String
+  is_completed        Boolean  @default(false)
   price               Decimal  @db.Decimal(8, 2)
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt

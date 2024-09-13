@@ -17,9 +17,11 @@ export default async function Page({ ...props }: PageProps): Promise<React.JSX.E
         <CardTitle className='text-xl font-bold'>User Addresses</CardTitle>
         <CardDescription>Manage your addresses, this information will be used to deliver your orders.</CardDescription>
       </CardHeader>
+
       <CardContent>
         <CustomerAddressTable />
       </CardContent>
+
       <CardFooter>
         <Link href='/profile/addresses/create' className='ml-auto'>
           <Button variant='outline'>Add Address</Button>

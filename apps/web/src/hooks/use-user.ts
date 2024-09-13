@@ -36,9 +36,7 @@ export const useUsers = (filter: ColumnFiltersState, pagination: PaginationState
       users: User[];
       count: number;
     };
-  }>('/users?' + out, fetcher, {
-    shouldRetryOnError: false,
-  });
+  }>('/users?' + out, fetcher);
 
   React.useEffect(() => {
     if (data) {
