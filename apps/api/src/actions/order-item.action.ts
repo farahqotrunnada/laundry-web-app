@@ -1,4 +1,5 @@
 import ApiError from '@/utils/error.util';
+import { OrderProgresses } from '@/utils/constant';
 import prisma from '@/libs/prisma';
 
 interface ChoosenItem {
@@ -13,9 +14,15 @@ export default class OrderItemAction {
     try {
       const order = await prisma.order.findUnique({
         where: { order_id },
+        include: {
+          OrderProgress: true,
+        },
       });
 
       if (!order) throw new ApiError(404, 'Order not found');
+      if (!order.OrderProgress.find((item) => item.name === OrderProgresses.ARRIVED_AT_OUTLET)) {
+        throw new ApiError(400, 'Order not arrived at outlet yet');
+      }
 
       const laundry_items = await prisma.laundryItem.findMany({
         where: {
@@ -34,6 +41,13 @@ export default class OrderItemAction {
           quantity: item.quantity,
           laundry_item_id: item.laundry_item_id,
         })),
+      });
+
+      await prisma.orderProgress.create({
+        data: {
+          order_id,
+          name: OrderProgresses.WAITING_FOR_PAYMENT,
+        },
       });
 
       return order;

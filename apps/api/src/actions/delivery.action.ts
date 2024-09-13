@@ -153,7 +153,7 @@ export default class DeliveryAction {
     }
   };
 
-  update = async (delivery_id: string, progress: ProgressType) => {
+  update = async (user_id: string, delivery_id: string, progress: ProgressType) => {
     try {
       const delivery = await prisma.delivery.findUnique({
         where: { delivery_id },
@@ -161,10 +161,37 @@ export default class DeliveryAction {
 
       if (!delivery) throw new ApiError(404, 'Delivery not found');
 
+      const employee = await prisma.employee.findUnique({
+        where: {
+          user_id,
+          outlet_id: delivery.outlet_id,
+        },
+      });
+
+      console.log(employee);
+
+      if (!employee) throw new ApiError(404, 'Employee not found or not assigned to this outlet');
+
       await prisma.delivery.update({
         where: { delivery_id },
         data: { progress },
       });
+
+      if (progress === ProgressType.Ongoing) {
+        await prisma.orderProgress.create({
+          data: {
+            order_id: delivery.order_id,
+            name: OrderProgresses.ON_PROGRESS_PICKUP,
+          },
+        });
+      } else if (progress === ProgressType.Completed) {
+        await prisma.orderProgress.create({
+          data: {
+            order_id: delivery.order_id,
+            name: OrderProgresses.ARRIVED_AT_OUTLET,
+          },
+        });
+      }
 
       return delivery;
     } catch (error) {

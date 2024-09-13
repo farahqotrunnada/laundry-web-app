@@ -104,14 +104,21 @@ export default class DeliveryController {
 
   update = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { delivery_id, progress } = await yup
+      const { user_id } = req.user as AccessTokenPayload;
+
+      const { delivery_id } = await yup
         .object({
           delivery_id: yup.string().required(),
+        })
+        .validate(req.params);
+
+      const { progress } = await yup
+        .object({
           progress: yup.string().oneOf(Object.values(ProgressType)).required(),
         })
         .validate(req.body);
 
-      const delivery = await this.deliveryAction.update(delivery_id, progress);
+      const delivery = await this.deliveryAction.update(user_id, delivery_id, progress);
 
       return res.status(200).json(new ApiResponse('Delivery updated successfully', delivery));
     } catch (error) {

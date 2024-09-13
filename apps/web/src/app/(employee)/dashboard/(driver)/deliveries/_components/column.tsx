@@ -1,5 +1,6 @@
 'use client';
 
+import { Delivery, ProgressType } from '@/types/delivery';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +14,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ColumnDef } from '@tanstack/react-table';
 import DataTableColumnHeader from '@/components/table/header';
-import { Delivery } from '@/types/delivery';
 import { MoreHorizontal } from 'lucide-react';
 import { Outlet } from '@/types/outlet';
+import axios from '@/lib/axios';
+import { useToast } from '@/hooks/use-toast';
 
 const columns: ColumnDef<
   Delivery & {
@@ -68,6 +70,25 @@ const columns: ColumnDef<
       return <DataTableColumnHeader column={column} title='Actions' />;
     },
     cell: ({ row }) => {
+      const { toast } = useToast();
+
+      const changeProgress = async (progress: ProgressType) => {
+        try {
+          await axios.put('/deliveries/' + row.original.delivery_id, { progress });
+          toast({
+            title: 'Delivery progress updated',
+            description: 'Your delivery progress has been updated successfully',
+          });
+          row.original.progress = progress;
+        } catch (error: any) {
+          toast({
+            variant: 'destructive',
+            title: 'Failed to change progress',
+            description: error.message,
+          });
+        }
+      };
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -79,9 +100,13 @@ const columns: ColumnDef<
           <DropdownMenuContent align='end'>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit Outlet</DropdownMenuItem>
-            <DropdownMenuItem>Delete Outlet</DropdownMenuItem>
-            <DropdownMenuItem>View Employee</DropdownMenuItem>
+            <DropdownMenuItem>View Delivery</DropdownMenuItem>
+            {row.original.progress === 'Pending' && (
+              <DropdownMenuItem onClick={() => changeProgress('Ongoing')}>Start Delivery</DropdownMenuItem>
+            )}
+            {row.original.progress === 'Ongoing' && (
+              <DropdownMenuItem onClick={() => changeProgress('Completed')}>Complete Delivery</DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );

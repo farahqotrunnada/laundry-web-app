@@ -108,6 +108,13 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
+                  {data.data.OrderItem.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={3} className='h-20 text-center'>
+                        No results.
+                      </TableCell>
+                    </TableRow>
+                  )}
                   {data.data.OrderItem.map((item, idx) => (
                     <TableRow key={idx}>
                       <TableCell>{item.LaundryItem.name}</TableCell>
