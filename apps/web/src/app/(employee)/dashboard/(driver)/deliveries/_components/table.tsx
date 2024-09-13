@@ -85,6 +85,7 @@ const DataTable = <TData, TValue>({
     <div className='w-full'>
       <div className='flex flex-col mb-6 space-y-4 lg:justify-between lg:flex-row lg:items-center lg:space-y-0 lg:space-x-4'>
         <Input
+          autoFocus
           placeholder='Filter Delivery by ID'
           value={(table.getColumn('delivery_id')?.getFilterValue() as string) ?? ''}
           onChange={(event) => table.getColumn('delivery_id')?.setFilterValue(event.target.value)}
@@ -165,7 +166,11 @@ const DataTable = <TData, TValue>({
   );
 };
 
-const DeliveryTable = () => {
+interface DevlieryTableProps {
+  //
+}
+
+const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
   const router = useRouter();
   const pathname = usePathname();
   const search = useSearchParams();

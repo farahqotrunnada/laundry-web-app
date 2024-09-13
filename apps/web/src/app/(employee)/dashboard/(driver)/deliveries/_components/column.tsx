@@ -14,8 +14,13 @@ import { ColumnDef } from '@tanstack/react-table';
 import DataTableColumnHeader from '@/components/table/header';
 import { Delivery } from '@/types/delivery';
 import { MoreHorizontal } from 'lucide-react';
+import { Outlet } from '@/types/outlet';
 
-const columns: ColumnDef<Delivery>[] = [
+const columns: ColumnDef<
+  Delivery & {
+    Outlet: Outlet;
+  }
+>[] = [
   {
     accessorKey: 'delivery_id',
     header: ({ column }) => {
@@ -23,9 +28,9 @@ const columns: ColumnDef<Delivery>[] = [
     },
   },
   {
-    accessorKey: 'outlet_id',
+    accessorKey: 'Outlet.name',
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Outlet ID' />;
+      return <DataTableColumnHeader column={column} title='Outlet Name' />;
     },
   },
   {

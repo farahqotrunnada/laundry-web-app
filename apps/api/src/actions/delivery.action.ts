@@ -2,6 +2,7 @@ import { DeliveryType, Prisma, ProgressType } from '@prisma/client';
 import { MAXIMUM_RADIUS, PRICE_PER_KM } from '@/config';
 
 import ApiError from '@/utils/error.util';
+import { OrderProgresses } from '@/utils/constant';
 import { getDistance } from '@/utils/distance.util';
 import prisma from '@/prisma';
 
@@ -20,7 +21,7 @@ export default class DeliveryAction {
 
       if (id && value) {
         filter = {
-          [id as keyof Prisma.DeliverySelect]: { contains: value as string },
+          [id as keyof Prisma.DeliverySelect]: { contains: value as string, mode: 'insensitive' },
         };
       }
 
@@ -38,7 +39,12 @@ export default class DeliveryAction {
       };
 
       const [deliveries, count] = await prisma.$transaction([
-        prisma.delivery.findMany(query),
+        prisma.delivery.findMany({
+          ...query,
+          include: {
+            Outlet: true,
+          },
+        }),
         prisma.delivery.count(query),
       ]);
 
@@ -131,8 +137,13 @@ export default class DeliveryAction {
           Delivery: {
             create: {
               outlet_id,
-              progress: 'Pending',
-              type: 'Pickup',
+              progress: ProgressType.Pending,
+              type: DeliveryType.Pickup,
+            },
+          },
+          OrderProgress: {
+            create: {
+              name: OrderProgresses.WAITING_FOR_PICKUP,
             },
           },
         },

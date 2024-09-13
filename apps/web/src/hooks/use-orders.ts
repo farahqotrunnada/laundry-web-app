@@ -3,8 +3,11 @@
 import * as React from 'react';
 
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
+import { Order, OrderProgress } from '@/types/order';
 
 import { Delivery } from '@/types/delivery';
+import { Outlet } from '@/types/outlet';
+import { User } from '@/types/user';
 import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
 import { useToast } from '@/hooks/use-toast';
@@ -33,7 +36,15 @@ export const useOrders = (filter: ColumnFiltersState, pagination: PaginationStat
   const { data, error, isLoading } = useSWR<{
     message: string;
     data: {
-      orders: Delivery[];
+      orders: Array<
+        Order & {
+          Outlet?: Outlet;
+          Customer?: {
+            User?: User;
+          };
+          OrderProgress?: OrderProgress[];
+        }
+      >;
       count: number;
     };
   }>('/orders?' + out, fetcher, {

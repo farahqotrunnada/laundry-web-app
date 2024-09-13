@@ -7,20 +7,20 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatDate } from '@/lib/utils';
-import { useCustomerAddress } from '@/hooks/use-customer-addres';
+import { useCustomerAddresses } from '@/hooks/use-customer-addresses';
 
 interface AddressListProps {
   //
 }
 
-const AddressTable: React.FC<AddressListProps> = ({ ...props }) => {
-  const { data, error, isLoading } = useCustomerAddress();
+const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
+  const { data, error, isLoading } = useCustomerAddresses();
 
   if (isLoading) return <Skeleton className='w-full h-32 rounded-lg' />;
   if (error || !data) return <div>failed to load</div>;
 
   return (
-    <div className='rounded-md border'>
+    <div className='border rounded-md'>
       <Table>
         <TableHeader>
           <TableRow>
@@ -34,7 +34,7 @@ const AddressTable: React.FC<AddressListProps> = ({ ...props }) => {
           {data.data.map((address, idx) => (
             <TableRow key={idx}>
               <TableCell>
-                <div className='font-medium flex items-center gap-2'>
+                <div className='flex items-center gap-2 font-medium'>
                   {address.address}
                   {address.is_primary && (
                     <Badge className='text-xs' variant='secondary'>
@@ -54,4 +54,4 @@ const AddressTable: React.FC<AddressListProps> = ({ ...props }) => {
   );
 };
 
-export default AddressTable;
+export default CustomerAddressTable;

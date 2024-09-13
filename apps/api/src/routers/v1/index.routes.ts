@@ -1,5 +1,6 @@
 import AuthRouter from '@/routers/v1/routes/auth.routes';
 import DeliveryRoutes from './routes/delivery.routes';
+import LaundryItemRouter from './routes/laundry-item.routes';
 import OrderRouter from './routes/order.routes';
 import OutletsRouter from './routes/outltes.routes';
 import ProfileRouter from '@/routers/v1/routes/profile.routes';
@@ -22,6 +23,7 @@ export default class IndexRouter {
       outlets: new OutletsRouter(),
       orders: new OrderRouter(),
       deliveries: new DeliveryRoutes(),
+      laundryItems: new LaundryItemRouter(),
     };
 
     this.router.use('/auth', routes.auth.getRouter());
@@ -30,6 +32,7 @@ export default class IndexRouter {
     this.router.use('/outlets', routes.outlets.getRouter());
     this.router.use('/orders', routes.orders.getRouter());
     this.router.use('/deliveries', routes.deliveries.getRouter());
+    this.router.use('/laundry-items', routes.laundryItems.getRouter());
   }
 
   getRouter(): Router {

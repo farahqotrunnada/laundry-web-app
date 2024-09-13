@@ -17,7 +17,7 @@ export default class OrderAction {
 
       if (id && value) {
         filter = {
-          [id as keyof Prisma.OrderSelect]: { contains: value as string },
+          [id as keyof Prisma.OrderSelect]: { contains: value as string, mode: 'insensitive' },
         };
       }
 
@@ -36,7 +36,25 @@ export default class OrderAction {
         orderBy: order,
       };
 
-      const [orders, count] = await prisma.$transaction([prisma.order.findMany(query), prisma.order.count(query)]);
+      const [orders, count] = await prisma.$transaction([
+        prisma.order.findMany({
+          ...query,
+          include: {
+            Outlet: true,
+            OrderProgress: {
+              orderBy: {
+                created_at: 'desc',
+              },
+            },
+            Customer: {
+              include: {
+                User: true,
+              },
+            },
+          },
+        }),
+        prisma.order.count(query),
+      ]);
 
       return [orders, count];
     } catch (error) {
@@ -59,7 +77,7 @@ export default class OrderAction {
 
       if (id && value) {
         filter = {
-          [id as keyof Prisma.OrderSelect]: { contains: value as string },
+          [id as keyof Prisma.OrderSelect]: { contains: value as string, mode: 'insensitive' },
         };
       }
 

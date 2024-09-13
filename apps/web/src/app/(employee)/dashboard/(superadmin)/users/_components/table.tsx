@@ -84,6 +84,7 @@ const DataTable = <TData, TValue>({
     <div className='w-full'>
       <div className='flex flex-col lg:justify-between lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-4 mb-6'>
         <Input
+          autoFocus
           placeholder='Filter name'
           value={(table.getColumn('fullname')?.getFilterValue() as string) ?? ''}
           onChange={(event) => table.getColumn('fullname')?.setFilterValue(event.target.value)}

@@ -4,13 +4,12 @@ import * as React from 'react';
 
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 
-import { Delivery } from '@/types/delivery';
-import { Outlet } from '@/types/outlet';
+import { LaundryItem } from '@/types/laundry-item';
 import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
 import { useToast } from '@/hooks/use-toast';
 
-export const useDeliveries = (filter: ColumnFiltersState, pagination: PaginationState, sorting: SortingState) => {
+export const useLaundryItems = (filter: ColumnFiltersState, pagination: PaginationState, sorting: SortingState) => {
   const { toast } = useToast();
 
   const query = new URLSearchParams();
@@ -34,27 +33,23 @@ export const useDeliveries = (filter: ColumnFiltersState, pagination: Pagination
   const { data, error, isLoading } = useSWR<{
     message: string;
     data: {
-      deliveries: Array<
-        Delivery & {
-          Outlet: Outlet;
-        }
-      >;
+      items: LaundryItem[];
       count: number;
     };
-  }>('/deliveries?' + out, fetcher, {
+  }>('/laundry-items?' + out, fetcher, {
     shouldRetryOnError: false,
   });
 
   React.useEffect(() => {
     if (data) {
       toast({
-        title: 'Devlieries loaded',
-        description: 'Your deliveries have been loaded successfully',
+        title: 'Laundry Items loaded',
+        description: 'Your laundry items have been loaded successfully',
       });
     } else if (error) {
       toast({
         variant: 'destructive',
-        title: 'Failed to load deliveries',
+        title: 'Failed to load laundry items',
         description: error.message,
       });
     }

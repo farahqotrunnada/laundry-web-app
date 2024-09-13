@@ -8,15 +8,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Order, OrderProgress } from '@/types/order';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ColumnDef } from '@tanstack/react-table';
 import DataTableColumnHeader from '@/components/table/header';
-import { Delivery } from '@/types/delivery';
 import { MoreHorizontal } from 'lucide-react';
+import { Outlet } from '@/types/outlet';
+import { User } from '@/types/user';
 import { formatDate } from '@/lib/utils';
 
-const columns: ColumnDef<Delivery>[] = [
+const columns: ColumnDef<
+  Order & {
+    Outlet?: Outlet;
+    Customer?: {
+      User?: User;
+    };
+    OrderProgress?: OrderProgress;
+  }
+>[] = [
   {
     accessorKey: 'order_id',
     header: ({ column }) => {
@@ -24,9 +35,27 @@ const columns: ColumnDef<Delivery>[] = [
     },
   },
   {
-    accessorKey: 'customer_id',
+    enableSorting: false,
+    accessorKey: 'Outlet.name',
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Customer ID' />;
+      return <DataTableColumnHeader column={column} title='Outlet Name' />;
+    },
+  },
+  {
+    enableSorting: false,
+    accessorKey: 'Customer.User.fullname',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Customer Name' />;
+    },
+  },
+  {
+    enableSorting: false,
+    accessorKey: 'OrderProgress.name',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Order Progress' />;
+    },
+    cell: ({ row }) => {
+      return <Badge className='whitespace-nowrap'>{row.original.OrderProgress?.name}</Badge>;
     },
   },
   {

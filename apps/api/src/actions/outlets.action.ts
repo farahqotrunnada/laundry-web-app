@@ -21,7 +21,7 @@ export default class OutletsAction {
 
       if (id && value) {
         filter = {
-          [id as keyof Prisma.OutletSelect]: { contains: value as string },
+          [id as keyof Prisma.OutletSelect]: { contains: value as string, mode: 'insensitive' },
         };
       }
 

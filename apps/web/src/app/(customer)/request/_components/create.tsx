@@ -3,7 +3,7 @@
 import * as React from 'react';
 import * as yup from 'yup';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Outlet } from '@/types/outlet';
 import axios from '@/lib/axios';
 import { cn } from '@/lib/utils';
-import { useCustomerAddress } from '@/hooks/use-customer-addres';
+import { useCustomerAddresses } from '@/hooks/use-customer-addresses';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -33,7 +33,7 @@ const requestOrderSchema = yup.object({
 const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
   const router = useRouter();
   const { toast } = useToast();
-  const { data } = useCustomerAddress();
+  const { data } = useCustomerAddresses();
   const addresses = React.useMemo(() => {
     return data ? data.data : [];
   }, [data]);
@@ -231,12 +231,14 @@ const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
                   defaultValue={selectedOutlet && 'Rp.' + Math.ceil(Number(selectedOutlet.distance)) * 5000}
                 />
               </div>
-
-              <div className='flex justify-start'>
-                <Button type='submit'>Save</Button>
-              </div>
             </div>
           </CardContent>
+
+          <CardFooter>
+            <div className='flex justify-start'>
+              <Button type='submit'>Save</Button>
+            </div>
+          </CardFooter>
         </Card>
       </form>
     </Form>

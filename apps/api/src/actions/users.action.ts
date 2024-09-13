@@ -18,7 +18,7 @@ export default class UserAction {
 
       if (id && value) {
         filter = {
-          [id as keyof Prisma.UserSelect]: { contains: value as string },
+          [id as keyof Prisma.UserSelect]: { contains: value as string, mode: 'insensitive' },
         };
       }
 

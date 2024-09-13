@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
-import AddressTable from './_components/table';
 import { Button } from '@/components/ui/button';
+import CustomerAddressTable from './_components/table';
 import Link from 'next/link';
 
 interface PageProps {
@@ -18,7 +18,7 @@ export default async function Page({ ...props }: PageProps): Promise<React.JSX.E
         <CardDescription>Manage your addresses, this information will be used to deliver your orders.</CardDescription>
       </CardHeader>
       <CardContent>
-        <AddressTable />
+        <CustomerAddressTable />
       </CardContent>
       <CardFooter>
         <Link href='/profile/addresses/create' className='ml-auto'>

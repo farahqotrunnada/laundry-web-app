@@ -27,8 +27,6 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { DataTablePagination } from '@/components/table/pagination';
 import { Input } from '@/components/ui/input';
-import Link from 'next/link';
-import { Plus } from 'lucide-react';
 import TableLoader from '@/components/loader/table';
 import columns from './column';
 import { useDebounceValue } from 'usehooks-ts';
@@ -85,6 +83,7 @@ const DataTable = <TData, TValue>({
     <div className='w-full'>
       <div className='flex flex-col mb-6 space-y-4 lg:justify-between lg:flex-row lg:items-center lg:space-y-0 lg:space-x-4'>
         <Input
+          autoFocus
           placeholder='Filter Order by ID'
           value={(table.getColumn('order_id')?.getFilterValue() as string) ?? ''}
           onChange={(event) => table.getColumn('order_id')?.setFilterValue(event.target.value)}
@@ -227,7 +226,7 @@ const OrderTable = () => {
   return (
     <DataTable
       columns={columns}
-      data={data.data.orders}
+      data={data.data.orders.map((order) => ({ ...order, OrderProgress: order.OrderProgress!.at(-1) }))}
       pageCount={Math.ceil(data.data.count / pagination.pageSize)}
       sorting={sorting}
       onSortingChange={setSorting}
