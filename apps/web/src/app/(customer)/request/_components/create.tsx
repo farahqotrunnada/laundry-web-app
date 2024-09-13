@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,6 +17,7 @@ import axios from '@/lib/axios';
 import { cn } from '@/lib/utils';
 import { useCustomerAddress } from '@/hooks/use-customer-addres';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -31,6 +31,7 @@ const requestOrderSchema = yup.object({
 });
 
 const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
+  const router = useRouter();
   const { toast } = useToast();
   const { data } = useCustomerAddress();
   const addresses = React.useMemo(() => {
@@ -52,16 +53,24 @@ const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
     }[]
   >([]);
 
+  const address = form.watch('customer_address_id');
+
   React.useEffect(() => {
-    if (form.watch('customer_address_id')) {
+    if (address) {
       const fetchOutlets = async () => {
         try {
           const { data } = await axios.get('/outlets/nearest', {
             params: {
-              customer_address_id: form.watch('customer_address_id'),
+              customer_address_id: address,
             },
           });
           setOutlets(data.data);
+          if (data.data.length === 0) {
+            toast({
+              variant: 'destructive',
+              title: 'No outlet found nearby, please select another address',
+            });
+          }
         } catch (error: any) {
           toast({
             variant: 'destructive',
@@ -71,17 +80,19 @@ const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
         }
       };
 
+      form.setValue('outlet_id', '');
       fetchOutlets();
     }
-  }, [form.watch('customer_address_id')]);
+  }, [address, toast, form]);
 
   const onSubmit = async (formData: yup.InferType<typeof requestOrderSchema>) => {
     try {
-      console.log(formData);
+      await axios.post('/deliveries/request', formData);
       toast({
         title: 'Order created',
         description: 'Your order has been created successfully',
       });
+      router.push('/orders');
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -119,7 +130,7 @@ const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
                             {field.value
                               ? addresses.find((address) => address.customer_address_id === field.value)?.name
                               : 'Select address'}
-                            <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
+                            <ChevronsUpDown className='w-4 h-4 ml-2 opacity-50 shrink-0' />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
@@ -137,7 +148,7 @@ const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
                                     form.setValue('customer_address_id', address.customer_address_id);
                                   }}>
                                   <div className='flex flex-col'>
-                                    <div className='flex space-x-2 items-center'>
+                                    <div className='flex items-center space-x-2'>
                                       <span className='text-sm font-medium'>{address.name}</span>
                                       {address.is_primary && <Badge>Primary</Badge>}
                                     </div>
@@ -172,7 +183,7 @@ const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
                             {field.value
                               ? outlets.find((item) => item.outlet.outlet_id === field.value)?.outlet.name
                               : 'Select outlet'}
-                            <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
+                            <ChevronsUpDown className='w-4 h-4 ml-2 opacity-50 shrink-0' />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
@@ -192,7 +203,7 @@ const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
                                   <div className='flex flex-col'>
                                     <div className='flex items-center space-x-2'>
                                       <span className='text-sm font-medium'>{item.outlet.name}</span>
-                                      <Badge>{Number(item.distance).toFixed(2)}m</Badge>
+                                      <Badge>{Number(item.distance).toFixed(2)} km</Badge>
                                     </div>
                                     <div className='text-xs text-muted-foreground'>{item.outlet.address}</div>
                                   </div>
@@ -210,14 +221,14 @@ const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
 
               <div>
                 <FormLabel>Distance</FormLabel>
-                <Input readOnly defaultValue={selectedOutlet && Number(selectedOutlet.distance).toFixed(2) + ' m'} />
+                <Input readOnly defaultValue={selectedOutlet && Number(selectedOutlet.distance).toFixed(2) + ' km'} />
               </div>
 
               <div>
                 <FormLabel>Total Price</FormLabel>
                 <Input
                   readOnly
-                  defaultValue={selectedOutlet && 'Rp.' + Number(selectedOutlet.distance * 5000).toFixed(2)}
+                  defaultValue={selectedOutlet && 'Rp.' + Math.ceil(Number(selectedOutlet.distance)) * 5000}
                 />
               </div>
 

@@ -1,5 +1,6 @@
 import AuthRouter from '@/routers/v1/routes/auth.routes';
 import DeliveryRoutes from './routes/delivery.routes';
+import OrderRouter from './routes/order.routes';
 import OutletsRouter from './routes/outltes.routes';
 import ProfileRouter from '@/routers/v1/routes/profile.routes';
 import { Router } from 'express';
@@ -19,6 +20,7 @@ export default class IndexRouter {
       users: new userRouter(),
       profile: new ProfileRouter(),
       outlets: new OutletsRouter(),
+      orders: new OrderRouter(),
       deliveries: new DeliveryRoutes(),
     };
 
@@ -26,6 +28,7 @@ export default class IndexRouter {
     this.router.use('/users', routes.users.getRouter());
     this.router.use('/profile', routes.profile.getRouter());
     this.router.use('/outlets', routes.outlets.getRouter());
+    this.router.use('/orders', routes.orders.getRouter());
     this.router.use('/deliveries', routes.deliveries.getRouter());
   }
 

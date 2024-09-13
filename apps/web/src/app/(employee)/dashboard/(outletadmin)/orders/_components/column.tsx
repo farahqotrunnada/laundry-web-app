@@ -1,0 +1,75 @@
+'use client';
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+import { Button } from '@/components/ui/button';
+import { ColumnDef } from '@tanstack/react-table';
+import DataTableColumnHeader from '@/components/table/header';
+import { Delivery } from '@/types/delivery';
+import { MoreHorizontal } from 'lucide-react';
+import { formatDate } from '@/lib/utils';
+
+const columns: ColumnDef<Delivery>[] = [
+  {
+    accessorKey: 'order_id',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Order ID' />;
+    },
+  },
+  {
+    accessorKey: 'customer_id',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Customer ID' />;
+    },
+  },
+  {
+    accessorKey: 'price',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Price' />;
+    },
+  },
+  {
+    accessorKey: 'created_at',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Created' />;
+    },
+    cell: ({ row }) => {
+      return <span>{formatDate(row.getValue('created_at') as string)}</span>;
+    },
+  },
+  {
+    id: 'actions',
+    enableSorting: false,
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Actions' />;
+    },
+    cell: ({ row }) => {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant='ghost' className='w-8 h-8 p-0'>
+              <span className='sr-only'>Open menu</span>
+              <MoreHorizontal className='w-4 h-4' />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end'>
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Edit Outlet</DropdownMenuItem>
+            <DropdownMenuItem>Delete Outlet</DropdownMenuItem>
+            <DropdownMenuItem>View Employee</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
+
+export default columns;

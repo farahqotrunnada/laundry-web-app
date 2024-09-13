@@ -1,7 +1,8 @@
+import { MAXIMUM_RADIUS, OPENCAGE_API } from '@/config';
 import { Prisma, Role } from '@prisma/client';
+import { getDistance, getTreshold } from '@/utils/distance.util';
 
 import ApiError from '@/utils/error.util';
-import { OPENCAGE_API } from '@/config';
 import axios from 'axios';
 import prisma from '@/libs/prisma';
 
@@ -128,18 +129,60 @@ export default class OutletsAction {
 
   nearest = async (customer_address_id: string) => {
     try {
+      const customer_address = await prisma.customerAdress.findUnique({
+        where: {
+          customer_address_id,
+        },
+        select: {
+          latitude: true,
+          longitude: true,
+        },
+      });
+
+      if (!customer_address) throw new ApiError(404, 'Customer address not found');
+
+      const { latStart, latEnd, lonStart, lonEnd } = getTreshold(
+        Number(customer_address.latitude),
+        Number(customer_address.longitude),
+        MAXIMUM_RADIUS
+      );
+
+      console.log(customer_address.latitude, customer_address.longitude);
+      console.log(latStart, latEnd, lonStart, lonEnd);
+
       const outlets = await prisma.outlet.findMany({
-        // where: {
-        // customerAddress: {
-        //   customer_address_id,
-        // },
-        // },
+        where: {
+          AND: [
+            {
+              latitude: {
+                gte: latStart,
+                lte: latEnd,
+              },
+            },
+            {
+              longitude: {
+                gte: lonStart,
+                lte: lonEnd,
+              },
+            },
+          ],
+        },
         orderBy: {
           created_at: 'asc',
         },
       });
 
-      return outlets;
+      if (!outlets) throw new ApiError(404, 'No outlet found nearby');
+
+      return outlets.map((outlet) => ({
+        outlet,
+        distance: getDistance(
+          Number(customer_address.latitude),
+          Number(customer_address.longitude),
+          Number(outlet.latitude),
+          Number(outlet.longitude)
+        ),
+      }));
     } catch (error) {
       throw error;
     }

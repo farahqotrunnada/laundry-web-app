@@ -12,7 +12,9 @@ export function formatDate(raw: string) {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
   };
 
-  return date.toLocaleDateString('id-ID', options);
+  return date.toLocaleDateString('en-US', options);
 }

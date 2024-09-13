@@ -102,17 +102,9 @@ export default class OutletsController {
         })
         .validate(req.query);
 
-      const outlets = await this.outletsAction.nearest(customer_address_id);
+      const outletsDistances = await this.outletsAction.nearest(customer_address_id);
 
-      return res.status(200).json(
-        new ApiResponse(
-          'Outlets retrieved successfully',
-          outlets.map((outlet) => ({
-            outlet,
-            distance: Math.random() * 100,
-          }))
-        )
-      );
+      return res.status(200).json(new ApiResponse('Outlets retrieved successfully', outletsDistances));
     } catch (error) {
       next(error);
     }

@@ -1,6 +1,8 @@
 import { DeliveryType, Prisma, ProgressType } from '@prisma/client';
+import { MAXIMUM_RADIUS, PRICE_PER_KM } from '@/config';
 
 import ApiError from '@/utils/error.util';
+import { getDistance } from '@/utils/distance.util';
 import prisma from '@/prisma';
 
 export default class DeliveryAction {
@@ -83,6 +85,58 @@ export default class DeliveryAction {
       });
 
       return delivery;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  request = async (user_id: string, customer_address_id: string, outlet_id: string) => {
+    try {
+      const customer = await prisma.customer.findUnique({
+        where: { user_id },
+      });
+
+      if (!customer) throw new ApiError(404, 'Customer not found for this user');
+
+      const [customerAddress, outletAddress] = await prisma.$transaction([
+        prisma.customerAdress.findUnique({
+          where: {
+            customer_id: customer.customer_id,
+            customer_address_id,
+          },
+        }),
+        prisma.outlet.findUnique({
+          where: { outlet_id },
+        }),
+      ]);
+
+      if (!customerAddress) throw new ApiError(404, 'Customer address not found or not linked to this customer');
+      if (!outletAddress) throw new ApiError(404, 'Outlet not found');
+
+      const distance = getDistance(
+        Number(customerAddress.latitude),
+        Number(customerAddress.longitude),
+        Number(outletAddress.latitude),
+        Number(outletAddress.longitude)
+      );
+
+      if (distance > MAXIMUM_RADIUS) throw new ApiError(400, 'Customer address is too far from outlet');
+
+      await prisma.order.create({
+        data: {
+          customer_id: customer.customer_id,
+          customer_address_id: customer_address_id,
+          outlet_id,
+          price: Math.ceil(distance) * PRICE_PER_KM,
+          Delivery: {
+            create: {
+              outlet_id,
+              progress: 'Pending',
+              type: 'Pickup',
+            },
+          },
+        },
+      });
     } catch (error) {
       throw error;
     }

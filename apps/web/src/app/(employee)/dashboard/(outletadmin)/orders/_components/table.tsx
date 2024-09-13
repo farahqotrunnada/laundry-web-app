@@ -32,7 +32,7 @@ import { Plus } from 'lucide-react';
 import TableLoader from '@/components/loader/table';
 import columns from './column';
 import { useDebounceValue } from 'usehooks-ts';
-import { useDeliveries } from '@/hooks/use-deliveries';
+import { useOrders } from '@/hooks/use-orders';
 
 interface DataTableProps<TData, TValue> {
   data: TData[];
@@ -85,9 +85,9 @@ const DataTable = <TData, TValue>({
     <div className='w-full'>
       <div className='flex flex-col mb-6 space-y-4 lg:justify-between lg:flex-row lg:items-center lg:space-y-0 lg:space-x-4'>
         <Input
-          placeholder='Filter Delivery by ID'
-          value={(table.getColumn('delivery_id')?.getFilterValue() as string) ?? ''}
-          onChange={(event) => table.getColumn('delivery_id')?.setFilterValue(event.target.value)}
+          placeholder='Filter Order by ID'
+          value={(table.getColumn('order_id')?.getFilterValue() as string) ?? ''}
+          onChange={(event) => table.getColumn('order_id')?.setFilterValue(event.target.value)}
           className='w-full lg:max-w-md'
         />
 
@@ -115,13 +115,6 @@ const DataTable = <TData, TValue>({
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-
-          <Link href='/dashboard/deliveries/create' className='w-full'>
-            <Button className='w-full'>
-              <Plus className='inline-block w-4 h-4 mr-2' />
-              <span>Add Delivery</span>
-            </Button>
-          </Link>
         </div>
       </div>
 
@@ -165,7 +158,7 @@ const DataTable = <TData, TValue>({
   );
 };
 
-const DeliveryTable = () => {
+const OrderTable = () => {
   const router = useRouter();
   const pathname = usePathname();
   const search = useSearchParams();
@@ -179,7 +172,7 @@ const DeliveryTable = () => {
 
   const [filter] = useDebounceValue<ColumnFiltersState>(columnFilters, 500);
 
-  const { data, error, isLoading } = useDeliveries(filter, pagination, sorting);
+  const { data, error, isLoading } = useOrders(filter, pagination, sorting);
 
   React.useEffect(() => {
     if (search.has('page')) {
@@ -229,12 +222,12 @@ const DeliveryTable = () => {
   }, [router, pathname, pagination, sorting, filter]);
 
   if (isLoading) return <TableLoader />;
-  if (error || !data) return <div>failed to load deliveries data, retrying...</div>;
+  if (error || !data) return <div>failed to load orders data, retrying...</div>;
 
   return (
     <DataTable
       columns={columns}
-      data={data.data.deliveries}
+      data={data.data.orders}
       pageCount={Math.ceil(data.data.count / pagination.pageSize)}
       sorting={sorting}
       onSortingChange={setSorting}
@@ -246,4 +239,4 @@ const DeliveryTable = () => {
   );
 };
 
-export default DeliveryTable;
+export default OrderTable;

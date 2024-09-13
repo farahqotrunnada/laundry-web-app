@@ -22,8 +22,8 @@ export default class OutletsRouter {
     this.router.use(this.authMiddleware.header);
     this.router.get('/', this.outletsController.index);
     this.router.get('/nearest', this.outletsController.nearest);
-    this.router.post('/', this.outletsController.create);
     this.router.get('/:outlet_id', this.outletsController.show);
+    this.router.post('/', this.outletsController.create);
   }
 
   getRouter(): Router {

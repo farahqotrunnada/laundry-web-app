@@ -3,6 +3,7 @@ import * as yup from 'yup';
 import { DeliveryType, ProgressType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 
+import { AccessTokenPayload } from '@/type/jwt';
 import ApiResponse from '@/utils/response.util';
 import DeliveryAction from '@/actions/delivery.action';
 
@@ -37,13 +38,12 @@ export default class DeliveryController {
 
       const [deliveries, count] = await this.deliveryAction.index(page, limit, id, value, key, desc);
 
-      return res.status(200).json({
-        message: 'Deliveries retrieved successfully',
-        data: {
+      return res.status(200).json(
+        new ApiResponse('Deliveries retrieved successfully', {
           deliveries: deliveries || [],
           count: count || 0,
-        },
-      });
+        })
+      );
     } catch (error) {
       return next(error);
     }
@@ -78,6 +78,25 @@ export default class DeliveryController {
       const delivery = await this.deliveryAction.create(order_id, outlet_id, type as DeliveryType);
 
       return res.status(201).json(new ApiResponse('Delivery created successfully', delivery));
+    } catch (error) {
+      return next(error);
+    }
+  };
+
+  request = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { user_id } = req.user as AccessTokenPayload;
+
+      const { customer_address_id, outlet_id } = await yup
+        .object({
+          customer_address_id: yup.string().required(),
+          outlet_id: yup.string().required(),
+        })
+        .validate(req.body);
+
+      await this.deliveryAction.request(user_id, customer_address_id, outlet_id);
+
+      return res.status(201).json(new ApiResponse('Delivery created successfully'));
     } catch (error) {
       return next(error);
     }
