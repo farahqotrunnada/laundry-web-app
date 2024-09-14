@@ -21,3 +21,10 @@ export type Customer = {
   customer_id: string;
   user_id: string;
 };
+
+export type Employee = {
+  employee_id: string;
+  user_id: string;
+  outlet_id?: string;
+  shift_id?: string;
+};

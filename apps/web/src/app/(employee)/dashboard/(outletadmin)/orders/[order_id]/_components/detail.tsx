@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { formatDate, formatDateTime } from '@/lib/utils';
+import { cn, formatDateTime } from '@/lib/utils';
 
 import { Badge } from '@/components/ui/badge';
 import { useOrderDetail } from '@/hooks/use-order-detail';
@@ -31,35 +31,11 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
           <CardContent>
             <div className='grid gap-4'>
               <div className='flex flex-col space-y-4 text-sm'>
-                <div className='flex w-full space-x-2 items-bottom'>
-                  <span className='flex-none'>Order ID</span>
-                  <div className='w-full border-b border-dotted border-muted-foreground'></div>
-                  <span className='flex-none uppercase text-muted-foreground'>{order_id}</span>
-                </div>
-
-                <div className='flex w-full space-x-2 items-bottom'>
-                  <span className='flex-none'>Customer Name</span>
-                  <div className='w-full border-b border-dotted border-muted-foreground'></div>
-                  <span className='flex-none text-muted-foreground'>{data.data.Customer.User.fullname}</span>
-                </div>
-
-                <div className='flex w-full space-x-2 items-bottom'>
-                  <span className='flex-none'>Customer Email</span>
-                  <div className='w-full border-b border-dotted border-muted-foreground'></div>
-                  <span className='flex-none text-muted-foreground'>{data.data.Customer.User.email}</span>
-                </div>
-
-                <div className='flex w-full space-x-2 items-bottom'>
-                  <span className='flex-none'>Outlet Name</span>
-                  <div className='w-full border-b border-dotted border-muted-foreground'></div>
-                  <span className='flex-none text-muted-foreground'>{data.data.Outlet.name}</span>
-                </div>
-
-                <div className='flex w-full space-x-2 items-bottom'>
-                  <span className='flex-none'>Outlet Address</span>
-                  <div className='w-full border-b border-dotted border-muted-foreground'></div>
-                  <span className='flex-none text-muted-foreground'>{data.data.Outlet.address}</span>
-                </div>
+                <DetailList title='Order ID' data={data.data.order_id.toUpperCase()} />
+                <DetailList title='Customer Name' data={data.data.Customer.User.fullname} />
+                <DetailList title='Customer Email' data={data.data.Customer.User.email} />
+                <DetailList title='Outlet Name' data={data.data.Outlet.name} />
+                <DetailList title='Outlet Address' data={data.data.Outlet.address} />
               </div>
             </div>
           </CardContent>
@@ -74,14 +50,16 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
             <div className='relative flex flex-col space-y-4'>
               {data.data.OrderProgress.map((item, idx) => (
                 <div key={idx} className='flex items-center space-x-4 text-sm'>
-                  <div className='flex items-center justify-center flex-none font-bold rounded-full size-10 aspect-square bg-muted'>
+                  <div
+                    className={cn(
+                      'flex items-center justify-center flex-none font-bold rounded-full size-8 aspect-square bg-muted',
+                      idx === data.data.OrderProgress.length - 1 && 'text-white bg-primary'
+                    )}>
                     {idx + 1}
                   </div>
                   <div className='flex items-center justify-between w-full'>
                     <span className='font-medium'>{item.name}</span>
-                    <Badge variant='outline' className='text-sm'>
-                      {formatDateTime(item.created_at)}
-                    </Badge>
+                    <Badge variant='outline'>{formatDateTime(item.created_at)}</Badge>
                   </div>
                 </div>
               ))}
@@ -127,6 +105,18 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
             </div>
           </CardContent>
         </Card>
+      </div>
+    </div>
+  );
+};
+
+const DetailList: React.FC<{ title: string; data: string | undefined }> = ({ title, data }) => {
+  return (
+    <div className='flex flex-col space-y-4 text-sm'>
+      <div className='flex w-full space-x-2 items-bottom'>
+        <span className='flex-none'>{title}</span>
+        <div className='w-full border-b border-dotted border-muted-foreground'></div>
+        <span className='flex-none text-muted-foreground'>{data}</span>
       </div>
     </div>
   );

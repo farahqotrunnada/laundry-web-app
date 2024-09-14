@@ -54,7 +54,7 @@ export default class OutletsController {
         .object({
           outlet_id: yup.string().required(),
         })
-        .validate(req.query);
+        .validate(req.params);
 
       const outlet = await this.outletsAction.show(outlet_id);
 
@@ -89,6 +89,32 @@ export default class OutletsController {
       const created = await this.outletsAction.create(name, description, address, latitude, longitude, employees);
 
       return res.status(201).json(new ApiResponse('Outlet created successfully', created));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  update = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { outlet_id } = await yup
+        .object({
+          outlet_id: yup.string().required(),
+        })
+        .validate(req.params);
+
+      const { name, description, address, latitude, longitude } = await yup
+        .object({
+          name: yup.string().required(),
+          description: yup.string().required(),
+          address: yup.string().required(),
+          latitude: yup.number().required(),
+          longitude: yup.number().required(),
+        })
+        .validate(req.body);
+
+      const updated = await this.outletsAction.update(outlet_id, name, description, address, latitude, longitude);
+
+      return res.status(200).json(new ApiResponse('Outlet updated successfully', updated));
     } catch (error) {
       next(error);
     }

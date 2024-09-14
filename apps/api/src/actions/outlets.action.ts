@@ -1,9 +1,9 @@
 import { MAXIMUM_RADIUS, OPENCAGE_API } from '@/config';
 import { Prisma, Role } from '@prisma/client';
+import axios, { isAxiosError } from 'axios';
 import { getDistance, getTreshold } from '@/utils/distance.util';
 
 import ApiError from '@/utils/error.util';
-import axios from 'axios';
 import prisma from '@/libs/prisma';
 
 export default class OutletsAction {
@@ -52,6 +52,20 @@ export default class OutletsAction {
     try {
       const outlet = await prisma.outlet.findUnique({
         where: { outlet_id },
+        include: {
+          Employee: {
+            include: {
+              User: {
+                select: {
+                  user_id: true,
+                  email: true,
+                  fullname: true,
+                  role: true,
+                },
+              },
+            },
+          },
+        },
       });
 
       if (!outlet) throw new ApiError(404, 'Outlet not found');
@@ -123,7 +137,77 @@ export default class OutletsAction {
 
       return outlet;
     } catch (error) {
+      if (isAxiosError(error)) {
+        throw new ApiError(
+          (error.response && error.response.status) || 500,
+          (error.response && error.response.data) || 'Something went wrong'
+        );
+      }
       throw error;
+    }
+  };
+
+  update = async (
+    outlet_id: string,
+    name: string,
+    description: string,
+    address: string,
+    latitude: number,
+    longitude: number
+  ) => {
+    try {
+      const outlet = await prisma.outlet.findUnique({
+        where: { outlet_id },
+      });
+
+      if (!outlet) throw new ApiError(404, 'Outlet not found');
+
+      if (Number(outlet.latitude) === latitude && Number(outlet.longitude) === longitude) {
+        await prisma.outlet.update({
+          where: { outlet_id },
+          data: {
+            name,
+            description,
+            address,
+          },
+        });
+      } else {
+        const url = new URL('https://api.opencagedata.com/geocode/v1/json');
+        url.searchParams.set('q', latitude + '+' + longitude);
+        url.searchParams.set('key', OPENCAGE_API);
+        url.searchParams.set('language', 'id');
+        url.searchParams.set('countrycode', 'id');
+        const output = url.toString();
+
+        const { data } = await axios.get(output);
+        const { formatted, components } = data.results.at(0);
+
+        await prisma.outlet.update({
+          where: { outlet_id },
+          data: {
+            name,
+            description,
+            address,
+            latitude,
+            longitude,
+            formatted,
+            city: components.city,
+            road: components.road,
+            region: components.state,
+            suburb: components.suburb,
+            zipcode: components.postcode,
+            city_district: components.city_district,
+          },
+        });
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        throw new ApiError(
+          (error.response && error.response.status) || 500,
+          (error.response && error.response.data) || 'Something went wrong'
+        );
+      }
+      if (error instanceof ApiError) throw error;
     }
   };
 
