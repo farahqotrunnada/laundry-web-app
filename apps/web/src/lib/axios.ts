@@ -28,6 +28,7 @@ const intercept = () => {
 
       axios.interceptors.response.eject(interceptor);
 
+
       return axios
         .post('/auth/refresh')
         .then(({ data }) => {
