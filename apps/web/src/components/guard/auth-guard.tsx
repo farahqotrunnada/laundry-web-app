@@ -24,21 +24,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ allowed, children }) => {
     if (token) {
       const verify = async () => {
         try {
-          let access = token;
-
-          const decoded = jwtDecode<{ exp: number }>(token);
-          if (decoded.exp < Date.now() / 1000) {
-            const { data } = await axios.post('/auth/refresh');
-            access = data.data.access_token;
-            setToken(access);
-          }
-
-          const { data } = await axios.post(
-            '/api/auth/verify',
-            { token: access, allowed },
-            { baseURL: 'http://localhost:3000' }
-          );
-
+          const { data } = await axios.post('/auth/guard', { allowed });
           if (!data.protected) {
             setAuthhorized(true);
             return;
