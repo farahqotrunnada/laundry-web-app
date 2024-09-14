@@ -13,12 +13,13 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import DataTableColumnHeader from '@/components/table/header';
+import { Job } from '@/types/job';
 import { MoreHorizontal } from 'lucide-react';
 import { Outlet } from '@/types/outlet';
-import axios from '@/lib/axios';
-import { useToast } from '@/hooks/use-toast';
-import { Job } from '@/types/job';
 import { ProgressType } from '@/types/shared';
+import axios from '@/lib/axios';
+import { useSWRConfig } from 'swr';
+import { useToast } from '@/hooks/use-toast';
 
 const columns: ColumnDef<
   Job & {
@@ -81,6 +82,7 @@ interface TableActionProps {
 }
 
 const TableAction: React.FC<TableActionProps> = ({ row }) => {
+  const { mutate } = useSWRConfig();
   const { toast } = useToast();
 
   const changeProgress = async (progress: ProgressType) => {
@@ -90,7 +92,7 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
         title: 'Job progress updated',
         description: 'Your job progress has been updated successfully',
       });
-      row.original.progress = progress;
+      mutate((key) => typeof key === 'string' && key.startsWith('/jobs'));
     } catch (error: any) {
       toast({
         variant: 'destructive',
