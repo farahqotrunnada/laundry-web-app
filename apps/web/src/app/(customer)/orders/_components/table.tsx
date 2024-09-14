@@ -24,7 +24,8 @@ const CustomerOrderTable: React.FC<CustomerOrderTableProps> = ({ type, ...props 
         <TableHeader>
           <TableRow>
             <TableHead>Order ID</TableHead>
-            <TableHead>Price</TableHead>
+            <TableHead>Delivery Fee</TableHead>
+            <TableHead>Laundry Fee</TableHead>
             <TableHead>Created</TableHead>
             <TableHead>Status</TableHead>
           </TableRow>
@@ -38,14 +39,17 @@ const CustomerOrderTable: React.FC<CustomerOrderTableProps> = ({ type, ...props 
             </TableRow>
           )}
           {data.data.map((order, idx) => {
-            const latest = order.OrderProgress && order.OrderProgress.at(-1);
+            const latest = order.OrderProgress && order.OrderProgress.at(0);
             return (
               <TableRow key={idx}>
                 <TableCell>
                   <span className='block w-32 font-medium uppercase truncate'>{order.order_id}</span>
                 </TableCell>
                 <TableCell>
-                  <Badge>{formatCurrency(order.price)}</Badge>
+                  <Badge variant='secondary'>{formatCurrency(order.delivery_fee)}</Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant='secondary'>{formatCurrency(order.laundry_fee)}</Badge>
                 </TableCell>
                 <TableCell>{formatDate(order.created_at)}</TableCell>
                 <TableCell>{latest && <Badge className='whitespace-nowrap'>{latest.name}</Badge>}</TableCell>

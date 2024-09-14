@@ -3,15 +3,14 @@
 import * as React from 'react';
 
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { Order, OrderProgress } from '@/types/order';
 
+import { Job } from '@/types/job';
 import { Outlet } from '@/types/outlet';
-import { User } from '@/types/user';
 import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
 import { useToast } from '@/hooks/use-toast';
 
-export const useOrders = (filter: ColumnFiltersState, pagination: PaginationState, sorting: SortingState) => {
+export const useJobs = (filter: ColumnFiltersState, pagination: PaginationState, sorting: SortingState) => {
   const { toast } = useToast();
 
   const query = new URLSearchParams();
@@ -35,29 +34,25 @@ export const useOrders = (filter: ColumnFiltersState, pagination: PaginationStat
   const { data, error, isLoading } = useSWR<{
     message: string;
     data: {
-      orders: Array<
-        Order & {
-          Outlet?: Outlet;
-          Customer?: {
-            User?: User;
-          };
-          OrderProgress?: OrderProgress[];
+      jobs: Array<
+        Job & {
+          Outlet: Outlet;
         }
       >;
       count: number;
     };
-  }>('/orders?' + out, fetcher);
+  }>('/jobs?' + out, fetcher);
 
   React.useEffect(() => {
     if (data) {
       toast({
-        title: 'Devlieries loaded',
-        description: 'Your orders have been loaded successfully',
+        title: 'Jobs loaded',
+        description: 'Your jobs have been loaded successfully',
       });
     } else if (error) {
       toast({
         variant: 'destructive',
-        title: 'Failed to load orders',
+        title: 'Failed to load jobs',
         description: error.message,
       });
     }

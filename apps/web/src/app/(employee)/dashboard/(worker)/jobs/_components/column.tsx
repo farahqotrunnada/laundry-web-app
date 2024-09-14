@@ -1,7 +1,6 @@
 'use client';
 
 import { ColumnDef, Row } from '@tanstack/react-table';
-import { Delivery } from '@/types/delivery';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,20 +17,21 @@ import { MoreHorizontal } from 'lucide-react';
 import { Outlet } from '@/types/outlet';
 import axios from '@/lib/axios';
 import { useToast } from '@/hooks/use-toast';
+import { Job } from '@/types/job';
 import { ProgressType } from '@/types/shared';
 
 const columns: ColumnDef<
-  Delivery & {
+  Job & {
     Outlet: Outlet;
   }
 >[] = [
   {
-    accessorKey: 'delivery_id',
+    accessorKey: 'job_id',
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='Delivery ID' />;
     },
     cell: ({ row }) => {
-      return <span className='block w-32 font-medium uppercase truncate'>{row.original.delivery_id}</span>;
+      return <span className='block w-32 font-medium uppercase truncate'>{row.original.job_id}</span>;
     },
   },
   {
@@ -77,7 +77,7 @@ const columns: ColumnDef<
 ];
 
 interface TableActionProps {
-  row: Row<Delivery & { Outlet: Outlet }>;
+  row: Row<Job & { Outlet: Outlet }>;
 }
 
 const TableAction: React.FC<TableActionProps> = ({ row }) => {
@@ -85,10 +85,10 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
 
   const changeProgress = async (progress: ProgressType) => {
     try {
-      await axios.put('/deliveries/' + row.original.delivery_id, { progress });
+      await axios.put('/jobs/' + row.original.job_id, { progress });
       toast({
-        title: 'Delivery progress updated',
-        description: 'Your delivery progress has been updated successfully',
+        title: 'Job progress updated',
+        description: 'Your job progress has been updated successfully',
       });
       row.original.progress = progress;
     } catch (error: any) {
@@ -111,12 +111,12 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
       <DropdownMenuContent align='end'>
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>View Delivery</DropdownMenuItem>
+        <DropdownMenuItem>View Job</DropdownMenuItem>
         {row.original.progress === 'Pending' && (
-          <DropdownMenuItem onClick={() => changeProgress('Ongoing')}>Start Delivery</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => changeProgress('Ongoing')}>Start Job</DropdownMenuItem>
         )}
         {row.original.progress === 'Ongoing' && (
-          <DropdownMenuItem onClick={() => changeProgress('Completed')}>Complete Delivery</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => changeProgress('Completed')}>Complete Job</DropdownMenuItem>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

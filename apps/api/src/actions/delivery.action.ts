@@ -133,7 +133,8 @@ export default class DeliveryAction {
           customer_id: customer.customer_id,
           customer_address_id: customer_address_id,
           outlet_id,
-          price: Math.ceil(distance) * PRICE_PER_KM,
+          laundry_fee: 0,
+          delivery_fee: Math.ceil(distance) * PRICE_PER_KM,
           Delivery: {
             create: {
               outlet_id,
@@ -153,7 +154,7 @@ export default class DeliveryAction {
     }
   };
 
-  update = async (user_id: string, delivery_id: string, progress: ProgressType) => {
+  update = async (user_id: string, role: 'SuperAdmin' | 'Driver', delivery_id: string, progress: ProgressType) => {
     try {
       const delivery = await prisma.delivery.findUnique({
         where: { delivery_id },
@@ -161,14 +162,16 @@ export default class DeliveryAction {
 
       if (!delivery) throw new ApiError(404, 'Delivery not found');
 
-      const employee = await prisma.employee.findUnique({
-        where: {
-          user_id,
-          outlet_id: delivery.outlet_id,
-        },
-      });
+      if (role !== 'SuperAdmin') {
+        const employee = await prisma.employee.findUnique({
+          where: {
+            user_id,
+            outlet_id: delivery.outlet_id,
+          },
+        });
 
-      if (!employee) throw new ApiError(404, 'Employee not found or not assigned to this outlet');
+        if (!employee) throw new ApiError(404, 'Employee not found or not assigned to this outlet');
+      }
 
       await prisma.delivery.update({
         where: { delivery_id },

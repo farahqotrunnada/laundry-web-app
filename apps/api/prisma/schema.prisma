@@ -137,7 +137,8 @@ model Order {
   customer_id         String
   customer_address_id String
   is_completed        Boolean  @default(false)
-  price               Decimal  @db.Decimal(8, 2)
+  laundry_fee         Decimal  @default(0) @db.Decimal(8, 2)
+  delivery_fee        Decimal  @default(0) @db.Decimal(8, 2)
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
 

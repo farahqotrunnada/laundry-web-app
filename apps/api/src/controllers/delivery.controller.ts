@@ -104,7 +104,7 @@ export default class DeliveryController {
 
   update = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { user_id } = req.user as AccessTokenPayload;
+      const { user_id, role } = req.user as AccessTokenPayload;
 
       const { delivery_id } = await yup
         .object({
@@ -118,7 +118,12 @@ export default class DeliveryController {
         })
         .validate(req.body);
 
-      const delivery = await this.deliveryAction.update(user_id, delivery_id, progress);
+      const delivery = await this.deliveryAction.update(
+        user_id,
+        role as 'SuperAdmin' | 'Driver',
+        delivery_id,
+        progress
+      );
 
       return res.status(200).json(new ApiResponse('Delivery updated successfully', delivery));
     } catch (error) {

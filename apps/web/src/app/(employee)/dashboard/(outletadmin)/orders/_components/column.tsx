@@ -40,32 +40,27 @@ const columns: ColumnDef<
   },
   {
     enableSorting: false,
-    accessorKey: 'Outlet.name',
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Outlet Name' />;
-    },
-  },
-  {
-    enableSorting: false,
     accessorKey: 'Customer.User.fullname',
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='Customer Name' />;
     },
   },
   {
-    enableSorting: false,
-    accessorKey: 'OrderProgress.name',
+    accessorKey: 'delivery_fee',
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Order Progress' />;
+      return <DataTableColumnHeader column={column} title='Delivery Fee' />;
+    },
+    cell: ({ row }) => {
+      return <Badge variant='secondary'>{formatCurrency(row.original.delivery_fee)}</Badge>;
     },
   },
   {
-    accessorKey: 'price',
+    accessorKey: 'laundry_fee',
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Price' />;
+      return <DataTableColumnHeader column={column} title='Laundry Fee' />;
     },
     cell: ({ row }) => {
-      return <Badge>{formatCurrency(row.original.price)}</Badge>;
+      return <Badge variant='secondary'>{formatCurrency(row.original.laundry_fee)}</Badge>;
     },
   },
   {
@@ -74,7 +69,17 @@ const columns: ColumnDef<
       return <DataTableColumnHeader column={column} title='Created' />;
     },
     cell: ({ row }) => {
-      return <span>{formatDate(row.getValue('created_at') as string)}</span>;
+      return <span className='whitespace-nowrap'>{formatDate(row.getValue('created_at') as string)}</span>;
+    },
+  },
+  {
+    enableSorting: false,
+    accessorKey: 'OrderProgress.name',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Order Progress' />;
+    },
+    cell: ({ row }) => {
+      return <Badge className='whitespace-nowrap'>{row.original.OrderProgress?.name}</Badge>;
     },
   },
   {

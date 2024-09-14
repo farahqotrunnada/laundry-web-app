@@ -11,7 +11,8 @@ export type Order = {
   outlet_id: string;
   customer_id: string;
   customer_address_id: string;
-  price: number;
+  delivery_fee: number;
+  laundry_fee: number;
   created_at: string;
   updated_at: string;
 };

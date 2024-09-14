@@ -27,12 +27,10 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { DataTablePagination } from '@/components/table/pagination';
 import { Input } from '@/components/ui/input';
-import Link from 'next/link';
-import { Plus } from 'lucide-react';
 import TableLoader from '@/components/loader/table';
 import columns from './column';
 import { useDebounceValue } from 'usehooks-ts';
-import { useDeliveries } from '@/hooks/use-deliveries';
+import { useJobs } from '@/hooks/use-jobs';
 
 interface DataTableProps<TData, TValue> {
   data: TData[];
@@ -86,9 +84,9 @@ const DataTable = <TData, TValue>({
       <div className='flex flex-col mb-6 space-y-4 lg:justify-between lg:flex-row lg:items-center lg:space-y-0 lg:space-x-4'>
         <Input
           autoFocus
-          placeholder='Filter Delivery by ID'
-          value={(table.getColumn('delivery_id')?.getFilterValue() as string) ?? ''}
-          onChange={(event) => table.getColumn('delivery_id')?.setFilterValue(event.target.value)}
+          placeholder='Filter Jobs by ID'
+          value={(table.getColumn('job_id')?.getFilterValue() as string) ?? ''}
+          onChange={(event) => table.getColumn('job_id')?.setFilterValue(event.target.value)}
           className='w-full lg:max-w-md'
         />
 
@@ -157,11 +155,11 @@ const DataTable = <TData, TValue>({
   );
 };
 
-interface DevlieryTableProps {
+interface JobTableProps {
   //
 }
 
-const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
+const JobTable: React.FC<JobTableProps> = ({ ...props }) => {
   const router = useRouter();
   const pathname = usePathname();
   const search = useSearchParams();
@@ -175,7 +173,7 @@ const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
 
   const [filter] = useDebounceValue<ColumnFiltersState>(columnFilters, 500);
 
-  const { data, error, isLoading } = useDeliveries(filter, pagination, sorting);
+  const { data, error, isLoading } = useJobs(filter, pagination, sorting);
 
   React.useEffect(() => {
     if (search.has('page')) {
@@ -225,12 +223,12 @@ const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
   }, [router, pathname, pagination, sorting, filter]);
 
   if (isLoading) return <TableLoader />;
-  if (error || !data) return <div>failed to load deliveries data, retrying...</div>;
+  if (error || !data) return <div>failed to load jobs data, retrying...</div>;
 
   return (
     <DataTable
       columns={columns}
-      data={data.data.deliveries}
+      data={data.data.jobs}
       pageCount={Math.ceil(data.data.count / pagination.pageSize)}
       sorting={sorting}
       onSortingChange={setSorting}
@@ -242,4 +240,4 @@ const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
   );
 };
 
-export default DeliveryTable;
+export default JobTable;

@@ -1,13 +1,13 @@
 import { ProgressType } from '@/types/shared';
 
-export type DeliveryType = 'Pickup' | 'Dropoff';
+export type JobType = 'Washing' | 'Ironing' | 'Packing';
 
-export type Delivery = {
-  delivery_id: string;
+export type Job = {
+  job_id: string;
   outlet_id: string;
-  employee_id: string;
+  order_id: string;
   progress: ProgressType;
-  type: DeliveryType;
+  type: JobType;
   created_at: string;
   updated_at: string;
 };

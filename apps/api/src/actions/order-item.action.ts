@@ -1,5 +1,8 @@
+import { JobType, ProgressType } from '@prisma/client';
+
 import ApiError from '@/utils/error.util';
 import { OrderProgresses } from '@/utils/constant';
+import { PRICE_PER_KG } from '@/config';
 import prisma from '@/libs/prisma';
 
 interface ChoosenItem {
@@ -33,22 +36,43 @@ export default class OrderItemAction {
       });
 
       if (laundry_items.length !== order_items.length) throw new ApiError(400, 'Some laundry items not found');
+      const weigth = order_items.reduce((acc, item) => acc + item.weight, 0);
 
-      await prisma.orderItem.createMany({
-        data: order_items.map((item) => ({
-          order_id,
-          weight: item.weight,
-          quantity: item.quantity,
-          laundry_item_id: item.laundry_item_id,
-        })),
-      });
+      await prisma.$transaction([
+        prisma.order.update({
+          where: { order_id },
+          data: {
+            laundry_fee: Math.ceil(weigth) * PRICE_PER_KG,
+          },
+        }),
 
-      await prisma.orderProgress.create({
-        data: {
-          order_id,
-          name: OrderProgresses.WAITING_FOR_PAYMENT,
-        },
-      });
+        ...order_items.map((item) =>
+          prisma.orderItem.create({
+            data: {
+              order_id,
+              weight: item.weight,
+              quantity: item.quantity,
+              laundry_item_id: item.laundry_item_id,
+            },
+          })
+        ),
+
+        prisma.orderProgress.create({
+          data: {
+            order_id,
+            name: OrderProgresses.ON_PROGRESS_WASHING,
+          },
+        }),
+
+        prisma.job.create({
+          data: {
+            order_id,
+            outlet_id: order.outlet_id,
+            progress: ProgressType.Ongoing,
+            type: JobType.Washing,
+          },
+        }),
+      ]);
 
       return order;
     } catch (error) {

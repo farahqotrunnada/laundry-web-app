@@ -170,7 +170,6 @@ const OrderTable = () => {
   });
 
   const [filter] = useDebounceValue<ColumnFiltersState>(columnFilters, 500);
-
   const { data, error, isLoading } = useOrders(filter, pagination, sorting);
 
   React.useEffect(() => {
@@ -226,7 +225,7 @@ const OrderTable = () => {
   return (
     <DataTable
       columns={columns}
-      data={data.data.orders.map((order) => ({ ...order, OrderProgress: order.OrderProgress!.at(-1) }))}
+      data={data.data.orders.map((order) => ({ ...order, OrderProgress: order.OrderProgress!.at(0) }))}
       pageCount={Math.ceil(data.data.count / pagination.pageSize)}
       sorting={sorting}
       onSortingChange={setSorting}

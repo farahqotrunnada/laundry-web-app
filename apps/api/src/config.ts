@@ -18,3 +18,4 @@ export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET as string;
 export const MAXIMUM_RADIUS = Number(process.env.MAXIMUM_RADIUS as string);
 export const PRICE_PER_KM = Number(process.env.PRICE_PER_KM as string);
+export const PRICE_PER_KG = Number(process.env.PRICE_PER_KG as string);
