@@ -46,7 +46,7 @@ const outletSchema = yup.object({
     .required(),
 });
 
-const OrderCreateForm: React.FC<OutletCreateProps> = ({ ...props }) => {
+const OutletCreateForm: React.FC<OutletCreateProps> = ({ ...props }) => {
   const router = useRouter();
   const { toast } = useToast();
   const { state } = useLocation();
@@ -284,4 +284,4 @@ const OrderCreateForm: React.FC<OutletCreateProps> = ({ ...props }) => {
   );
 };
 
-export default OrderCreateForm;
+export default OutletCreateForm;

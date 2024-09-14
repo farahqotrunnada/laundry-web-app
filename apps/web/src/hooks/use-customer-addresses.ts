@@ -9,7 +9,7 @@ import { useToast } from './use-toast';
 export const useCustomerAddresses = () => {
   const { toast } = useToast();
 
-  const { data, error, isLoading } = useSWR<{
+  const { data, error, isLoading, mutate } = useSWR<{
     message: string;
     data: Address[];
   }>('/profile/addresses', fetcher);
@@ -28,5 +28,5 @@ export const useCustomerAddresses = () => {
     }
   }, [data, error, toast]);
 
-  return { data, error, isLoading };
+  return { data, error, isLoading, mutate };
 };

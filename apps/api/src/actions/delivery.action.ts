@@ -168,8 +168,6 @@ export default class DeliveryAction {
         },
       });
 
-      console.log(employee);
-
       if (!employee) throw new ApiError(404, 'Employee not found or not assigned to this outlet');
 
       await prisma.delivery.update({

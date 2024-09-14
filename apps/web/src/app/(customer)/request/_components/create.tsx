@@ -30,10 +30,17 @@ const requestOrderSchema = yup.object({
   outlet_id: yup.string().required(),
 });
 
+interface OutletDistance {
+  outlet: Outlet;
+  distance: number;
+}
+
 const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
   const router = useRouter();
   const { toast } = useToast();
   const { data } = useCustomerAddresses();
+  const [outlets, setOutlets] = React.useState<OutletDistance[]>([]);
+
   const addresses = React.useMemo(() => {
     return data ? data.data : [];
   }, [data]);
@@ -45,13 +52,6 @@ const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
       outlet_id: '',
     },
   });
-
-  const [outlets, setOutlets] = React.useState<
-    {
-      outlet: Outlet;
-      distance: number;
-    }[]
-  >([]);
 
   const address = form.watch('customer_address_id');
 

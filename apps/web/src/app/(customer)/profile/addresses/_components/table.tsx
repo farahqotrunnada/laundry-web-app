@@ -2,19 +2,58 @@
 
 import * as React from 'react';
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
+import { Address } from '@/types/address';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { MoreHorizontal } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { formatDate } from '@/lib/utils';
+import axios from '@/lib/axios';
 import { useCustomerAddresses } from '@/hooks/use-customer-addresses';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 interface AddressListProps {
   //
 }
 
 const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
-  const { data, error, isLoading } = useCustomerAddresses();
+  const { toast } = useToast();
+  const { data, error, isLoading, mutate } = useCustomerAddresses();
+
+  const handleSetPrimary = async (address: Address) => {
+    try {
+      if (address.is_primary) {
+        toast({
+          title: 'Address already set as primary',
+          description: 'Your address is already set as primary.',
+        });
+        return;
+      }
+
+      await axios.put(`/profile/addresses/${address.customer_address_id}/set-primary`);
+      toast({
+        title: 'Address set as primary',
+        description: 'Your address has been set as primary.',
+      });
+      mutate();
+    } catch (error: any) {
+      toast({
+        title: 'Failed to set address as primary',
+        description: error.message,
+      });
+    }
+  };
 
   if (isLoading) return <Skeleton className='w-full h-32 rounded-lg' />;
   if (error || !data) return <div>failed to load</div>;
@@ -25,8 +64,9 @@ const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
         <TableHeader>
           <TableRow>
             <TableHead>Label</TableHead>
-            <TableHead className='hidden sm:table-cell'>Address</TableHead>
-            <TableHead className='hidden md:table-cell'>Created At</TableHead>
+            <TableHead>Address</TableHead>
+            <TableHead>City</TableHead>
+            <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -37,7 +77,6 @@ const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
               </TableCell>
             </TableRow>
           )}
-
           {data.data.map((address, idx) => (
             <TableRow key={idx}>
               <TableCell>
@@ -46,10 +85,32 @@ const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
                   {address.is_primary && <Badge>Primary</Badge>}
                 </div>
               </TableCell>
-              <TableCell className='hidden sm:table-cell'>
+              <TableCell>
                 <p className='line-clamp-1 text-muted-foreground'>{address.formatted}</p>
               </TableCell>
-              <TableCell className='hidden md:table-cell'>{formatDate(address.created_at)}</TableCell>
+              <TableCell>
+                <span className='text-muted-foreground whitespace-nowrap'>{address.city_district}</span>
+              </TableCell>
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant='ghost' className='w-8 h-8 p-0'>
+                        <span className='sr-only'>Open menu</span>
+                        <MoreHorizontal className='w-4 h-4' />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align='end'>
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <Link href={'/profile/addresses/' + address.customer_address_id} className='w-full'>
+                        <DropdownMenuItem>View Detail</DropdownMenuItem>
+                      </Link>
+                      <DropdownMenuItem onClick={() => handleSetPrimary(address)}>Set as Primary</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </DropdownMenu>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

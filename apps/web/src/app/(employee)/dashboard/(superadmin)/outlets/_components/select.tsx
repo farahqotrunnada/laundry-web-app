@@ -45,7 +45,7 @@ const EmployeeSelectField = React.forwardRef<HTMLDivElement, UserSelectProps>(({
     };
 
     getUsers();
-  }, [debounced]);
+  }, [toast, debounced]);
 
   const getPlaceholder = (user: (typeof users)[0]) => {
     const find = selected.find((u) => u.user_id === user.user_id);
@@ -107,5 +107,7 @@ const EmployeeSelectField = React.forwardRef<HTMLDivElement, UserSelectProps>(({
     </>
   );
 });
+
+EmployeeSelectField.displayName = 'EmployeeSelectField';
 
 export default EmployeeSelectField;

@@ -24,9 +24,9 @@ const CustomerOrderTable: React.FC<CustomerOrderTableProps> = ({ type, ...props 
         <TableHeader>
           <TableRow>
             <TableHead>Order ID</TableHead>
-            <TableHead className='hidden md:table-cell'>Price</TableHead>
-            <TableHead className='hidden md:table-cell'>Created</TableHead>
-            <TableHead className='hidden md:table-cell'>Status</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Created</TableHead>
+            <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -41,14 +41,14 @@ const CustomerOrderTable: React.FC<CustomerOrderTableProps> = ({ type, ...props 
             const latest = order.OrderProgress && order.OrderProgress.at(-1);
             return (
               <TableRow key={idx}>
-                <TableCell className='font-medium uppercase'>{order.order_id}</TableCell>
-                <TableCell className='hidden md:table-cell'>
+                <TableCell>
+                  <span className='block w-32 font-medium uppercase truncate'>{order.order_id}</span>
+                </TableCell>
+                <TableCell>
                   <Badge>{formatCurrency(order.price)}</Badge>
                 </TableCell>
-                <TableCell className='hidden md:table-cell'>{formatDate(order.created_at)}</TableCell>
-                <TableCell className='hidden md:table-cell'>
-                  {latest && <Badge className='whitespace-nowrap'>{latest.name}</Badge>}
-                </TableCell>
+                <TableCell>{formatDate(order.created_at)}</TableCell>
+                <TableCell>{latest && <Badge className='whitespace-nowrap'>{latest.name}</Badge>}</TableCell>
               </TableRow>
             );
           })}

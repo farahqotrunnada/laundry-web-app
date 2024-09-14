@@ -1,5 +1,6 @@
 'use client';
 
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { Delivery, ProgressType } from '@/types/delivery';
 import {
   DropdownMenu,
@@ -12,7 +13,6 @@ import {
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ColumnDef } from '@tanstack/react-table';
 import DataTableColumnHeader from '@/components/table/header';
 import { MoreHorizontal } from 'lucide-react';
 import { Outlet } from '@/types/outlet';
@@ -70,48 +70,56 @@ const columns: ColumnDef<
       return <DataTableColumnHeader column={column} title='Actions' />;
     },
     cell: ({ row }) => {
-      const { toast } = useToast();
-
-      const changeProgress = async (progress: ProgressType) => {
-        try {
-          await axios.put('/deliveries/' + row.original.delivery_id, { progress });
-          toast({
-            title: 'Delivery progress updated',
-            description: 'Your delivery progress has been updated successfully',
-          });
-          row.original.progress = progress;
-        } catch (error: any) {
-          toast({
-            variant: 'destructive',
-            title: 'Failed to change progress',
-            description: error.message,
-          });
-        }
-      };
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='w-8 h-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreHorizontal className='w-4 h-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View Delivery</DropdownMenuItem>
-            {row.original.progress === 'Pending' && (
-              <DropdownMenuItem onClick={() => changeProgress('Ongoing')}>Start Delivery</DropdownMenuItem>
-            )}
-            {row.original.progress === 'Ongoing' && (
-              <DropdownMenuItem onClick={() => changeProgress('Completed')}>Complete Delivery</DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      return <TableAction row={row} />;
     },
   },
 ];
+
+interface TableActionProps {
+  row: Row<Delivery & { Outlet: Outlet }>;
+}
+
+const TableAction: React.FC<TableActionProps> = ({ row }) => {
+  const { toast } = useToast();
+
+  const changeProgress = async (progress: ProgressType) => {
+    try {
+      await axios.put('/deliveries/' + row.original.delivery_id, { progress });
+      toast({
+        title: 'Delivery progress updated',
+        description: 'Your delivery progress has been updated successfully',
+      });
+      row.original.progress = progress;
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Failed to change progress',
+        description: error.message,
+      });
+    }
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant='ghost' className='w-8 h-8 p-0'>
+          <span className='sr-only'>Open menu</span>
+          <MoreHorizontal className='w-4 h-4' />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align='end'>
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>View Delivery</DropdownMenuItem>
+        {row.original.progress === 'Pending' && (
+          <DropdownMenuItem onClick={() => changeProgress('Ongoing')}>Start Delivery</DropdownMenuItem>
+        )}
+        {row.original.progress === 'Ongoing' && (
+          <DropdownMenuItem onClick={() => changeProgress('Completed')}>Complete Delivery</DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 export default columns;

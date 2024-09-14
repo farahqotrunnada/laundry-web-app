@@ -30,6 +30,7 @@ export default class ProfileRouter {
     this.router.get('/orders', this.orderController.customer);
     this.router.get('/addresses', this.addressController.customer);
     this.router.post('/addresses', this.addressController.create);
+    this.router.put('/addresses/:customer_address_id/set-primary', this.addressController.primary);
   }
 
   getRouter(): Router {

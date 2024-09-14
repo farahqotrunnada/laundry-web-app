@@ -59,7 +59,7 @@ const OrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...props }) =
 
   React.useEffect(() => {
     form.setValue('order_items', orderItems);
-  }, [orderItems]);
+  }, [form, orderItems]);
 
   const onSubmit = async (formData: yup.InferType<typeof orderItemsSchema>) => {
     try {
