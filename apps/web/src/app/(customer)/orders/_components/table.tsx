@@ -33,7 +33,7 @@ const CustomerOrderTable: React.FC<CustomerOrderTableProps> = ({ type, ...props 
         <TableBody>
           {data.data.length === 0 && (
             <TableRow>
-              <TableCell colSpan={4} className='h-20 text-center'>
+              <TableCell colSpan={5} className='h-20 text-center'>
                 No results.
               </TableCell>
             </TableRow>

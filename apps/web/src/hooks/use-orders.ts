@@ -1,7 +1,5 @@
 'use client';
 
-import * as React from 'react';
-
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 import { Order, OrderProgress } from '@/types/order';
 
@@ -9,7 +7,7 @@ import { Outlet } from '@/types/outlet';
 import { User } from '@/types/user';
 import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from './use-toast';
 
 export const useOrders = (filter: ColumnFiltersState, pagination: PaginationState, sorting: SortingState) => {
   const { toast } = useToast();
@@ -32,7 +30,7 @@ export const useOrders = (filter: ColumnFiltersState, pagination: PaginationStat
 
   const out = query.toString();
 
-  const { data, error, isLoading } = useSWR<{
+  return useSWR<{
     message: string;
     data: {
       orders: Array<
@@ -46,22 +44,12 @@ export const useOrders = (filter: ColumnFiltersState, pagination: PaginationStat
       >;
       count: number;
     };
-  }>('/orders?' + out, fetcher);
-
-  React.useEffect(() => {
-    if (data) {
+  }>('/orders?' + out, fetcher, {
+    onError: (error) => {
       toast({
-        title: 'Devlieries loaded',
-        description: 'Your orders have been loaded successfully',
-      });
-    } else if (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed to load orders',
+        title: 'Failed to fetch orders',
         description: error.message,
       });
-    }
-  }, [data, error, toast]);
-
-  return { data, error, isLoading };
+    },
+  });
 };

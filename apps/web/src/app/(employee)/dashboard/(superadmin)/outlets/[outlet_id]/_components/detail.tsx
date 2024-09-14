@@ -32,6 +32,7 @@ const OutletDetails: React.FC<OutletDetailsProps> = ({ outlet_id, ...props }) =>
               <div className='flex flex-col space-y-4 text-sm'>
                 <DetailList title='Outlet ID' data={data.data.outlet_id.toUpperCase()} />
                 <DetailList title='Name' data={data.data.name} />
+                <DetailList title='Description' data={data.data.description} />
                 <DetailList title='Address' data={data.data.address} />
                 <DetailList title='City' data={data.data.city} />
                 <DetailList title='Region' data={data.data.region} />
@@ -61,6 +62,13 @@ const OutletDetails: React.FC<OutletDetailsProps> = ({ outlet_id, ...props }) =>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
+                  {data.data.Employee.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={3} className='h-20 text-center'>
+                        No results.
+                      </TableCell>
+                    </TableRow>
+                  )}
                   {data.data.Employee.map((employee, idx) => (
                     <TableRow key={idx}>
                       <TableCell>{employee.User.fullname}</TableCell>

@@ -1,14 +1,12 @@
 'use client';
 
-import * as React from 'react';
-
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 
 import { Job } from '@/types/job';
 import { Outlet } from '@/types/outlet';
 import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from './use-toast';
 
 export const useJobs = (filter: ColumnFiltersState, pagination: PaginationState, sorting: SortingState) => {
   const { toast } = useToast();
@@ -31,7 +29,7 @@ export const useJobs = (filter: ColumnFiltersState, pagination: PaginationState,
 
   const out = query.toString();
 
-  const { data, error, isLoading } = useSWR<{
+  return useSWR<{
     message: string;
     data: {
       jobs: Array<
@@ -41,22 +39,12 @@ export const useJobs = (filter: ColumnFiltersState, pagination: PaginationState,
       >;
       count: number;
     };
-  }>('/jobs?' + out, fetcher);
-
-  React.useEffect(() => {
-    if (data) {
+  }>('/jobs?' + out, fetcher, {
+    onError: (error) => {
       toast({
-        title: 'Jobs loaded',
-        description: 'Your jobs have been loaded successfully',
-      });
-    } else if (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed to load jobs',
+        title: 'Failed to fetch jobs',
         description: error.message,
       });
-    }
-  }, [data, error, toast]);
-
-  return { data, error, isLoading };
+    },
+  });
 };

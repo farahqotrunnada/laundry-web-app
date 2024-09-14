@@ -1,6 +1,7 @@
 export type Role =
   | 'Driver'
   | 'Customer'
+  | 'Employee'
   | 'SuperAdmin'
   | 'OutletAdmin'
   | 'WashingWorker'

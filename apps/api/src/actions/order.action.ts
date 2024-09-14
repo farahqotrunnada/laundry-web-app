@@ -1,9 +1,12 @@
+import { Prisma, Role } from '@prisma/client';
+
 import ApiError from '@/utils/error.util';
-import { Prisma } from '@prisma/client';
 import prisma from '@/libs/prisma';
 
 export default class OrderAction {
   index = async (
+    user_id: string,
+    role: Role,
     page: number,
     limit: number,
     id: string | undefined,
@@ -29,12 +32,34 @@ export default class OrderAction {
         ];
       }
 
-      const query = {
-        where: filter,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: order,
-      };
+      let query;
+
+      if (role === 'SuperAdmin') {
+        query = {
+          where: filter,
+          skip: (page - 1) * limit,
+          take: limit,
+          orderBy: order,
+        };
+      } else {
+        query = {
+          where: {
+            ...filter,
+            Outlet: {
+              Employee: {
+                some: {
+                  User: {
+                    user_id,
+                  },
+                },
+              },
+            },
+          },
+          skip: (page - 1) * limit,
+          take: limit,
+          orderBy: order,
+        };
+      }
 
       const [orders, count] = await prisma.$transaction([
         prisma.order.findMany({
@@ -52,8 +77,9 @@ export default class OrderAction {
               },
             },
           },
-        }),
-        prisma.order.count(query),
+        } as Prisma.OrderFindManyArgs),
+
+        prisma.order.count(query as Prisma.OrderCountArgs),
       ]);
 
       return [orders, count];
@@ -108,6 +134,7 @@ export default class OrderAction {
               User: true,
             },
           },
+          CustomerAddress: true,
           OrderProgress: true,
         },
       });

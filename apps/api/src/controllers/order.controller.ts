@@ -15,6 +15,8 @@ export default class OrderController {
 
   index = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const { user_id, role } = req.user as AccessTokenPayload;
+
       const { page, limit, id, value, key, desc } = await yup
         .object({
           page: yup
@@ -35,7 +37,7 @@ export default class OrderController {
         })
         .validate(req.query);
 
-      const [orders, count] = await this.orderAction.index(page, limit, id, value, key, desc);
+      const [orders, count] = await this.orderAction.index(user_id, role, page, limit, id, value, key, desc);
 
       return res.status(200).json(
         new ApiResponse('Orders retrieved successfully', {
@@ -51,6 +53,7 @@ export default class OrderController {
   customer = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { user_id } = req.user as AccessTokenPayload;
+
       const { type } = await yup
         .object({
           type: yup.string().oneOf(['All', 'Ongoing', 'Completed']).optional(),

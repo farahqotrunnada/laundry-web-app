@@ -34,6 +34,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
                 <DetailList title='Order ID' data={data.data.order_id.toUpperCase()} />
                 <DetailList title='Customer Name' data={data.data.Customer.User.fullname} />
                 <DetailList title='Customer Email' data={data.data.Customer.User.email} />
+                <DetailList title='Customer Address' data={data.data.CustomerAddress.address} />
                 <DetailList title='Outlet Name' data={data.data.Outlet.name} />
                 <DetailList title='Outlet Address' data={data.data.Outlet.address} />
               </div>

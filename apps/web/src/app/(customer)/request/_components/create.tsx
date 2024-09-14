@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ChevronsUpDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import Link from 'next/link';
 import { Outlet } from '@/types/outlet';
 import axios from '@/lib/axios';
 import { cn } from '@/lib/utils';
@@ -40,10 +41,6 @@ const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
   const { toast } = useToast();
   const { data } = useCustomerAddresses();
   const [outlets, setOutlets] = React.useState<OutletDistance[]>([]);
-
-  const addresses = React.useMemo(() => {
-    return data ? data.data : [];
-  }, [data]);
 
   const form = useForm<yup.InferType<typeof requestOrderSchema>>({
     resolver: yupResolver(requestOrderSchema),
@@ -103,14 +100,37 @@ const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
   };
 
   const selectedOutlet = outlets.find((item) => item.outlet.outlet_id === form.watch('outlet_id'));
+  if (!data || data.data.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className='text-xl font-bold'>Create Order</CardTitle>
+          <CardDescription>Create new laundry order to the nearest outlet.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className='flex items-center justify-center w-full h-96'>
+            <div className='flex flex-col items-center justify-center'>
+              <div className='text-center'>
+                <p className='text-2xl font-bold'>No addresses found</p>
+                <p className='text-muted-foreground'>Please add your addresses to start creating orders.</p>
+              </div>
+              <Link href='/profile/addresses/create' className='mt-4'>
+                <Button className='mt-4'>Add Address</Button>
+              </Link>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col space-y-6'>
         <Card>
           <CardHeader>
-            <CardTitle className='text-xl font-bold'>Outlet Detail</CardTitle>
-            <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+            <CardTitle className='text-xl font-bold'>Create Order</CardTitle>
+            <CardDescription>Create new laundry order to the nearest outlet.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className='grid gap-4'>
@@ -127,9 +147,8 @@ const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
                             variant='outline'
                             role='combobox'
                             className={cn('w-full justify-between', !field.value && 'text-muted-foreground')}>
-                            {field.value
-                              ? addresses.find((address) => address.customer_address_id === field.value)?.name
-                              : 'Select address'}
+                            {!field.value && 'Select address'}
+                            {field.value && data.data.find((a) => a.customer_address_id === field.value)?.name}
                             <ChevronsUpDown className='w-4 h-4 ml-2 opacity-50 shrink-0' />
                           </Button>
                         </FormControl>
@@ -140,7 +159,7 @@ const RequestOrderForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
                           <CommandList>
                             <CommandEmpty>No address found.</CommandEmpty>
                             <CommandGroup>
-                              {addresses.map((address) => (
+                              {data.data.map((address) => (
                                 <CommandItem
                                   value={address.customer_address_id}
                                   key={address.customer_address_id}

@@ -16,6 +16,8 @@ export default class JobController {
 
   index = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const { user_id, role } = req.user as AccessTokenPayload;
+
       const { page, limit, id, value, key, desc } = await yup
         .object({
           page: yup
@@ -36,7 +38,7 @@ export default class JobController {
         })
         .validate(req.query);
 
-      const [jobs, count] = await this.jobAction.index(page, limit, id, value, key, desc);
+      const [jobs, count] = await this.jobAction.index(user_id, role, page, limit, id, value, key, desc);
 
       return res.status(200).json(
         new ApiResponse('Jobs retrieved successfully', {

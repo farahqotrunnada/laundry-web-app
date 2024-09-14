@@ -1,4 +1,4 @@
-import { DeliveryType, Prisma, ProgressType } from '@prisma/client';
+import { DeliveryType, Prisma, ProgressType, Role } from '@prisma/client';
 import { MAXIMUM_RADIUS, PRICE_PER_KM } from '@/config';
 
 import ApiError from '@/utils/error.util';
@@ -8,6 +8,8 @@ import prisma from '@/prisma';
 
 export default class DeliveryAction {
   index = async (
+    user_id: string,
+    role: Role,
     page: number,
     limit: number,
     id: string | undefined,
@@ -31,12 +33,34 @@ export default class DeliveryAction {
         };
       }
 
-      const query = {
-        where: filter,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: order,
-      };
+      let query;
+
+      if (role === 'SuperAdmin') {
+        query = {
+          where: filter,
+          skip: (page - 1) * limit,
+          take: limit,
+          orderBy: order,
+        };
+      } else {
+        query = {
+          where: {
+            ...filter,
+            Outlet: {
+              Employee: {
+                some: {
+                  User: {
+                    user_id,
+                  },
+                },
+              },
+            },
+          },
+          skip: (page - 1) * limit,
+          take: limit,
+          orderBy: order,
+        };
+      }
 
       const [deliveries, count] = await prisma.$transaction([
         prisma.delivery.findMany({
@@ -44,8 +68,9 @@ export default class DeliveryAction {
           include: {
             Outlet: true,
           },
-        }),
-        prisma.delivery.count(query),
+        } as Prisma.DeliveryFindManyArgs),
+
+        prisma.delivery.count(query as Prisma.DeliveryCountArgs),
       ]);
 
       return [deliveries, count];

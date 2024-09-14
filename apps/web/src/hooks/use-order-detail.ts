@@ -1,20 +1,19 @@
 'use client';
 
-import * as React from 'react';
-
 import { Customer, User } from '@/types/user';
 import { Order, OrderItem, OrderProgress } from '@/types/order';
 
+import { Address } from '@/types/address';
 import { LaundryItem } from '@/types/laundry-item';
 import { Outlet } from '@/types/outlet';
 import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from './use-toast';
 
 export const useOrderDetail = (order_id: string) => {
   const { toast } = useToast();
 
-  const { data, error, isLoading } = useSWR<{
+  return useSWR<{
     message: string;
     data: Order & {
       OrderItem: Array<
@@ -26,24 +25,15 @@ export const useOrderDetail = (order_id: string) => {
       Customer: Customer & {
         User: User;
       };
+      CustomerAddress: Address;
       OrderProgress: OrderProgress[];
     };
-  }>('/orders/' + order_id, fetcher);
-
-  React.useEffect(() => {
-    if (data) {
+  }>('/orders/' + order_id, fetcher, {
+    onError: (error) => {
       toast({
-        title: 'Order loaded',
-        description: 'Your order has been loaded successfully',
-      });
-    } else if (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed to load order',
+        title: 'Failed to fetch order detail',
         description: error.message,
       });
-    }
-  }, [data, error, toast]);
-
-  return { data, error, isLoading };
+    },
+  });
 };

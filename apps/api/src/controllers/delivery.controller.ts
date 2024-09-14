@@ -16,6 +16,8 @@ export default class DeliveryController {
 
   index = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const { user_id, role } = req.user as AccessTokenPayload;
+
       const { page, limit, id, value, key, desc } = await yup
         .object({
           page: yup
@@ -36,7 +38,7 @@ export default class DeliveryController {
         })
         .validate(req.query);
 
-      const [deliveries, count] = await this.deliveryAction.index(page, limit, id, value, key, desc);
+      const [deliveries, count] = await this.deliveryAction.index(user_id, role, page, limit, id, value, key, desc);
 
       return res.status(200).json(
         new ApiResponse('Deliveries retrieved successfully', {

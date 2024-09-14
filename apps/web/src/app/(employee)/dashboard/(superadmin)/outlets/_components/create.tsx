@@ -26,7 +26,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 interface OutletCreateProps {
   //
 }
-const Role = ['Customer', 'Driver', 'OutletAdmin', 'WashingWorker', 'IroningWorker', 'PackingWorker'] as const;
+const Role = ['Employee', 'Driver', 'OutletAdmin', 'WashingWorker', 'IroningWorker', 'PackingWorker'] as const;
 
 const outletSchema = yup.object({
   name: yup.string().required(),
@@ -159,6 +159,13 @@ const OutletCreateForm: React.FC<OutletCreateProps> = ({ ...props }) => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
+                      {employees.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={3} className='h-20 text-center'>
+                            No results.
+                          </TableCell>
+                        </TableRow>
+                      )}
                       {employees.map((employee, idx) => (
                         <TableRow key={idx}>
                           <TableCell className='font-medium'>{employee.fullname}</TableCell>

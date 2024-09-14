@@ -90,6 +90,17 @@ export default class OutletsAction {
     }[]
   ) => {
     try {
+      const users = await prisma.user.findMany({
+        where: {
+          OR: employees.map((employee) => ({
+            user_id: employee.user_id,
+            role: 'Employee',
+          })),
+        },
+      });
+
+      if (users.length !== employees.length) throw new ApiError(400, 'Some employees not found');
+
       const url = new URL('https://api.opencagedata.com/geocode/v1/json');
       url.searchParams.set('q', latitude + '+' + longitude);
       url.searchParams.set('key', OPENCAGE_API);

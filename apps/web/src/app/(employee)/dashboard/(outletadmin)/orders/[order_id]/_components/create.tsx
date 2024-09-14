@@ -85,7 +85,7 @@ const OrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...props }) =
         ...orderItems,
         {
           name: item.name,
-          weight: 1,
+          weight: 0,
           quantity: 1,
           laundry_item_id: item.laundry_item_id,
         },
@@ -113,7 +113,7 @@ const OrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...props }) =
     if (index === -1) return;
 
     const choosen = [...orderItems];
-    choosen[index].weight = Math.max(1, Number(e.target.value));
+    choosen[index].weight = Math.max(0, Number(e.target.value));
 
     setOrderItems(choosen);
   };

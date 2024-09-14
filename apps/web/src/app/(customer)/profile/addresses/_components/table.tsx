@@ -42,6 +42,7 @@ const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
       }
 
       await axios.put(`/profile/addresses/${address.customer_address_id}/set-primary`);
+
       toast({
         title: 'Address set as primary',
         description: 'Your address has been set as primary.',
@@ -72,7 +73,7 @@ const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
         <TableBody>
           {data.data.length === 0 && (
             <TableRow>
-              <TableCell colSpan={3} className='h-20 text-center'>
+              <TableCell colSpan={4} className='h-20 text-center'>
                 No results.
               </TableCell>
             </TableRow>

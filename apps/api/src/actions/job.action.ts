@@ -6,6 +6,8 @@ import prisma from '@/libs/prisma';
 
 export default class JobAction {
   index = async (
+    user_id: string,
+    role: Role,
     page: number,
     limit: number,
     id: string | undefined,
@@ -29,12 +31,34 @@ export default class JobAction {
         };
       }
 
-      const query = {
-        where: filter,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: order,
-      };
+      let query;
+
+      if (role === 'SuperAdmin') {
+        query = {
+          where: filter,
+          skip: (page - 1) * limit,
+          take: limit,
+          orderBy: order,
+        };
+      } else {
+        query = {
+          where: {
+            ...filter,
+            Outlet: {
+              Employee: {
+                some: {
+                  User: {
+                    user_id,
+                  },
+                },
+              },
+            },
+          },
+          skip: (page - 1) * limit,
+          take: limit,
+          orderBy: order,
+        };
+      }
 
       const [jobs, count] = await prisma.$transaction([
         prisma.job.findMany({
@@ -43,8 +67,9 @@ export default class JobAction {
             Outlet: true,
             Order: true,
           },
-        }),
-        prisma.job.count(query),
+        } as Prisma.JobFindManyArgs),
+
+        prisma.job.count(query as Prisma.JobCountArgs),
       ]);
 
       return [jobs, count];

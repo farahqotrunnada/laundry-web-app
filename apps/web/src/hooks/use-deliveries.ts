@@ -1,14 +1,12 @@
 'use client';
 
-import * as React from 'react';
-
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
 
 import { Delivery } from '@/types/delivery';
 import { Outlet } from '@/types/outlet';
 import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from './use-toast';
 
 export const useDeliveries = (filter: ColumnFiltersState, pagination: PaginationState, sorting: SortingState) => {
   const { toast } = useToast();
@@ -31,7 +29,7 @@ export const useDeliveries = (filter: ColumnFiltersState, pagination: Pagination
 
   const out = query.toString();
 
-  const { data, error, isLoading } = useSWR<{
+  return useSWR<{
     message: string;
     data: {
       deliveries: Array<
@@ -41,22 +39,12 @@ export const useDeliveries = (filter: ColumnFiltersState, pagination: Pagination
       >;
       count: number;
     };
-  }>('/deliveries?' + out, fetcher);
-
-  React.useEffect(() => {
-    if (data) {
+  }>('/deliveries?' + out, fetcher, {
+    onError: (error) => {
       toast({
-        title: 'Devlieries loaded',
-        description: 'Your deliveries have been loaded successfully',
-      });
-    } else if (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed to load deliveries',
+        title: 'Failed to fetch deliveries',
         description: error.message,
       });
-    }
-  }, [data, error, toast]);
-
-  return { data, error, isLoading };
+    },
+  });
 };

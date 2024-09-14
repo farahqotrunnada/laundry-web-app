@@ -14,6 +14,7 @@ datasource db {
 enum Role {
   Driver
   Customer
+  Employee
   SuperAdmin
   OutletAdmin
   WashingWorker
@@ -71,6 +72,7 @@ model CustomerAdress {
   updated_at          DateTime @updatedAt
 
   Customer Customer @relation(fields: [customer_id], references: [customer_id], onDelete: Cascade)
+  Order    Order[]
 
   @@map("customer_addresses")
 }
@@ -142,8 +144,9 @@ model Order {
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
 
-  Customer Customer @relation(fields: [customer_id], references: [customer_id], onDelete: Cascade)
-  Outlet   Outlet   @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
+  Outlet          Outlet         @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
+  Customer        Customer       @relation(fields: [customer_id], references: [customer_id], onDelete: Cascade)
+  CustomerAddress CustomerAdress @relation(fields: [customer_address_id], references: [customer_address_id], onDelete: Cascade)
 
   OrderItem     OrderItem[]
   OrderProgress OrderProgress[]
