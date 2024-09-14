@@ -8,5 +8,9 @@ interface LayoutProps extends React.PropsWithChildren {
 }
 
 export default async function Layout({ children }: LayoutProps): Promise<React.JSX.Element> {
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return (
+    <AuthGuard allowed={['SuperAdmin', 'OutletAdmin', 'Driver', 'WashingWorker', 'IroningWorker', 'PackingWorker']}>
+      {children}
+    </AuthGuard>
+  );
 }
