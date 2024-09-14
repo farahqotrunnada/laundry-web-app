@@ -68,7 +68,7 @@ export default class OrderItemAction {
           data: {
             order_id,
             outlet_id: order.outlet_id,
-            progress: ProgressType.Ongoing,
+            progress: ProgressType.Pending,
             type: JobType.Washing,
           },
         }),

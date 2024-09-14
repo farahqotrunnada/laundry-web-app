@@ -1,3 +1,5 @@
+import * as yup from 'yup';
+
 import { config } from 'dotenv';
 import { resolve } from 'path';
 
@@ -7,6 +9,24 @@ const envFile = NODE_ENV === 'development' ? '.env.development' : '.env';
 
 config({ path: resolve(__dirname, `../${envFile}`) });
 config({ path: resolve(__dirname, `../${envFile}.local`), override: true });
+
+export async function validateEnv() {
+  return yup
+    .object({
+      PORT: yup.number().required(),
+      DATABASE_URL: yup.string().required(),
+      BACKEND_URL: yup.string().required(),
+      FRONTEND_URL: yup.string().required(),
+      JWT_SECRET: yup.string().required(),
+      OPENCAGE_API: yup.string().required(),
+      GOOGLE_CLIENT_ID: yup.string().required(),
+      GOOGLE_CLIENT_SECRET: yup.string().required(),
+      MAXIMUM_RADIUS: yup.number().required(),
+      PRICE_PER_KM: yup.number().required(),
+      PRICE_PER_KG: yup.number().required(),
+    })
+    .validate(process.env);
+}
 
 export const PORT = process.env.PORT || 8000;
 export const DATABASE_URL = process.env.DATABASE_URL as string;
