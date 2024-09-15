@@ -1,217 +1,177 @@
-import prisma from '@/prisma';
-import { HttpException } from '@/exceptions/http.exception';
-import userAction from './user.action';
-import { genSalt, hash, compare } from 'bcrypt';
-import { sendVerificationEmail } from '@/utils/emailUtil';
-import { generateToken } from '@/utils/tokenUtil';
+import { comparePasswords, generateAccessToken, generateHash, generateRefreshToken } from '@/utils/encrypt.util';
 
-interface JwtPayload {
-  userId: number;
-  email: string;
-}
+import ApiError from '@/utils/error.util';
+import EmailAction from '@/actions/email.action';
+import { User } from '@prisma/client';
+import prisma from '@/libs/prisma';
 
-class AuthAction {
-  registerWithEmailAction = async (
-    email: string,
-    first_name: string,
-    last_name: string,
-    phone_number: string,
-  ) => {
-    try {
-      const isEmailRegisterd = await userAction.findUserByEmail(email);
+export default class AuthAction {
+  private emailAction: EmailAction;
 
-      if (isEmailRegisterd)
-        throw new HttpException(500, 'Email is already registered');
+  constructor() {
+    this.emailAction = new EmailAction();
+  }
 
-      const newUser = await prisma.$transaction(async (transaction: any) => {
-        return await transaction.user.create({
-          data: {
-            email,
-            first_name,
-            last_name,
-            phone_number,
-            is_verified: false,
-          },
-        });
-      });
-
-      return newUser;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  activateUserEmail = async (req: any) => {
-    try {
-      const { userId } = req.user as JwtPayload;
-
-      // checking user apakah udah verified
-      const user = await prisma.user.findUnique({
-        where: { user_id: userId },
-      });
-
-      if (!user) {
-        throw new HttpException(404, 'User not found');
-      }
-
-      if (user.is_verified) {
-        return { message: 'Email has already been verified' };
-      }
-
-      // Update status kalau blm verified
-      const updatedUser = await prisma.user.update({
-        where: { user_id: userId },
-        data: { is_verified: true },
-      });
-
-      return { user: updatedUser };
-    } catch (error) {
-      throw new HttpException(
-        500,
-        `Error during email verification: ${(error as Error).message}`,
-      );
-    }
-  };
-
-  loginAction = async (email: string, password: string) => {
-    try {
-      const user = await prisma.user.findFirst({
-        select: {
-          user_id: true,
-          first_name: true,
-          last_name: true,
-          email: true,
-          password: true,
-          phone_number: true,
-          avatarFilename: true,
-          is_verified: true,
-        },
-
-        where: {
-          email,
-        },
-      });
-
-      if (!user) throw new HttpException(500, 'Incorrect email or password');
-
-      // Check if the user is verified
-      if (!user.is_verified) {
-        throw new HttpException(
-          400,
-          'Please verify your email before logging in',
-        );
-      }
-
-      const isPassValid = await compare(password, user.password || '');
-      if (!isPassValid)
-        throw new HttpException(500, 'Incorrect email or password');
-
-      const payload = {
-        userId: user.user_id,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        email: user.email,
-        phoneNumber: user.phone_number,
-        avatarFilename: user.avatarFilename,
-        isVerified: user.is_verified,
-      };
-
-      const accessToken = generateToken(
-        payload,
-        '2h',
-        String(process.env.API_KEY),
-      );
-
-      return accessToken;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  refreshTokenAction = async (email: string) => {
-    try {
-      const user = await prisma.user.findFirst({
-        select: {
-          user_id: true,
-          first_name: true,
-          last_name: true,
-          email: true,
-          password: true,
-          phone_number: true,
-          avatarFilename: true,
-          is_verified: true,
-        },
-
-        where: {
-          email,
-        },
-      });
-
-      if (!user) throw new HttpException(500, 'Incorrect email or password');
-
-      const payload = {
-        userId: user.user_id,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        email: user.email,
-        phoneNumber: user.phone_number,
-        avatarFilename: user.avatarFilename,
-        isVerified: user.is_verified,
-      };
-
-      const refreshToken = generateToken(
-        payload,
-        '2h',
-        String(process.env.API_KEY),
-      );
-
-      return refreshToken;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  resendVerificationEmail = async (email: string) => {
+  login = async (email: string, password: string) => {
     try {
       const user = await prisma.user.findUnique({
         where: { email },
       });
 
-      if (!user) {
-        throw new HttpException(404, 'User not found');
-      }
+      if (!user) throw new ApiError(400, 'Invalid email or password');
+      if (!user.password || !user.is_verified) throw new ApiError(400, 'Please verify your email, to login');
 
-      if (user.is_verified) {
-        throw new HttpException(400, 'User is already verified');
-      }
+      const valid = await comparePasswords(password, user.password);
+      if (!valid) throw new ApiError(400, 'Invalid email or password');
 
-      await sendVerificationEmail(user);
+      const access_token = generateAccessToken({
+        user_id: user.user_id,
+        fullname: user.fullname,
+        email: user.email,
+        avatar_url: user.avatar_url,
+        role: user.role,
+        is_verified: user.is_verified,
+      });
+
+      const refresh_token = generateRefreshToken({
+        user_id: user.user_id,
+        email: user.email,
+      });
+
+      return { access_token, refresh_token };
     } catch (error) {
-      throw new HttpException(
-        500,
-        `Error resending verification email: ${(error as Error).message}`,
-      );
+      throw error;
     }
   };
 
-  setPassword = async (userId: number, password: string) => {
+  register = async (email: string, fullname: string, phone: string) => {
     try {
-      const salt = await genSalt(10);
-      const hashedPass = await hash(password, salt);
-
-      const updatedUser = await prisma.user.update({
-        where: { user_id: userId },
-        data: { password: hashedPass },
+      const user = await prisma.user.findUnique({
+        where: { email },
       });
 
-      return updatedUser;
+      if (user) throw new ApiError(400, 'Email already exists');
+
+      const created = await prisma.user.create({
+        data: {
+          email,
+          fullname,
+          phone,
+        },
+      });
+
+      await this.emailAction.sendVerificationEmail(created);
     } catch (error) {
-      throw new HttpException(
-        500,
-        `Error setting password: ${(error as Error).message}`,
-      );
+      throw error;
+    }
+  };
+
+  verify = async (user_id: string) => {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { user_id },
+      });
+      if (!user) throw new ApiError(404, 'User not found');
+
+      user.is_verified = true;
+      await prisma.user.update({
+        where: { user_id: user.user_id },
+        data: { is_verified: true },
+      });
+
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  setPassword = async (user_id: string, password: string) => {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { user_id },
+      });
+
+      if (!user) throw new ApiError(404, 'User not found');
+
+      const hashed = await generateHash(password);
+      await prisma.user.update({
+        where: { user_id: user_id },
+        data: { password: hashed },
+      });
+
+      await prisma.customer.create({
+        data: {
+          user_id,
+        },
+      });
+
+      const access_token = generateAccessToken({
+        user_id: user.user_id,
+        fullname: user.fullname,
+        email: user.email,
+        avatar_url: user.avatar_url,
+        role: user.role,
+        is_verified: user.is_verified,
+      });
+
+      const refresh_token = generateRefreshToken({
+        user_id: user.user_id,
+        email: user.email,
+      });
+
+      return { access_token, refresh_token };
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  refresh = async (user_id: string) => {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { user_id },
+      });
+
+      if (!user) throw new ApiError(404, 'User not found');
+
+      const access_token = generateAccessToken({
+        user_id: user.user_id,
+        fullname: user.fullname,
+        email: user.email,
+        avatar_url: user.avatar_url,
+        role: user.role,
+        is_verified: user.is_verified,
+      });
+
+      const refresh_token = generateRefreshToken({
+        user_id: user.user_id,
+        email: user.email,
+      });
+
+      return { access_token, refresh_token };
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  google = async (user: User) => {
+    try {
+      const access_token = generateAccessToken({
+        user_id: user.user_id,
+        fullname: user.fullname,
+        email: user.email,
+        avatar_url: user.avatar_url,
+        role: user.role,
+        is_verified: user.is_verified,
+      });
+
+      const refresh_token = generateRefreshToken({
+        user_id: user.user_id,
+        email: user.email,
+      });
+
+      return { access_token, refresh_token };
+    } catch (error) {
+      throw error;
     }
   };
 }
-
-export default new AuthAction();

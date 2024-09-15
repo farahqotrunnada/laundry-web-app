@@ -1,87 +1,108 @@
-import { Request, Response, NextFunction } from 'express';
-import authAction from '@/actions/auth.action';
-import { HttpException } from '@/exceptions/http.exception';
-import { sendVerificationEmail } from '@/utils/emailUtil';
+import * as yup from 'yup';
 
-interface JwtPayload {
-  userId: number;
-  email: string;
-}
+import { EmailTokenPayload, RefreshTokenPayload } from '@/type/jwt';
+import { NextFunction, Request, Response } from 'express';
 
-export class AuthController {
-  registerWithEmailController = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+import ApiError from '@/utils/error.util';
+import ApiResponse from '@/utils/response.util';
+import AuthAction from '@/actions/auth.action';
+import { FRONTEND_URL } from '@/config';
+import { User } from '@prisma/client';
+
+export default class AuthController {
+  private authAction: AuthAction;
+
+  constructor() {
+    this.authAction = new AuthAction();
+  }
+
+  login = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email, first_name, last_name, phone_number } = req.body;
-
-      const user = await authAction.registerWithEmailAction(
-        email,
-        first_name,
-        last_name,
-        phone_number,
-      );
-
-      await sendVerificationEmail(user);
-
-      res.status(201).json({
-        message:
-          'User registration success, please check your email to verify your account',
-        data: user,
-      });
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  loginController = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { email, password } = req.body;
-
-      const user = await authAction.loginAction(email, password);
-
-      res.status(200).cookie('access-token', user).json({
-        message: 'Successfully logged in',
-        data: user,
-      });
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  refreshTokenController = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      const { email } = req.user as JwtPayload;
-
-      const result = await authAction.refreshTokenAction(email);
-
-      res.status(200).json({
-        message: 'Refresh token success',
-        data: result,
-      });
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  verifyEmailController = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-<<<<<<< Updated upstream
-      const result = await authAction.activateUserEmail(req);
-=======
-      const { password, confirmation } = await yup
+      const { email, password } = await yup
         .object({
+          email: yup.string().email().required(),
           password: yup.string().required(),
+        })
+        .validate(req.body);
+
+      const { access_token, refresh_token } = await this.authAction.login(email, password);
+
+      res.cookie('refresh_token', refresh_token, {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 7,
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
+      });
+
+      return res.status(200).json(
+        new ApiResponse('Login successful', {
+          access_token,
+        })
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  register = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, fullname, phone } = await yup
+        .object({
+          email: yup.string().email().required(),
+          fullname: yup.string().required(),
+          phone: yup.string().required(),
+        })
+        .validate(req.body);
+
+      await this.authAction.register(email, fullname, phone);
+
+      return res.status(201).json(
+        new ApiResponse('Register successful, please check your email to verify your account', {
+          email,
+          fullname,
+          phone,
+        })
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  verify = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user as EmailTokenPayload;
+
+      const { user_id } = user;
+      await this.authAction.verify(user_id);
+
+      const { token } = await yup
+        .object({
+          token: yup.string().required(),
+        })
+        .validate(req.query);
+
+      const url = new URL(FRONTEND_URL);
+      url.pathname = '/auth/set-password';
+      url.searchParams.set('token', token);
+
+      return res.redirect(url.toString());
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  setPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { password } = await yup
+        .object({
+          password: yup
+            .string()
+            .min(10, 'Password is too short')
+            .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+            .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+            .matches(/[0-9]/, 'Password must contain at least one number')
+            .matches(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
+            .required(),
           confirmation: yup
             .string()
             .oneOf([yup.ref('password')])
@@ -98,61 +119,58 @@ export class AuthController {
         sameSite: 'strict',
         secure: process.env.NODE_ENV === 'production',
       });
->>>>>>> Stashed changes
 
-      if (result.message) {
-        return res.status(200).json({
-          message: result.message,
-        });
-      }
-
-      // Redirect user to /set-password with the token as a query parameter
-      const token = req.query.token;
-      const setPasswordUrl = `${process.env.FE_BASE_URL}/set-password?token=${token}`;
-
-      return res.redirect(setPasswordUrl);
+      return res.status(200).json(
+        new ApiResponse('Password set successfully', {
+          access_token,
+        })
+      );
     } catch (error) {
       next(error);
     }
   };
 
-  resendVerificationController = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  logout = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email } = req.body;
-
-      await authAction.resendVerificationEmail(email);
-
-      res.status(200).json({
-        message: 'Verification email resent, please check your email',
-      });
+      res.clearCookie('refresh_token');
+      return res.status(200).json(new ApiResponse('Logout successful'));
     } catch (error) {
       next(error);
     }
   };
 
-  setPasswordController = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  refresh = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { password } = req.body;
-      const { userId } = req.user as JwtPayload;
+      const { user_id } = req.user as RefreshTokenPayload;
 
-      if (!password) {
-        throw new HttpException(400, 'Password is required');
-      }
+      const { access_token } = await this.authAction.refresh(user_id);
 
-      const updatedUser = await authAction.setPassword(userId, password);
+      return res.status(200).json(
+        new ApiResponse('Refresh successful', {
+          access_token,
+        })
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
 
-      res.status(200).json({
-        message: 'Password set successfully',
-        data: updatedUser,
+  callback = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user as User;
+      if (!user) throw new ApiError(400, 'Invalid username or password');
+      if (!user.is_verified) return res.redirect(`${FRONTEND_URL}/auth/verify`);
+
+      const { refresh_token } = await this.authAction.google(user);
+
+      res.cookie('refresh_token', refresh_token, {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 7,
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
       });
+
+      return res.redirect(FRONTEND_URL);
     } catch (error) {
       next(error);
     }

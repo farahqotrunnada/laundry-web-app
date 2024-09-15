@@ -1,61 +1,77 @@
-import passport, { Profile } from 'passport';
-import {
-  Strategy as GoogleStrategy,
-  VerifyCallback,
-} from 'passport-google-oauth20';
+import { BACKEND_URL, FRONTEND_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '@/config';
+
+import ApiError from '@/utils/error.util';
+import EmailAction from '@/actions/email.action';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import passport from 'passport';
 import prisma from '@/prisma';
-import { sendEmail, sendVerificationEmail } from '@/utils/emailUtil';
 
-passport.serializeUser((user: any, done: (err: any, id?: any) => void) => {
-  done(null, user);
-});
+const emailAction = new EmailAction();
 
-passport.deserializeUser((obj: any, done: (err: any, user?: any) => void) => {
-  done(null, obj);
-});
+export const options = {
+  scope: ['profile', 'email'],
+  session: false,
+};
 
-// Google Strategy
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      callbackURL: `${process.env.BE_BASE_URL}/auth/google/callback`,
-    },
-    async (
-      accessToken: string,
-      refreshToken: string,
-      profile: Profile,
-      done: VerifyCallback,
-    ) => {
-      try {
-        const email = profile.emails?.[0]?.value || '';
-        if (!email) {
-          return done(new Error('No email found in Google profile'), undefined);
+class PassportConfig {
+  initialize = () => {
+    passport.use(
+      new GoogleStrategy(
+        {
+          clientID: GOOGLE_CLIENT_ID,
+          clientSecret: GOOGLE_CLIENT_SECRET,
+          callbackURL: `${BACKEND_URL}/api/v1/auth/google/callback`,
+          scope: ['email', 'profile'],
+        },
+        async (accessToken, refreshToken, profile, cb) => {
+          try {
+            const { id, emails, photos, displayName } = profile;
+
+            const email = emails && emails.length > 0 ? emails[0].value : undefined;
+            const avatar_url = photos && photos.length > 0 ? photos[0].value : undefined;
+            if (email === undefined) throw new ApiError(400, 'Email not found on Google account');
+
+            const user = await prisma.user.findUnique({
+              where: { email },
+            });
+
+            if (!user) {
+              const upsert = await prisma.user.upsert({
+                where: { email },
+                update: { google_id: id },
+                create: {
+                  email,
+                  avatar_url,
+                  google_id: id,
+                  fullname: displayName,
+                },
+              });
+
+              await emailAction.sendVerificationEmail(upsert);
+              return cb(null, upsert);
+            }
+
+            if (!user.is_verified) await emailAction.sendVerificationEmail(user);
+            return cb(null, user);
+          } catch (error) {
+            return cb(error);
+          }
         }
+      )
+    );
 
-        const user = await prisma.user.upsert({
-          where: { email },
-          update: { googleId: profile.id },
-          create: {
-            email,
-            first_name: profile.name?.givenName || '',
-            last_name: profile.name?.familyName || '',
-            googleId: profile.id,
-          },
-        });
+    passport.serializeUser(function (user, cb) {
+      process.nextTick(function () {
+        cb(null, user);
+      });
+    });
 
-        // To ensure the email is only sent once
-        if (!user.is_verified) {
-          await sendVerificationEmail(user);
-        }
+    passport.deserializeUser(function (user, cb) {
+      process.nextTick(function () {
+        return cb(null, user as any);
+      });
+    });
+  };
+}
 
-        return done(undefined, user);
-      } catch (error) {
-        return done(error, undefined);
-      }
-    },
-  ),
-);
-
-export default passport;
+export default PassportConfig;

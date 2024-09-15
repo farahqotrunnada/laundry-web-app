@@ -1,61 +1,75 @@
-import { Request, Response, NextFunction } from 'express';
-import { verify, TokenExpiredError } from 'jsonwebtoken';
-import { User } from '@/types/express';
-import { HttpException } from '@/exceptions/http.exception';
+import * as yup from 'yup';
+
+import { NextFunction, Request, Response } from 'express';
+
+import ApiError from '@/utils/error.util';
+import { JWT_SECRET } from '@/config';
+import { verify } from 'jsonwebtoken';
 
 export class AuthMiddleware {
-  verifyAccessToken = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  header = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.header('Authorization')?.replace('Bearer ', '');
-      if (!token) throw new HttpException(500, 'Missing Token');
+      const authorization = req.headers.authorization;
+      if (!authorization) throw new ApiError(401, 'Unauthorized, please login');
 
-      const isTokenValid = verify(token, String(process.env.API_KEY));
-      if (!isTokenValid) throw new HttpException(500, 'Unauthorized');
+      const token = authorization.split(' ')[1];
+      verify(token, JWT_SECRET, (error, decoded) => {
+        if (error) throw new ApiError(401, error.message);
+        req.user = decoded;
+        next();
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
-      req.user = isTokenValid as User;
+  cookie = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { refresh_token } = req.cookies;
 
-<<<<<<< Updated upstream
-      next();
-=======
       const token = refresh_token as string;
       verify(token, JWT_SECRET, (error, decoded) => {
         if (error) throw new ApiError(401, error.message);
         req.user = decoded;
         next();
       });
->>>>>>> Stashed changes
     } catch (error) {
       next(error);
     }
   };
 
-  verifyEmailToken = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  query = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token =
-        (req.query.token as string) ||
-        req.header('Authorization')?.replace('Bearer ', '');
-      if (!token) throw new HttpException(400, 'Missing Token');
+      const { token } = await yup
+        .object({
+          token: yup.string().required(),
+        })
+        .validate(req.query);
 
-      const decoded = verify(token, String(process.env.JWT_SECRET));
-      if (!decoded) throw new HttpException(400, 'Invalid or expired token');
-
-      req.user = decoded as User;
-
-      next();
+      verify(token, JWT_SECRET, (error, decoded) => {
+        if (error) throw new ApiError(401, error.message);
+        req.user = decoded;
+        next();
+      });
     } catch (error) {
-      if (error instanceof TokenExpiredError) {
-        return res.status(400).json({
-          message: 'Verification token expired, please request a new one',
-        });
-      }
+      next(error);
+    }
+  };
+
+  body = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { token } = await yup
+        .object({
+          token: yup.string().required(),
+        })
+        .validate(req.body);
+
+      verify(token, JWT_SECRET, (error, decoded) => {
+        if (error) throw new ApiError(401, error.message);
+        req.user = decoded;
+        next();
+      });
+    } catch (error) {
       next(error);
     }
   };

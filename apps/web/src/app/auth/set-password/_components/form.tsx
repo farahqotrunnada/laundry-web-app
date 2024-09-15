@@ -7,10 +7,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
-import { Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
-import { cn } from '@/lib/utils';
+import PasswordMeter from '@/components/password-meter';
 import { useAuth } from '@/hooks/use-auth';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
@@ -21,7 +19,14 @@ interface SetPasswordFormProps {
 }
 
 const passwordSchema = yup.object({
-  password: yup.string().required(),
+  password: yup
+    .string()
+    .min(10, 'Password is too short')
+    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .matches(/[0-9]/, 'Password must contain at least one number')
+    .matches(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
+    .required(),
   confirmation: yup
     .string()
     .oneOf([yup.ref('password')], 'Passwords do not match')
@@ -34,7 +39,7 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ ...props }) => {
   const search = useSearchParams();
 
   const { toast } = useToast();
-  const { authenticate } = useAuth();
+  const { verify } = useAuth();
 
   const form = useForm<yup.InferType<typeof passwordSchema>>({
     resolver: yupResolver(passwordSchema),
@@ -45,57 +50,6 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ ...props }) => {
     },
   });
 
-  const passwordRules = [
-    {
-      label: 'Must be at least 10 characters',
-      regex: /.{10,}/,
-    },
-    {
-      label: 'Must contain at least one uppercase letter',
-      regex: /[A-Z]/,
-    },
-    {
-      label: 'Must contain at least one lowercase letter',
-      regex: /[a-z]/,
-    },
-    {
-      label: 'Must contain at least one number',
-      regex: /[0-9]/,
-    },
-    {
-      label: 'Must contain at least one special character',
-      regex: /[^A-Za-z0-9]/,
-    },
-  ];
-
-  const statuses = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong', 'Excellent'];
-
-  const strength = React.useMemo(() => {
-    const password = form.watch('password');
-
-    let strength = 0;
-    passwordRules.forEach((rule) => {
-      if (rule.regex.test(password)) {
-        strength += 1;
-      }
-    });
-
-    return {
-      value: strength,
-      status: statuses[strength],
-    };
-  }, [form.watch('password')]);
-
-  const state = React.useMemo(() => {
-    const password = form.watch('password');
-    if (!password) return passwordRules.map((rule) => ({ ...rule, valid: false }));
-
-    return passwordRules.map((rule) => ({
-      ...rule,
-      valid: rule.regex.test(password),
-    }));
-  }, [form.watch('password')]);
-
   React.useEffect(() => {
     if (search.has('token')) {
       const token = search.get('token');
@@ -105,7 +59,7 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ ...props }) => {
 
   const onSubmit = async (formData: yup.InferType<typeof passwordSchema>) => {
     try {
-      await authenticate(formData);
+      await verify(formData);
       toast({
         title: 'Password set successfully',
         description: 'Please login with your new password',
@@ -151,17 +105,7 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ ...props }) => {
           )}
         />
 
-        {state.map((rule, idx) => (
-          <div key={idx} className={cn('flex items-center space-x-2 text-red-500', rule.valid && 'text-green-500')}>
-            <Check className='w-4 h-4' aria-hidden='true' />
-            <div className='text-sm'>{rule.label}</div>
-          </div>
-        ))}
-
-        <div className='flex space-x-2 items-center'>
-          <span className='text-sm w-20'>{strength.status}</span>
-          <Progress value={(strength.value * 100) / state.length} className='h-2' />
-        </div>
+        <PasswordMeter password={form.watch('password')} />
 
         <FormField
           control={form.control}
