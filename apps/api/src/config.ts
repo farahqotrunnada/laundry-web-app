@@ -24,6 +24,7 @@ export async function validateEnv() {
       MAXIMUM_RADIUS: yup.number().required(),
       PRICE_PER_KM: yup.number().required(),
       PRICE_PER_KG: yup.number().required(),
+      RESEND_API: yup.string().required(),
     })
     .validate(process.env);
 }
@@ -39,3 +40,4 @@ export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET as string;
 export const MAXIMUM_RADIUS = Number(process.env.MAXIMUM_RADIUS as string);
 export const PRICE_PER_KM = Number(process.env.PRICE_PER_KM as string);
 export const PRICE_PER_KG = Number(process.env.PRICE_PER_KG as string);
+export const RESEND_API = process.env.RESEND_API as string;
