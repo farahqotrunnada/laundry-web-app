@@ -29,3 +29,5 @@ export type Employee = {
   outlet_id?: string;
   shift_id?: string;
 };
+
+export type UserToken = Omit<User, 'phone' | 'created_at' | 'updated_at'>;

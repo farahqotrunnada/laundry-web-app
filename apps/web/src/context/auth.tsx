@@ -2,12 +2,11 @@
 
 import * as React from 'react';
 
-import { User } from '@/types/user';
+import { User, UserToken } from '@/types/user';
+
 import axios from '@/lib/axios';
 import { jwtDecode } from 'jwt-decode';
 import { useLocalStorage } from 'usehooks-ts';
-
-type UserToken = Omit<User, 'phone' | 'created_at' | 'updated_at'>;
 
 interface AccessTokenPayload extends UserToken {
   exp: number;

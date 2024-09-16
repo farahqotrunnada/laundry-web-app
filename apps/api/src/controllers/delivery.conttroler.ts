@@ -3,6 +3,7 @@ import * as yup from 'yup';
 import { DeliveryType, ProgressType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 
+import { AccessTokenPayload } from '@/type/jwt';
 import ApiResponse from '@/utils/response.util';
 import DeliveryAction from '@/actions/delivery.action';
 
@@ -15,6 +16,8 @@ export default class DeliveryController {
 
   index = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const { user_id, role } = req.user as AccessTokenPayload;
+
       const { page, limit, id, value, key, desc } = await yup
         .object({
           page: yup
@@ -35,7 +38,7 @@ export default class DeliveryController {
         })
         .validate(req.query);
 
-      const [deliveries, count] = await this.deliveryAction.index(page, limit, id, value, key, desc);
+      const [deliveries, count] = await this.deliveryAction.index(user_id, role, page, limit, id, value, key, desc);
 
       return res.status(200).json({
         message: 'Deliveries retrieved successfully',
@@ -85,6 +88,8 @@ export default class DeliveryController {
 
   update = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const { user_id, role } = req.user as AccessTokenPayload;
+
       const { delivery_id, progress } = await yup
         .object({
           delivery_id: yup.string().required(),
@@ -92,7 +97,12 @@ export default class DeliveryController {
         })
         .validate(req.body);
 
-      const delivery = await this.deliveryAction.update(delivery_id, progress);
+      const delivery = await this.deliveryAction.update(
+        user_id,
+        role as 'SuperAdmin' | 'Driver',
+        delivery_id,
+        progress
+      );
 
       return res.status(200).json(new ApiResponse('Delivery updated successfully', delivery));
     } catch (error) {
