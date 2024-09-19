@@ -25,6 +25,7 @@ import { useForm } from 'react-hook-form';
 import { useSWRConfig } from 'swr';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { PasswordInput } from '@/components/password-input';
 
 interface AddUserModalProps {
   //
@@ -112,7 +113,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ ...props }) => {
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input placeholder='enter your full name' {...field} />
+                      <Input placeholder='Enter your full name' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -126,7 +127,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ ...props }) => {
                   <FormItem>
                     <FormLabel>Phone</FormLabel>
                     <FormControl>
-                      <Input placeholder='enter your phone' {...field} />
+                      <Input type='number' inputMode='numeric' placeholder='enter your phone' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -140,7 +141,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ ...props }) => {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder='enter your email' {...field} />
+                      <Input placeholder='Enter your email' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -154,7 +155,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ ...props }) => {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type='password' placeholder='enter your password' {...field} />
+                      <PasswordInput type='password' placeholder='Enter your password' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

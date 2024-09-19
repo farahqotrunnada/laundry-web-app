@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { PasswordInput } from '@/components/password-input';
 
 interface LoginFormProps {
   //
@@ -60,7 +61,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder='enter your email' {...field} />
+                <Input placeholder='Enter your email' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -74,7 +75,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type='password' placeholder='enter your password' {...field} />
+                <PasswordInput type='password' placeholder='Enter your password' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

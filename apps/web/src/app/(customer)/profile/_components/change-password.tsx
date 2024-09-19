@@ -4,17 +4,17 @@ import * as React from 'react';
 import * as yup from 'yup';
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import axios from '@/lib/axios';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
+import PasswordMeter from '@/components/password-meter';
+import { useAuth } from '@/hooks/use-auth';
 import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
-import PasswordMeter from '@/components/password-meter';
-import { useAuth } from '@/hooks/use-auth';
+import { PasswordInput } from '@/components/password-input';
 
 interface ChangePasswordFormProps {
   //
@@ -86,7 +86,7 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ ...props }) => 
             <FormItem>
               <FormLabel>Current Password</FormLabel>
               <FormControl>
-                <Input type='password' placeholder='enter your current password' {...field} />
+                <PasswordInput type='password' placeholder='Enter your current password' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -101,7 +101,7 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ ...props }) => 
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type='password' placeholder='enter your password' {...field} />
+                  <PasswordInput type='password' placeholder='Enter your password' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -115,7 +115,7 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ ...props }) => 
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input type='password' placeholder='confirm your password' {...field} />
+                  <PasswordInput type='password' placeholder='confirm your password' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

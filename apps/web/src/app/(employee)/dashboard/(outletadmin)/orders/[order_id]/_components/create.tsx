@@ -204,7 +204,7 @@ const CreateOrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...prop
                     <FormItem>
                       <FormLabel>Total Weight</FormLabel>
                       <FormControl>
-                        <Input type='number' placeholder='enter total weight' {...field} />
+                        <Input type='number' placeholder='Enter total weight' {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -63,8 +63,16 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  .hide-password-toggle::-ms-reveal,
+  .hide-password-toggle::-ms-clear {
+    visibility: hidden;
+    pointer-events: none;
+    display: none;
   }
 }
 
@@ -112,7 +120,7 @@
   }
 
   .animate-right {
-    animation: scroll 15s reverse linear infinite;
+    animation: scroll 15s reverse linear;
   }
 }
 

@@ -37,3 +37,11 @@ export function formatCurrency(value: number) {
     currency: 'IDR',
   }).format(value);
 }
+
+export function formatHour(value: number) {
+  return Intl.NumberFormat('id-ID', {
+    style: 'unit',
+    unit: 'hour',
+    unitDisplay: 'long',
+  }).format(value);
+}

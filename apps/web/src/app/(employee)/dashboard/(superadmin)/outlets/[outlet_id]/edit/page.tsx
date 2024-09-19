@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as yup from 'yup';
 
-import OutletEditForm from '../../_components/edit';
+import EditOutletForm from './_components/edit';
 import { redirect } from 'next/navigation';
 
 interface PageProps {
@@ -27,7 +27,7 @@ export default async function Page({ params, ...props }: PageProps): Promise<Rea
           </p>
         </div>
 
-        <OutletEditForm outlet_id={outlet_id} />
+        <EditOutletForm outlet_id={outlet_id} />
       </>
     );
   } catch (error) {

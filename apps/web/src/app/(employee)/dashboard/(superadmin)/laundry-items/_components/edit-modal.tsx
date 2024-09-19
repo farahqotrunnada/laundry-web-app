@@ -88,7 +88,7 @@ const EditLaundryItemModal: React.FC<EditLaundryItemModalProps> = ({ item, ...pr
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder='enter your name' {...field} />
+                      <Input placeholder='Enter your name' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { PasswordInput } from '@/components/password-input';
 
 interface SetPasswordFormProps {
   //
@@ -84,7 +85,7 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type='password' placeholder='enter your password' {...field} />
+                <PasswordInput type='password' placeholder='Enter your password' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -98,7 +99,7 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Confirm Password</FormLabel>
               <FormControl>
-                <Input type='password' placeholder='confirm your password' {...field} />
+                <PasswordInput type='password' placeholder='confirm your password' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -107,11 +108,7 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ ...props }) => {
 
         <PasswordMeter password={form.watch('password')} />
 
-        <FormField
-          control={form.control}
-          name='token'
-          render={({ field }) => <Input type='hidden' placeholder='enter your token' {...field} />}
-        />
+        <FormField control={form.control} name='token' render={({ field }) => <Input type='hidden' {...field} />} />
 
         <Button type='submit' className='w-full'>
           Set Password

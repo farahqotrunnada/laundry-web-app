@@ -39,8 +39,6 @@ export default class OrderAction {
       if (role === 'SuperAdmin') {
         query = {
           where: filter,
-          skip: (page - 1) * limit,
-          take: limit,
           orderBy: order,
         };
       } else {

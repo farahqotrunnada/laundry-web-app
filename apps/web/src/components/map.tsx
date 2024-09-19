@@ -6,11 +6,12 @@ import * as React from 'react';
 
 import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet';
 
+import { DEFAULT_LOCATION } from '@/lib/constant';
 import { Location } from '@/types/location';
 import { cn } from '@/lib/utils';
 
 interface MapProps {
-  location: Location;
+  location?: Location;
   setLocation: (location: Location) => void;
   className?: string;
 }
@@ -39,7 +40,7 @@ const MapEvent: React.FC<MapEventProps> = ({ handleClick, handleLocationFound })
   return null;
 };
 
-const Map: React.FC<MapProps> = ({ location, setLocation, className }) => {
+const Map: React.FC<MapProps> = ({ location = DEFAULT_LOCATION, setLocation, className }) => {
   const [mapRef, setMapRef] = React.useState<any>(null);
 
   const handleClick = (latlng: LatLng) => {
@@ -50,17 +51,15 @@ const Map: React.FC<MapProps> = ({ location, setLocation, className }) => {
   };
 
   React.useEffect(() => {
-    if (mapRef) {
-      mapRef.flyTo([location.latitude, location.longitude], 15);
-    }
+    if (mapRef) mapRef.flyTo([location.latitude, location.longitude], 15);
   }, [mapRef, location]);
 
   return (
     <MapContainer
       zoom={15}
       ref={setMapRef}
+      scrollWheelZoom={false}
       center={[location.latitude, location.longitude]}
-      scrollWheelZoom={true}
       className={cn('w-full border rounded-lg z-0', className)}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
