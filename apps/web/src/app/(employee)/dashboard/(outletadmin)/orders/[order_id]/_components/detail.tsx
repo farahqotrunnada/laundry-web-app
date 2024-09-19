@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { cn, formatDateTime } from '@/lib/utils';
 
 import { Badge } from '@/components/ui/badge';
+import DetailList from '@/components/detail-list';
 import { OrderStatusMapper } from '@/lib/constant';
 import { useOrderDetail } from '@/hooks/use-order-detail';
 
@@ -107,18 +108,6 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
             </div>
           </CardContent>
         </Card>
-      </div>
-    </div>
-  );
-};
-
-const DetailList: React.FC<{ title: string; data: string | undefined }> = ({ title, data }) => {
-  return (
-    <div className='flex flex-col space-y-4 text-sm'>
-      <div className='flex w-full space-x-2 items-bottom'>
-        <span className='flex-none'>{title}</span>
-        <div className='w-full border-b border-dotted border-muted-foreground'></div>
-        <span className='flex-none text-muted-foreground'>{data}</span>
       </div>
     </div>
   );
