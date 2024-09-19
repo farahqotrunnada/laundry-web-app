@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { cn, formatDateTime } from '@/lib/utils';
+import { cn, formatCurrency, formatDateTime } from '@/lib/utils';
 
 import { Badge } from '@/components/ui/badge';
 import DetailList from '@/components/detail-list';
@@ -38,6 +38,24 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
             <DetailList title='Customer Address' data={data.data.CustomerAddress.address} />
             <DetailList title='Outlet Name' data={data.data.Outlet.name} />
             <DetailList title='Outlet Address' data={data.data.Outlet.address} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className='text-xl font-bold'>Order Fee</CardTitle>
+          <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className='flex flex-col space-y-4 text-sm'>
+            <DetailList title='Weight' data={Number(data.data.weight || 0) + ' kg'} />
+            <DetailList title='Laundry Fee' data={formatCurrency(data.data.laundry_fee)} />
+            <DetailList title='Delivery Fee' data={formatCurrency(data.data.delivery_fee)} />
+            <DetailList
+              title='Total'
+              data={formatCurrency(Number(data.data.laundry_fee) + Number(data.data.delivery_fee))}
+            />
           </div>
         </CardContent>
       </Card>
@@ -80,7 +98,6 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead className='text-right'>Weight</TableHead>
                   <TableHead className='text-right'>Quantity</TableHead>
                 </TableRow>
               </TableHeader>
@@ -95,7 +112,6 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
                 {data.data.OrderItem.map((item, idx) => (
                   <TableRow key={idx}>
                     <TableCell>{item.LaundryItem.name}</TableCell>
-                    <TableCell className='text-right'>{item.weight} kg</TableCell>
                     <TableCell className='text-right'>{item.quantity}</TableCell>
                   </TableRow>
                 ))}
