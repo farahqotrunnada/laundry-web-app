@@ -4,9 +4,12 @@ import * as React from 'react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { cn, formatDateTime } from '@/lib/utils';
+import { cn, formatCurrency, formatDateTime } from '@/lib/utils';
 
 import { Badge } from '@/components/ui/badge';
+import DetailList from '@/components/detail-list';
+import Image from 'next/image';
+import { OrderStatusMapper } from '@/lib/constant';
 import { useOrderDetail } from '@/hooks/use-order-detail';
 
 interface ComponentProps {
@@ -34,6 +37,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
                 <DetailList title='Order ID' data={data.data.order_id.toUpperCase()} />
                 <DetailList title='Customer Name' data={data.data.Customer.User.fullname} />
                 <DetailList title='Customer Email' data={data.data.Customer.User.email} />
+                <DetailList title='Customer Address' data={data.data.CustomerAddress.address} />
                 <DetailList title='Outlet Name' data={data.data.Outlet.name} />
                 <DetailList title='Outlet Address' data={data.data.Outlet.address} />
               </div>
@@ -58,12 +62,55 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
                     {idx + 1}
                   </div>
                   <div className='flex items-center justify-between w-full'>
-                    <span className='font-medium'>{item.name}</span>
+                    <span className='font-medium'>{OrderStatusMapper[item.status]}</span>
                     <Badge variant='outline'>{formatDateTime(item.created_at)}</Badge>
                   </div>
                 </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className='text-xl font-bold'>Order Payment</CardTitle>
+            <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {!data.data.Payment && (
+              <div className='flex items-center justify-center w-full h-52'>
+                <div className='flex flex-col items-center justify-center'>
+                  <div className='text-center'>
+                    <p className='font-medium'>Continue payment</p>
+                    <p className='text-sm text-muted-foreground'>
+                      Please complete your payment with your preferred payment method.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {data.data.Payment && (
+              <div className='flex flex-col space-y-4 text-sm'>
+                <DetailList title='Payment ID' data={data.data.Payment.payment_id.toUpperCase()} />
+                <DetailList title='Payment Status' data={data.data.Payment.status} />
+                <DetailList title='Payment Method' data={data.data.Payment.method} />
+                <DetailList title='Created' data={formatDateTime(data.data.Payment.created_at)} />
+                <DetailList title='Updated' data={formatDateTime(data.data.Payment.updated_at)} />
+                {data.data.Payment.receipt_url && (
+                  <div className='flex flex-col space-y-4 text-sm'>
+                    <span className='text-sm'>Receipt</span>
+                    <Image
+                      src={data.data.Payment.receipt_url}
+                      width={300}
+                      height={300}
+                      alt='Receipt'
+                      className='object-cover w-full rounded-lg aspect-square'
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -81,7 +128,6 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Name</TableHead>
-                    <TableHead className='text-right'>Weight</TableHead>
                     <TableHead className='text-right'>Quantity</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -96,7 +142,6 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
                   {data.data.OrderItem.map((item, idx) => (
                     <TableRow key={idx}>
                       <TableCell>{item.LaundryItem.name}</TableCell>
-                      <TableCell className='text-right'>{item.weight} kg</TableCell>
                       <TableCell className='text-right'>{item.quantity}</TableCell>
                     </TableRow>
                   ))}
@@ -105,18 +150,24 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
             </div>
           </CardContent>
         </Card>
-      </div>
-    </div>
-  );
-};
 
-const DetailList: React.FC<{ title: string; data: string | undefined }> = ({ title, data }) => {
-  return (
-    <div className='flex flex-col space-y-4 text-sm'>
-      <div className='flex w-full space-x-2 items-bottom'>
-        <span className='flex-none'>{title}</span>
-        <div className='w-full border-b border-dotted border-muted-foreground'></div>
-        <span className='flex-none text-muted-foreground'>{data}</span>
+        <Card>
+          <CardHeader>
+            <CardTitle className='text-xl font-bold'>Order Fee</CardTitle>
+            <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className='flex flex-col space-y-4 text-sm'>
+              <DetailList title='Weight' data={Number(data.data.weight || 0) + ' kg'} />
+              <DetailList title='Laundry Fee' data={formatCurrency(data.data.laundry_fee)} />
+              <DetailList title='Delivery Fee' data={formatCurrency(data.data.delivery_fee)} />
+              <DetailList
+                title='Total'
+                data={formatCurrency(Number(data.data.laundry_fee) + Number(data.data.delivery_fee))}
+              />
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -31,6 +31,7 @@ export default class AddressAction {
           user_id,
         },
       });
+
       if (!customer) throw new ApiError(404, 'Customer not found');
 
       const addresses = await prisma.customerAdress.findFirst({

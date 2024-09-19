@@ -15,20 +15,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { Button } from '@/components/ui/button';
+import AddUserModal from './create-modal';
 import { DataTablePagination } from '@/components/table/pagination';
 import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
 import TableLoader from '@/components/loader/table';
+import ToggleColumn from '@/components/table/column-toggle';
 import columns from './column';
 import { useDebounceValue } from 'usehooks-ts';
 import { useUsers } from '@/hooks/use-user';
@@ -82,7 +76,7 @@ const DataTable = <TData, TValue>({
 
   return (
     <div className='w-full'>
-      <div className='flex flex-col lg:justify-between lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-4 mb-6'>
+      <div className='flex flex-col mb-6 space-y-4 lg:justify-between lg:flex-row lg:items-center lg:space-y-0 lg:space-x-4'>
         <Input
           autoFocus
           placeholder='Filter name'
@@ -91,32 +85,14 @@ const DataTable = <TData, TValue>({
           className='w-full lg:max-w-md'
         />
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='outline' className='lg:ml-auto'>
-              Columns
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className='capitalize'
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}>
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className='flex flex-col items-center w-full space-x-2 space-y-4 lg:w-auto lg:flex-row lg:space-y-0 lg:space-x-4'>
+          <ToggleColumn table={table} />
+
+          <AddUserModal />
+        </div>
       </div>
 
-      <div className='rounded-md border mb-6'>
+      <div className='mb-6 border rounded-md'>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

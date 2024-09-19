@@ -1,10 +1,11 @@
 import * as yup from 'yup';
 
-import { NextFunction, Request, Response } from 'express';
+import e, { NextFunction, Request, Response } from 'express';
 
 import { AccessTokenPayload } from '@/type/jwt';
 import ApiResponse from '@/utils/response.util';
 import OrderAction from '@/actions/order.action';
+import { PaymentMethod } from '@prisma/client';
 
 export default class OrderController {
   private orderAction: OrderAction;
@@ -15,6 +16,8 @@ export default class OrderController {
 
   index = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const { user_id, role } = req.user as AccessTokenPayload;
+
       const { page, limit, id, value, key, desc } = await yup
         .object({
           page: yup
@@ -35,7 +38,7 @@ export default class OrderController {
         })
         .validate(req.query);
 
-      const [orders, count] = await this.orderAction.index(page, limit, id, value, key, desc);
+      const [orders, count] = await this.orderAction.index(user_id, role, page, limit, id, value, key, desc);
 
       return res.status(200).json(
         new ApiResponse('Orders retrieved successfully', {
@@ -51,6 +54,7 @@ export default class OrderController {
   customer = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { user_id } = req.user as AccessTokenPayload;
+
       const { type } = await yup
         .object({
           type: yup.string().oneOf(['All', 'Ongoing', 'Completed']).optional(),
@@ -67,15 +71,48 @@ export default class OrderController {
 
   show = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const { user_id, role } = req.user as AccessTokenPayload;
+
       const { order_id } = await yup
         .object({
           order_id: yup.string().required(),
         })
         .validate(req.params);
 
-      const order = await this.orderAction.show(order_id);
+      const order = await this.orderAction.show(user_id, role, order_id);
 
       return res.status(200).json(new ApiResponse('Order retrieved successfully', order));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  payment = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { user_id } = req.user as AccessTokenPayload;
+
+      const { order_id } = await yup
+        .object({
+          order_id: yup.string().required(),
+        })
+        .validate(req.params);
+
+      const { method, receipt_url } = await yup
+        .object({
+          method: yup.string().oneOf(Object.values(PaymentMethod)).required(),
+          receipt_url: yup
+            .string()
+            .url()
+            .when('method', {
+              is: (method: PaymentMethod) => method === 'Manual',
+              then: (schema: yup.Schema) => schema.required(),
+              otherwise: (schema: yup.Schema) => schema.notRequired(),
+            }),
+        })
+        .validate(req.body);
+
+      const payment = await this.orderAction.payment(user_id, order_id, method, receipt_url);
+      return res.status(200).json(new ApiResponse('Your order payment created successfully', payment));
     } catch (error) {
       next(error);
     }

@@ -12,11 +12,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import { Loader2 } from 'lucide-react';
 import { Location } from '@/types/location';
 import { MapLoader } from '@/components/loader/map';
 import { Textarea } from '@/components/ui/textarea';
 import axios from '@/lib/axios';
 import dynamic from 'next/dynamic';
+import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
 import { useLocation } from '@/hooks/use-location';
 import { useRouter } from 'next/navigation';
@@ -26,7 +28,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 interface OutletCreateProps {
   //
 }
-const Role = ['Customer', 'Driver', 'OutletAdmin', 'WashingWorker', 'IroningWorker', 'PackingWorker'] as const;
+const Role = ['Employee', 'Driver', 'OutletAdmin', 'WashingWorker', 'IroningWorker', 'PackingWorker'] as const;
 
 const outletSchema = yup.object({
   name: yup.string().required(),
@@ -46,9 +48,10 @@ const outletSchema = yup.object({
     .required(),
 });
 
-const OutletCreateForm: React.FC<OutletCreateProps> = ({ ...props }) => {
+const CreateOutletForm: React.FC<OutletCreateProps> = ({ ...props }) => {
   const router = useRouter();
   const { toast } = useToast();
+  const { confirm } = useConfirm();
   const { state } = useLocation();
   const [location, setLocation] = React.useState<Location | null>(null);
   const [employees, setEmployees] = React.useState<EmployeeForm[]>([]);
@@ -92,20 +95,29 @@ const OutletCreateForm: React.FC<OutletCreateProps> = ({ ...props }) => {
   }, [form, employees]);
 
   const onSubmit = async (formData: yup.InferType<typeof outletSchema>) => {
-    try {
-      await axios.post('/outlets', formData);
-      toast({
-        title: 'Outlet created',
-        description: 'Your outlet has been created successfully',
+    confirm({
+      title: 'Create Outlet',
+      description: 'Are you sure you want to create this outlet? make sure the details are correct.',
+    })
+      .then(async () => {
+        try {
+          await axios.post('/outlets', formData);
+          toast({
+            title: 'Outlet created',
+            description: 'Your outlet has been created successfully',
+          });
+          router.push('/dashboard/outlets');
+        } catch (error: any) {
+          toast({
+            variant: 'destructive',
+            title: 'Failed to create outlet',
+            description: error.message,
+          });
+        }
+      })
+      .catch(() => {
+        // do nothing
       });
-      router.push('/dashboard/outlets');
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed to create outlet',
-        description: error.message,
-      });
-    }
   };
 
   return (
@@ -159,6 +171,13 @@ const OutletCreateForm: React.FC<OutletCreateProps> = ({ ...props }) => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
+                      {employees.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={3} className='h-20 text-center'>
+                            No results.
+                          </TableCell>
+                        </TableRow>
+                      )}
                       {employees.map((employee, idx) => (
                         <TableRow key={idx}>
                           <TableCell className='font-medium'>{employee.fullname}</TableCell>
@@ -274,7 +293,10 @@ const OutletCreateForm: React.FC<OutletCreateProps> = ({ ...props }) => {
                 <Link href='/dashboard/outlets'>
                   <Button variant='outline'>Cancel</Button>
                 </Link>
-                <Button type='submit'>Save Outlet</Button>
+                <Button type='submit' disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting && <Loader2 className='mr-2 size-4 animate-spin' />}
+                  Create Outlet
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -284,4 +306,4 @@ const OutletCreateForm: React.FC<OutletCreateProps> = ({ ...props }) => {
   );
 };
 
-export default OutletCreateForm;
+export default CreateOutletForm;

@@ -35,12 +35,17 @@ export default class OutletsAction {
 
       const query = {
         where: filter,
-        skip: (page - 1) * limit,
-        take: limit,
         orderBy: order,
       };
 
-      const [outlets, count] = await prisma.$transaction([prisma.outlet.findMany(query), prisma.outlet.count(query)]);
+      const [outlets, count] = await prisma.$transaction([
+        prisma.outlet.findMany({
+          ...query,
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+        prisma.outlet.count(query),
+      ]);
 
       return [outlets, count];
     } catch (error) {
@@ -90,6 +95,17 @@ export default class OutletsAction {
     }[]
   ) => {
     try {
+      const users = await prisma.user.findMany({
+        where: {
+          OR: employees.map((employee) => ({
+            user_id: employee.user_id,
+            role: 'Employee',
+          })),
+        },
+      });
+
+      if (users.length !== employees.length) throw new ApiError(400, 'Some employees not found');
+
       const url = new URL('https://api.opencagedata.com/geocode/v1/json');
       url.searchParams.set('q', latitude + '+' + longitude);
       url.searchParams.set('key', OPENCAGE_API);
@@ -231,9 +247,6 @@ export default class OutletsAction {
         MAXIMUM_RADIUS
       );
 
-      console.log(customer_address.latitude, customer_address.longitude);
-      console.log(latStart, latEnd, lonStart, lonEnd);
-
       const outlets = await prisma.outlet.findMany({
         where: {
           AND: [
@@ -255,8 +268,6 @@ export default class OutletsAction {
           created_at: 'asc',
         },
       });
-
-      if (!outlets) throw new ApiError(404, 'No outlet found nearby');
 
       return outlets.map((outlet) => ({
         outlet,

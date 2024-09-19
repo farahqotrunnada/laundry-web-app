@@ -17,6 +17,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import DataTableColumnHeader from '@/components/table/header';
 import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
+import { OrderStatusMapper } from '@/lib/constant';
 import { Outlet } from '@/types/outlet';
 import { User } from '@/types/user';
 
@@ -40,32 +41,27 @@ const columns: ColumnDef<
   },
   {
     enableSorting: false,
-    accessorKey: 'Outlet.name',
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Outlet Name' />;
-    },
-  },
-  {
-    enableSorting: false,
     accessorKey: 'Customer.User.fullname',
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='Customer Name' />;
     },
   },
   {
-    enableSorting: false,
-    accessorKey: 'OrderProgress.name',
+    accessorKey: 'delivery_fee',
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Order Progress' />;
+      return <DataTableColumnHeader column={column} title='Delivery Fee' />;
+    },
+    cell: ({ row }) => {
+      return <Badge variant='secondary'>{formatCurrency(row.original.delivery_fee)}</Badge>;
     },
   },
   {
-    accessorKey: 'price',
+    accessorKey: 'laundry_fee',
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Price' />;
+      return <DataTableColumnHeader column={column} title='Laundry Fee' />;
     },
     cell: ({ row }) => {
-      return <Badge>{formatCurrency(row.original.price)}</Badge>;
+      return <Badge variant='secondary'>{formatCurrency(row.original.laundry_fee)}</Badge>;
     },
   },
   {
@@ -74,7 +70,21 @@ const columns: ColumnDef<
       return <DataTableColumnHeader column={column} title='Created' />;
     },
     cell: ({ row }) => {
-      return <span>{formatDate(row.getValue('created_at') as string)}</span>;
+      return <span className='whitespace-nowrap'>{formatDate(row.getValue('created_at') as string)}</span>;
+    },
+  },
+  {
+    enableSorting: false,
+    accessorKey: 'OrderProgress.status',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Order Progress' />;
+    },
+    cell: ({ row }) => {
+      return (
+        <Badge className='whitespace-nowrap'>
+          {row.original.OrderProgress && OrderStatusMapper[row.original.OrderProgress.status]}
+        </Badge>
+      );
     },
   },
   {
@@ -99,9 +109,11 @@ const columns: ColumnDef<
             <Link href={'/dashboard/orders/' + row.original.order_id} className='w-full'>
               <DropdownMenuItem>View Order</DropdownMenuItem>
             </Link>
-            <Link href={'/dashboard/orders/' + row.original.order_id + '/create'} className='w-full'>
-              <DropdownMenuItem>Add Order Items</DropdownMenuItem>
-            </Link>
+            {row.original.OrderProgress && row.original.OrderProgress.status === 'ARRIVED_AT_OUTLET' && (
+              <Link href={'/dashboard/orders/' + row.original.order_id + '/create'} className='w-full'>
+                <DropdownMenuItem>Add Order Items</DropdownMenuItem>
+              </Link>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );

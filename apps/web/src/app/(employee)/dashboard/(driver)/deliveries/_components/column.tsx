@@ -1,7 +1,6 @@
 'use client';
 
 import { ColumnDef, Row } from '@tanstack/react-table';
-import { Delivery, ProgressType } from '@/types/delivery';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,9 +13,13 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import DataTableColumnHeader from '@/components/table/header';
+import { Delivery } from '@/types/delivery';
 import { MoreHorizontal } from 'lucide-react';
 import { Outlet } from '@/types/outlet';
+import { ProgressType } from '@/types/shared';
 import axios from '@/lib/axios';
+import useConfirm from '@/hooks/use-confirm';
+import { useSWRConfig } from 'swr';
 import { useToast } from '@/hooks/use-toast';
 
 const columns: ColumnDef<
@@ -80,23 +83,34 @@ interface TableActionProps {
 }
 
 const TableAction: React.FC<TableActionProps> = ({ row }) => {
+  const { mutate } = useSWRConfig();
   const { toast } = useToast();
+  const { confirm } = useConfirm();
 
   const changeProgress = async (progress: ProgressType) => {
-    try {
-      await axios.put('/deliveries/' + row.original.delivery_id, { progress });
-      toast({
-        title: 'Delivery progress updated',
-        description: 'Your delivery progress has been updated successfully',
+    confirm({
+      title: 'Update Delivery Progress',
+      description: 'Are you sure you want to update this delivery progress?',
+    })
+      .then(async () => {
+        try {
+          await axios.put('/deliveries/' + row.original.delivery_id, { progress });
+          toast({
+            title: 'Delivery progress updated',
+            description: 'Your delivery progress has been updated successfully',
+          });
+          mutate((key) => Array.isArray(key) && key.includes('/deliveries'));
+        } catch (error: any) {
+          toast({
+            variant: 'destructive',
+            title: 'Failed to change progress',
+            description: error.message,
+          });
+        }
+      })
+      .catch(() => {
+        // do nothing
       });
-      row.original.progress = progress;
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed to change progress',
-        description: error.message,
-      });
-    }
   };
 
   return (

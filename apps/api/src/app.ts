@@ -1,11 +1,12 @@
+import { FRONTEND_URL, PORT, validateEnv } from '@/config';
 import express, { Express, NextFunction, Request, Response } from 'express';
 
 import ApiError from '@/utils/error.util';
-import { PORT } from '@/config';
 import PassportConfig from './libs/passport';
 import { ValidationError } from 'yup';
 import cookie from 'cookie-parser';
 import cors from 'cors';
+import path from 'path';
 import v1Router from '@/routers/v1/index.routes';
 
 export default class App {
@@ -25,7 +26,7 @@ export default class App {
     this.app.use(
       cors({
         credentials: true,
-        origin: 'http://localhost:3000',
+        origin: FRONTEND_URL,
         allowedHeaders: ['Content-Type', 'Authorization'],
       })
     );
@@ -38,6 +39,7 @@ export default class App {
   private routes(): void {
     const v1 = new v1Router();
 
+    this.app.use('/static', express.static(path.join(__dirname, '../public')));
     this.app.get('/_debug/healthcheck', (req: Request, res: Response) => {
       res.send('OK');
     });
@@ -65,8 +67,14 @@ export default class App {
   }
 
   public start(): void {
-    this.app.listen(PORT, () => {
-      console.log(`  ➜  [API] Local:   http://localhost:${PORT}/`);
-    });
+    validateEnv()
+      .then(() => {
+        this.app.listen(PORT, () => {
+          console.log(`  ➜  [API] Local:   http://localhost:${PORT}/`);
+        });
+      })
+      .catch((error) => {
+        console.error('Environment variables are not valid', error.message);
+      });
   }
 }

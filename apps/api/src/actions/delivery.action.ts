@@ -1,13 +1,14 @@
-import { DeliveryType, Prisma, ProgressType } from '@prisma/client';
+import { DeliveryType, OrderStatus, Prisma, ProgressType, Role } from '@prisma/client';
 import { MAXIMUM_RADIUS, PRICE_PER_KM } from '@/config';
 
 import ApiError from '@/utils/error.util';
-import { OrderProgresses } from '@/utils/constant';
 import { getDistance } from '@/utils/distance.util';
 import prisma from '@/prisma';
 
 export default class DeliveryAction {
   index = async (
+    user_id: string,
+    role: Role,
     page: number,
     limit: number,
     id: string | undefined,
@@ -31,21 +32,44 @@ export default class DeliveryAction {
         };
       }
 
-      const query = {
-        where: filter,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: order,
-      };
+      let query;
+
+      if (role === 'SuperAdmin') {
+        query = {
+          where: filter,
+          skip: (page - 1) * limit,
+          take: limit,
+          orderBy: order,
+        };
+      } else {
+        query = {
+          where: {
+            ...filter,
+            Outlet: {
+              Employee: {
+                some: {
+                  User: {
+                    user_id,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: order,
+        };
+      }
 
       const [deliveries, count] = await prisma.$transaction([
         prisma.delivery.findMany({
           ...query,
+          skip: (page - 1) * limit,
+          take: limit,
           include: {
             Outlet: true,
           },
-        }),
-        prisma.delivery.count(query),
+        } as Prisma.DeliveryFindManyArgs),
+
+        prisma.delivery.count(query as Prisma.DeliveryCountArgs),
       ]);
 
       return [deliveries, count];
@@ -133,7 +157,8 @@ export default class DeliveryAction {
           customer_id: customer.customer_id,
           customer_address_id: customer_address_id,
           outlet_id,
-          price: Math.ceil(distance) * PRICE_PER_KM,
+          laundry_fee: 0,
+          delivery_fee: Math.ceil(distance) * PRICE_PER_KM,
           Delivery: {
             create: {
               outlet_id,
@@ -143,7 +168,7 @@ export default class DeliveryAction {
           },
           OrderProgress: {
             create: {
-              name: OrderProgresses.WAITING_FOR_PICKUP,
+              status: OrderStatus.WAITING_FOR_PICKUP,
             },
           },
         },
@@ -153,7 +178,7 @@ export default class DeliveryAction {
     }
   };
 
-  update = async (user_id: string, delivery_id: string, progress: ProgressType) => {
+  update = async (user_id: string, role: 'SuperAdmin' | 'Driver', delivery_id: string, progress: ProgressType) => {
     try {
       const delivery = await prisma.delivery.findUnique({
         where: { delivery_id },
@@ -161,14 +186,16 @@ export default class DeliveryAction {
 
       if (!delivery) throw new ApiError(404, 'Delivery not found');
 
-      const employee = await prisma.employee.findUnique({
-        where: {
-          user_id,
-          outlet_id: delivery.outlet_id,
-        },
-      });
+      if (role !== 'SuperAdmin') {
+        const employee = await prisma.employee.findUnique({
+          where: {
+            user_id,
+            outlet_id: delivery.outlet_id,
+          },
+        });
 
-      if (!employee) throw new ApiError(404, 'Employee not found or not assigned to this outlet');
+        if (!employee) throw new ApiError(404, 'Employee not found or not assigned to this outlet');
+      }
 
       await prisma.delivery.update({
         where: { delivery_id },
@@ -179,14 +206,14 @@ export default class DeliveryAction {
         await prisma.orderProgress.create({
           data: {
             order_id: delivery.order_id,
-            name: OrderProgresses.ON_PROGRESS_PICKUP,
+            status: OrderStatus.ON_PROGRESS_PICKUP,
           },
         });
       } else if (progress === ProgressType.Completed) {
         await prisma.orderProgress.create({
           data: {
             order_id: delivery.order_id,
-            name: OrderProgresses.ARRIVED_AT_OUTLET,
+            status: OrderStatus.ARRIVED_AT_OUTLET,
           },
         });
       }

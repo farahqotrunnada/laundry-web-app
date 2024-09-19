@@ -7,6 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
@@ -19,8 +20,13 @@ interface LoginFormProps {
 
 const registerSchema = yup.object({
   email: yup.string().email().required(),
-  fullname: yup.string().required(),
-  phone: yup.string().required(),
+  fullname: yup.string().min(6, 'Full name is too short').max(50, 'Full name is too long').required(),
+  phone: yup
+    .string()
+    .min(10, 'Phone number is too short')
+    .max(13, 'Phone number is too long')
+    .matches(/^\d+$/, 'Phone number must be a number')
+    .required(),
 });
 
 const RegisterForm: React.FC<LoginFormProps> = ({ ...props }) => {
@@ -92,14 +98,31 @@ const RegisterForm: React.FC<LoginFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Phone</FormLabel>
               <FormControl>
-                <Input placeholder='enter your phone' {...field} />
+                <Input
+                  placeholder='enter your phone'
+                  {...field}
+                  inputMode='numeric'
+                  pattern='\d*'
+                  onKeyDown={(e) => {
+                    if (
+                      !/^[0-9]$/.test(e.key) &&
+                      e.key !== 'Backspace' &&
+                      e.key !== 'Tab' &&
+                      e.key !== 'ArrowLeft' &&
+                      e.key !== 'ArrowRight'
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type='submit' className='w-full'>
+        <Button type='submit' className='w-full' disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting && <Loader2 className='mr-2 size-4 animate-spin' />}
           Register
         </Button>
       </form>

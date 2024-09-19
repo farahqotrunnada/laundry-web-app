@@ -20,9 +20,19 @@ export default class LaundryItemRouter {
 
   private initializeRoutes(): void {
     this.router.use(this.authMiddleware.header);
-    this.router.use(this.roleMiddleware.role(['SuperAdmin']));
-
+    this.router.use(
+      this.roleMiddleware.role([
+        'SuperAdmin',
+        'Driver',
+        'OutletAdmin',
+        'IroningWorker',
+        'PackingWorker',
+        'WashingWorker',
+      ])
+    );
     this.router.get('/', this.laundryItemController.index);
+
+    this.router.use(this.roleMiddleware.role(['SuperAdmin']));
     this.router.post('/', this.laundryItemController.create);
     this.router.get('/:laundry_item_id', this.laundryItemController.show);
     this.router.put('/:laundry_item_id', this.laundryItemController.update);

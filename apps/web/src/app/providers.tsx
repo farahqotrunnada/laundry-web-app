@@ -5,6 +5,8 @@ import 'aos/dist/aos.css';
 import * as React from 'react';
 
 import { AuthProvider } from '@/context/auth';
+import { ConfirmProvider } from '@/context/confirm';
+import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import dynamic from 'next/dynamic';
@@ -23,13 +25,17 @@ export default function Provider({ children }: LayoutProps) {
   );
 
   return (
-    <AuthProvider>
-      <TooltipProvider>
-        <AosProvider>
-          {children}
-          <Toaster />
-        </AosProvider>
-      </TooltipProvider>
-    </AuthProvider>
+    <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+      <AuthProvider>
+        <ConfirmProvider>
+          <TooltipProvider>
+            <AosProvider>
+              {children}
+              <Toaster />
+            </AosProvider>
+          </TooltipProvider>
+        </ConfirmProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

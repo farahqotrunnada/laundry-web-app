@@ -19,8 +19,8 @@ import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import axios from '@/lib/axios';
+import useConfirm from '@/hooks/use-confirm';
 import { useCustomerAddresses } from '@/hooks/use-customer-addresses';
-import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 
 interface AddressListProps {
@@ -29,30 +29,40 @@ interface AddressListProps {
 
 const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
   const { toast } = useToast();
+  const { confirm } = useConfirm();
   const { data, error, isLoading, mutate } = useCustomerAddresses();
 
   const handleSetPrimary = async (address: Address) => {
-    try {
-      if (address.is_primary) {
-        toast({
-          title: 'Address already set as primary',
-          description: 'Your address is already set as primary.',
-        });
-        return;
-      }
+    confirm({
+      title: 'Set as Primary Address',
+      description: 'Are you sure you want to set this address as primary?',
+    })
+      .then(async () => {
+        try {
+          if (address.is_primary) {
+            toast({
+              title: 'Address already set as primary',
+              description: 'Your address is already set as primary.',
+            });
+            return;
+          }
 
-      await axios.put(`/profile/addresses/${address.customer_address_id}/set-primary`);
-      toast({
-        title: 'Address set as primary',
-        description: 'Your address has been set as primary.',
+          await axios.put(`/profile/addresses/${address.customer_address_id}/set-primary`);
+          toast({
+            title: 'Address set as primary',
+            description: 'Your address has been set as primary.',
+          });
+          mutate();
+        } catch (error: any) {
+          toast({
+            title: 'Failed to set address as primary',
+            description: error.message,
+          });
+        }
+      })
+      .catch(() => {
+        // do nothing
       });
-      mutate();
-    } catch (error: any) {
-      toast({
-        title: 'Failed to set address as primary',
-        description: error.message,
-      });
-    }
   };
 
   if (isLoading) return <Skeleton className='w-full h-32 rounded-lg' />;
@@ -72,7 +82,7 @@ const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
         <TableBody>
           {data.data.length === 0 && (
             <TableRow>
-              <TableCell colSpan={3} className='h-20 text-center'>
+              <TableCell colSpan={4} className='h-20 text-center'>
                 No results.
               </TableCell>
             </TableRow>

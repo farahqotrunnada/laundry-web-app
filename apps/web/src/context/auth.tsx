@@ -2,18 +2,26 @@
 
 import * as React from 'react';
 
-import { User } from '@/types/user';
+import { User, UserToken } from '@/types/user';
+
 import axios from '@/lib/axios';
+import { jwtDecode } from 'jwt-decode';
 import { useLocalStorage } from 'usehooks-ts';
-import { useToast } from '@/hooks/use-toast';
+
+interface AccessTokenPayload extends UserToken {
+  exp: number;
+  iat: number;
+}
 
 interface AuthContextProps {
-  user: User | null;
+  user: UserToken | null;
   token: string | null;
   signin: (data: { email: string; password: string }) => Promise<void>;
   signup: (data: { email: string; fullname: string; phone: string }) => Promise<void>;
   verify: (data: { password: string; confirmation: string; token: string }) => Promise<void>;
-  update: (data: { fullname: string; phone: string }) => Promise<void>;
+  update: (data: { fullname: string; phone: string; avatar_url: string }) => Promise<void>;
+  changePassword: (data: { password: string; new_password: string; confirmation: string }) => Promise<void>;
+  changeEmail: (data: { email: string; password: string }) => Promise<void>;
   google: () => Promise<void>;
   signout: () => Promise<void>;
 }
@@ -25,24 +33,25 @@ const AuthContext = React.createContext<AuthContextProps>({
   signup: async () => {},
   verify: async () => {},
   update: async () => {},
+  changePassword: async () => {},
+  changeEmail: async () => {},
   google: async () => {},
   signout: async () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const { toast } = useToast();
-
   const [token, setToken] = useLocalStorage<string | null>('access_token', null);
-  const [user, setUser] = React.useState<User | null>(null);
+  const [user, setUser] = React.useState<UserToken | null>(null);
 
   React.useEffect(() => {
-    const profile = async () => {
-      const { data } = await axios.get('/profile');
-      setUser(data.data);
+    const parseToken = (token: string) => {
+      const { exp, iat, ...user } = jwtDecode<AccessTokenPayload>(token);
+      setUser(user);
     };
 
-    if (token) profile();
-  }, [token, toast, setToken]);
+    if (token) parseToken(token);
+    else setUser(null);
+  }, [token]);
 
   const signin = async ({ email, password }: { email: string; password: string }) => {
     const { data } = await axios.post('/auth/login', { email, password });
@@ -66,15 +75,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(data.data.access_token);
   };
 
-  const update = async ({ fullname, phone }: { fullname: string; phone: string }) => {
-    const { data } = await axios.put('/profile', { fullname, phone });
-    setUser(data.data);
+  const update = async ({ fullname, phone, avatar_url }: { fullname: string; phone: string; avatar_url: string }) => {
+    const { data } = await axios.put('/profile', { fullname, phone, avatar_url });
+    setToken(data.data.access_token);
+  };
+
+  const changePassword = async ({
+    password,
+    new_password,
+    confirmation,
+  }: {
+    password: string;
+    new_password: string;
+    confirmation: string;
+  }) => {
+    await axios.post('/profile/change-password', { password, new_password, confirmation });
+  };
+
+  const changeEmail = async ({ email, password }: { email: string; password: string }) => {
+    const { data } = await axios.post('/profile/change-email', { email, password });
+    setToken(data.data.access_token);
   };
 
   const signout = async () => {
     await axios.post('/auth/logout');
     setToken(null);
-    setUser(null);
   };
 
   const google = async () => {
@@ -82,7 +107,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, signin, signup, verify, update, google, signout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        signin,
+        signup,
+        verify,
+        update,
+        changePassword,
+        changeEmail,
+        google,
+        signout,
+      }}>
       {children}
     </AuthContext.Provider>
   );

@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import { Badge } from '@/components/ui/badge';
+import DetailList from '@/components/detail-list';
 import { useOutletDetail } from '@/hooks/use-outlet-detail';
 
 interface OutletDetailsProps {
@@ -32,6 +33,7 @@ const OutletDetails: React.FC<OutletDetailsProps> = ({ outlet_id, ...props }) =>
               <div className='flex flex-col space-y-4 text-sm'>
                 <DetailList title='Outlet ID' data={data.data.outlet_id.toUpperCase()} />
                 <DetailList title='Name' data={data.data.name} />
+                <DetailList title='Description' data={data.data.description} />
                 <DetailList title='Address' data={data.data.address} />
                 <DetailList title='City' data={data.data.city} />
                 <DetailList title='Region' data={data.data.region} />
@@ -61,6 +63,13 @@ const OutletDetails: React.FC<OutletDetailsProps> = ({ outlet_id, ...props }) =>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
+                  {data.data.Employee.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={3} className='h-20 text-center'>
+                        No results.
+                      </TableCell>
+                    </TableRow>
+                  )}
                   {data.data.Employee.map((employee, idx) => (
                     <TableRow key={idx}>
                       <TableCell>{employee.User.fullname}</TableCell>
@@ -75,18 +84,6 @@ const OutletDetails: React.FC<OutletDetailsProps> = ({ outlet_id, ...props }) =>
             </div>
           </CardContent>
         </Card>
-      </div>
-    </div>
-  );
-};
-
-const DetailList: React.FC<{ title: string; data: string | undefined }> = ({ title, data }) => {
-  return (
-    <div className='flex flex-col space-y-4 text-sm'>
-      <div className='flex w-full space-x-2 items-bottom'>
-        <span className='flex-none'>{title}</span>
-        <div className='w-full border-b border-dotted border-muted-foreground'></div>
-        <span className='flex-none text-muted-foreground'>{data}</span>
       </div>
     </div>
   );

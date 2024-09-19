@@ -4,21 +4,21 @@ import * as React from 'react';
 import * as yup from 'yup';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import EmployeeSelectField, { EmployeeForm } from './select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { EmployeeForm } from './select';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import { Loader2 } from 'lucide-react';
 import { Location } from '@/types/location';
 import { MapLoader } from '@/components/loader/map';
 import { Textarea } from '@/components/ui/textarea';
 import axios from '@/lib/axios';
 import dynamic from 'next/dynamic';
 import { useForm } from 'react-hook-form';
-import { useLocation } from '@/hooks/use-location';
 import { useOutletDetail } from '@/hooks/use-outlet-detail';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -156,6 +156,13 @@ const OutletEditForm: React.FC<OutletEditProps> = ({ outlet_id }) => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
+                      {data.data.Employee.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={3} className='h-20 text-center'>
+                            No results.
+                          </TableCell>
+                        </TableRow>
+                      )}
                       {employees.map((employee, idx) => (
                         <TableRow key={idx}>
                           <TableCell className='font-medium'>{employee.fullname}</TableCell>
@@ -247,7 +254,10 @@ const OutletEditForm: React.FC<OutletEditProps> = ({ outlet_id }) => {
                 <Link href='/dashboard/outlets'>
                   <Button variant='outline'>Cancel</Button>
                 </Link>
-                <Button type='submit'>Save Outlet</Button>
+                <Button type='submit' disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting && <Loader2 className='mr-2 size-4 animate-spin' />}
+                  Update Outlet
+                </Button>
               </div>
             </CardContent>
           </Card>
