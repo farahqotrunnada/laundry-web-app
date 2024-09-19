@@ -84,7 +84,7 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type='password' placeholder='enter your password' {...field} />
+                <Input type='password' placeholder='Enter your password' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -107,11 +107,7 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ ...props }) => {
 
         <PasswordMeter password={form.watch('password')} />
 
-        <FormField
-          control={form.control}
-          name='token'
-          render={({ field }) => <Input type='hidden' placeholder='enter your token' {...field} />}
-        />
+        <FormField control={form.control} name='token' render={({ field }) => <Input type='hidden' {...field} />} />
 
         <Button type='submit' className='w-full'>
           Set Password

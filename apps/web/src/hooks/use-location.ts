@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 
+import { DEFAULT_LOCATION } from '@/lib/constant';
 import { Location } from '@/types/location';
 import { useToast } from '@/hooks/use-toast';
 
@@ -9,10 +10,7 @@ export const useLocation = () => {
   const { toast } = useToast();
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<GeolocationPositionError | null>(null);
-  const [state, setState] = React.useState<Location>({
-    latitude: -6.1741855,
-    longitude: 106.8283778,
-  });
+  const [state, setState] = React.useState<Location>(DEFAULT_LOCATION);
 
   React.useEffect(() => {
     navigator.geolocation.getCurrentPosition(

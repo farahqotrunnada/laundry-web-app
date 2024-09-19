@@ -112,7 +112,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ ...props }) => {
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input placeholder='enter your full name' {...field} />
+                      <Input placeholder='Enter your full name' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -126,7 +126,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ ...props }) => {
                   <FormItem>
                     <FormLabel>Phone</FormLabel>
                     <FormControl>
-                      <Input placeholder='enter your phone' {...field} />
+                      <Input placeholder='Enter your phone' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -140,7 +140,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ ...props }) => {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder='enter your email' {...field} />
+                      <Input placeholder='Enter your email' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -154,7 +154,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ ...props }) => {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type='password' placeholder='enter your password' {...field} />
+                      <Input type='password' placeholder='Enter your password' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

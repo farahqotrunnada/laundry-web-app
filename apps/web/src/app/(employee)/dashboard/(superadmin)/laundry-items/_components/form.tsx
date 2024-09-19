@@ -71,7 +71,7 @@ const CreateLaundryItem: React.FC<CreateLaundryItemProps> = ({ ...props }) => {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder='enter your name' {...field} />
+                      <Input placeholder='Enter your name' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -85,7 +85,7 @@ const CreateLaundryItem: React.FC<CreateLaundryItemProps> = ({ ...props }) => {
                   <FormItem>
                     <FormLabel>Icon Url (wip)</FormLabel>
                     <FormControl>
-                      <Input placeholder='enter your icon url' {...field} />
+                      <Input placeholder='Enter your icon url' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

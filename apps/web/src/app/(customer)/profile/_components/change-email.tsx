@@ -7,14 +7,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import Loader from '@/components/loader/loader';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
+import { useProfile } from '@/hooks/use-profile';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
-import Loader from '@/components/loader/loader';
-import { useProfile } from '@/hooks/use-profile';
 
 interface ChangeEmailFormProps {
   //
@@ -84,7 +84,7 @@ const ChangeEmailForm: React.FC<ChangeEmailFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder='enter your email' {...field} />
+                <Input placeholder='Enter your email' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -98,7 +98,7 @@ const ChangeEmailForm: React.FC<ChangeEmailFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type='password' placeholder='enter your password' {...field} />
+                <Input type='password' placeholder='Enter your password' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

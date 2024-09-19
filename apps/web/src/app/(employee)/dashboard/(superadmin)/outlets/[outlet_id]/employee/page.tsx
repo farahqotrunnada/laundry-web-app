@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as yup from 'yup';
 
-import EditOutletForm from './_components/edit';
 import { redirect } from 'next/navigation';
 
 interface PageProps {
@@ -21,13 +20,11 @@ export default async function Page({ params, ...props }: PageProps): Promise<Rea
     return (
       <>
         <div className='flex flex-col items-start space-y-2'>
-          <h2 className='text-4xl font-bold'>Outlet Details</h2>
+          <h2 className='text-4xl font-bold'>Outlet employee Details</h2>
           <p className='leading-relaxed tracking-tight text-left text-muted-foreground'>
             Managing a small business today is already tough. Avoid further complications by ditching outdated.
           </p>
         </div>
-
-        <EditOutletForm outlet_id={outlet_id} />
       </>
     );
   } catch (error) {

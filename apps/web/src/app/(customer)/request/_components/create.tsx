@@ -13,7 +13,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import { MapLoader } from '@/components/loader/map';
 import axios from '@/lib/axios';
+import dynamic from 'next/dynamic';
 import useConfirm from '@/hooks/use-confirm';
 import { useCustomerAddresses } from '@/hooks/use-customer-addresses';
 import { useForm } from 'react-hook-form';
@@ -35,6 +37,15 @@ const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
   const router = useRouter();
   const { toast } = useToast();
   const { confirm } = useConfirm();
+
+  const MapRange = React.useMemo(
+    () =>
+      dynamic(() => import('@/components/map-range'), {
+        loading: () => <MapLoader />,
+        ssr: false,
+      }),
+    []
+  );
 
   const form = useForm<yup.InferType<typeof requestOrderSchema>>({
     resolver: yupResolver(requestOrderSchema),
@@ -105,8 +116,8 @@ const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col space-y-6'>
-        <Card>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='grid items-start gap-8 lg:grid-cols-5'>
+        <Card className='lg:col-span-3'>
           <CardHeader>
             <CardTitle className='text-xl font-bold'>Create Order</CardTitle>
             <CardDescription>Create new laundry order to the nearest outlet.</CardDescription>
@@ -236,6 +247,32 @@ const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
               </Button>
             </div>
           </CardFooter>
+        </Card>
+
+        <Card className='lg:col-span-2'>
+          <CardHeader>
+            <CardTitle className='text-xl font-bold'>Location Range</CardTitle>
+            <CardDescription>This information will be used to locate your outlet.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <MapRange
+              center={
+                address && {
+                  latitude: address.latitude,
+                  longitude: address.longitude,
+                }
+              }
+              points={
+                distances &&
+                distances.data.map((distance) => ({
+                  latitude: distance.outlet.latitude,
+                  longitude: distance.outlet.longitude,
+                  name: distance.outlet.name,
+                }))
+              }
+              className='w-full aspect-square'
+            />
+          </CardContent>
         </Card>
       </form>
     </Form>

@@ -70,7 +70,7 @@ const RegisterForm: React.FC<LoginFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder='enter your email' {...field} />
+                <Input placeholder='Enter your email' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -84,7 +84,7 @@ const RegisterForm: React.FC<LoginFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Full Name</FormLabel>
               <FormControl>
-                <Input placeholder='enter your full name' {...field} />
+                <Input placeholder='Enter your full name' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

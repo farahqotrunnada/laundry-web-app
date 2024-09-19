@@ -114,7 +114,7 @@ const EditProfileForm: React.FC<ProfileFormProps> = ({ ...props }) => {
           <FormItem>
             <FormLabel>Email</FormLabel>
             <FormControl>
-              <Input placeholder='enter your email' defaultValue={form.watch('email')} disabled readOnly />
+              <Input placeholder='Enter your email' defaultValue={form.watch('email')} disabled readOnly />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -126,7 +126,7 @@ const EditProfileForm: React.FC<ProfileFormProps> = ({ ...props }) => {
               <FormItem>
                 <FormLabel>Full Name</FormLabel>
                 <FormControl>
-                  <Input placeholder='enter your full name' {...field} />
+                  <Input placeholder='Enter your full name' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

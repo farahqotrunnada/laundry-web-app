@@ -6,6 +6,7 @@ import * as yup from 'yup';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 import { Button } from '@/components/ui/button';
+import { DEFAULT_LOCATION } from '@/lib/constant';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import { Location } from '@/types/location';
@@ -36,7 +37,7 @@ const CreateAddressForm: React.FC<AddressFormProps> = ({ ...props }) => {
   const { toast } = useToast();
   const { confirm } = useConfirm();
   const { state } = useLocation();
-  const [location, setLocation] = React.useState<Location | null>(null);
+  const [location, setLocation] = React.useState<Location>(DEFAULT_LOCATION);
 
   const Map = React.useMemo(
     () =>
@@ -58,18 +59,12 @@ const CreateAddressForm: React.FC<AddressFormProps> = ({ ...props }) => {
   });
 
   React.useEffect(() => {
-    if (state) {
-      setLocation(state);
-      form.setValue('latitude', state.latitude);
-      form.setValue('longitude', state.longitude);
-    }
+    if (state) setLocation(state);
   }, [state, form]);
 
   React.useEffect(() => {
-    if (location) {
-      form.setValue('latitude', location.latitude);
-      form.setValue('longitude', location.longitude);
-    }
+    form.setValue('latitude', location.latitude);
+    form.setValue('longitude', location.longitude);
   }, [form, location]);
 
   const onSubmit = async (formData: yup.InferType<typeof addressSchema>) => {
@@ -109,7 +104,7 @@ const CreateAddressForm: React.FC<AddressFormProps> = ({ ...props }) => {
               <FormItem>
                 <FormLabel>Label Name</FormLabel>
                 <FormControl>
-                  <Input placeholder='enter label name for address' {...form.register('name')} />
+                  <Input placeholder='Enter label name for address' {...form.register('name')} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -123,7 +118,7 @@ const CreateAddressForm: React.FC<AddressFormProps> = ({ ...props }) => {
               <FormItem>
                 <FormLabel>Address</FormLabel>
                 <FormControl>
-                  <Textarea placeholder='enter your address' {...field} />
+                  <Textarea placeholder='Enter your address' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -138,7 +133,7 @@ const CreateAddressForm: React.FC<AddressFormProps> = ({ ...props }) => {
                 <FormItem>
                   <FormLabel>Latitude</FormLabel>
                   <FormControl>
-                    <Input placeholder='enter your latitude' {...form.register('latitude')} readOnly />
+                    <Input placeholder='Enter your latitude' {...form.register('latitude')} readOnly />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -152,7 +147,7 @@ const CreateAddressForm: React.FC<AddressFormProps> = ({ ...props }) => {
                 <FormItem>
                   <FormLabel>Longitude</FormLabel>
                   <FormControl>
-                    <Input placeholder='enter your longitude' {...form.register('longitude')} readOnly />
+                    <Input placeholder='Enter your longitude' {...form.register('longitude')} readOnly />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
