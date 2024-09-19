@@ -26,8 +26,8 @@ export type Customer = {
 export type Employee = {
   employee_id: string;
   user_id: string;
-  outlet_id?: string;
-  shift_id?: string;
+  outlet_id: string;
+  shift_id: string;
 };
 
 export type UserToken = Omit<User, 'phone' | 'created_at' | 'updated_at'>;

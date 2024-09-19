@@ -60,7 +60,7 @@ const Action: React.FC<ActionProps> = ({ className, shift }) => {
   const { confirm } = useConfirm();
   const { mutate } = useShifts();
 
-  const handleDelete = async (shift: Shift) => {
+  const handleDelete = async () => {
     confirm({
       variant: 'destructive',
       title: 'Delete Shift',
@@ -96,7 +96,7 @@ const Action: React.FC<ActionProps> = ({ className, shift }) => {
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <EditShiftModal shift={shift} />
-        <DropdownMenuItem onClick={() => handleDelete(shift)}>Delete shift</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleDelete()}>Delete shift</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

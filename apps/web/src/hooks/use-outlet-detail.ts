@@ -2,6 +2,7 @@
 
 import { Employee } from '@/types/user';
 import { Outlet } from '@/types/outlet';
+import { Shift } from '@/types/shift';
 import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
 import { useToast } from './use-toast';
@@ -20,6 +21,7 @@ export const useOutletDetail = (outlet_id: string) => {
             fullname: string;
             role: string;
           };
+          Shift?: Shift;
         }
       >;
     };

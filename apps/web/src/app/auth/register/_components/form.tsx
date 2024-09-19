@@ -98,23 +98,7 @@ const RegisterForm: React.FC<LoginFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Phone</FormLabel>
               <FormControl>
-                <Input
-                  placeholder='enter your phone'
-                  {...field}
-                  inputMode='numeric'
-                  pattern='\d*'
-                  onKeyDown={(e) => {
-                    if (
-                      !/^[0-9]$/.test(e.key) &&
-                      e.key !== 'Backspace' &&
-                      e.key !== 'Tab' &&
-                      e.key !== 'ArrowLeft' &&
-                      e.key !== 'ArrowRight'
-                    ) {
-                      e.preventDefault();
-                    }
-                  }}
-                />
+                <Input type='number' inputMode='numeric' placeholder='enter your phone' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

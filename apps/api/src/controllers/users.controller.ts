@@ -71,8 +71,20 @@ export default class UsersController {
         .object({
           email: yup.string().email().required(),
           fullname: yup.string().required(),
-          phone: yup.string().required(),
-          password: yup.string().required(),
+          phone: yup
+            .string()
+            .min(10, 'Phone number is too short')
+            .max(13, 'Phone number is too long')
+            .matches(/^\d+$/, 'Phone number must be a number')
+            .required(),
+          password: yup
+            .string()
+            .min(10, 'Password is too short')
+            .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+            .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+            .matches(/[0-9]/, 'Password must contain at least one number')
+            .matches(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
+            .required(),
         })
         .validate(req.body);
 
@@ -95,7 +107,12 @@ export default class UsersController {
       const { fullname, phone, role, is_verified, avatar_url } = await yup
         .object({
           fullname: yup.string().required(),
-          phone: yup.string().required(),
+          phone: yup
+            .string()
+            .min(10, 'Phone number is too short')
+            .max(13, 'Phone number is too long')
+            .matches(/^\d+$/, 'Phone number must be a number')
+            .required(),
           role: yup.string().oneOf(Object.values(Role)).required(),
           is_verified: yup.boolean().required(),
           avatar_url: yup.string().nullable(),

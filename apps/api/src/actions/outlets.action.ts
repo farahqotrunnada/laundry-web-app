@@ -68,6 +68,7 @@ export default class OutletsAction {
                   role: true,
                 },
               },
+              Shift: true,
             },
           },
         },

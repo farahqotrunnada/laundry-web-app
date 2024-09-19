@@ -1,3 +1,4 @@
+import ApiError from '@/utils/error.util';
 import { Prisma } from '@prisma/client';
 import prisma from '@/libs/prisma';
 
@@ -28,14 +29,22 @@ export class ShiftAction {
 
   create = async (start: string, end: string) => {
     try {
-      const shift = await prisma.shift.create({
-        data: {
+      const shift = await prisma.shift.findFirst({
+        where: {
           start,
           end,
         },
       });
 
-      return shift;
+      if (shift) throw new ApiError(400, 'Shift with this start and end time already exists');
+
+      const created = await prisma.shift.create({
+        data: {
+          start,
+          end,
+        },
+      });
+      return created;
     } catch (error) {
       throw error;
     }
@@ -43,7 +52,16 @@ export class ShiftAction {
 
   update = async (shift_id: string, start: string, end: string) => {
     try {
-      const shift = await prisma.shift.update({
+      const shift = await prisma.shift.findFirst({
+        where: {
+          start,
+          end,
+        },
+      });
+
+      if (!shift) throw new ApiError(404, 'Shift with this start and end time does not exist');
+
+      const updated = await prisma.shift.update({
         where: { shift_id },
         data: {
           start,
@@ -51,7 +69,7 @@ export class ShiftAction {
         },
       });
 
-      return shift;
+      return updated;
     } catch (error) {
       throw error;
     }

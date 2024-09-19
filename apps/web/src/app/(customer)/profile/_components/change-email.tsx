@@ -15,6 +15,7 @@ import { useForm } from 'react-hook-form';
 import { useProfile } from '@/hooks/use-profile';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { PasswordInput } from '@/components/password-input';
 
 interface ChangeEmailFormProps {
   //
@@ -98,7 +99,7 @@ const ChangeEmailForm: React.FC<ChangeEmailFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type='password' placeholder='Enter your password' {...field} />
+                <PasswordInput type='password' placeholder='Enter your password' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

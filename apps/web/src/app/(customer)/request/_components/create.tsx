@@ -37,6 +37,8 @@ const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
   const router = useRouter();
   const { toast } = useToast();
   const { confirm } = useConfirm();
+  const [addressOpen, setAddressOpen] = React.useState(false);
+  const [outletOpen, setOutletOpen] = React.useState(false);
 
   const MapRange = React.useMemo(
     () =>
@@ -130,7 +132,7 @@ const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Your Addresses</FormLabel>
-                    <Popover>
+                    <Popover open={addressOpen} onOpenChange={setAddressOpen}>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
@@ -155,6 +157,7 @@ const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
                                   value={address.customer_address_id}
                                   onSelect={() => {
                                     form.setValue('customer_address_id', address.customer_address_id);
+                                    setAddressOpen(false);
                                   }}>
                                   <div className='flex flex-col'>
                                     <div className='flex items-center space-x-2'>
@@ -181,7 +184,7 @@ const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Nearest Outlets</FormLabel>
-                    <Popover>
+                    <Popover open={outletOpen} onOpenChange={setOutletOpen}>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
@@ -207,6 +210,7 @@ const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
                                     value={distance.outlet.outlet_id}
                                     onSelect={() => {
                                       form.setValue('outlet_id', distance.outlet.outlet_id);
+                                      setOutletOpen(false);
                                     }}>
                                     <div className='flex flex-col'>
                                       <div className='flex items-center space-x-2'>

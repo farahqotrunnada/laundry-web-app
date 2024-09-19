@@ -14,6 +14,7 @@ import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { PasswordInput } from '@/components/password-input';
 
 interface ChangePasswordFormProps {
   //
@@ -85,7 +86,7 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ ...props }) => 
             <FormItem>
               <FormLabel>Current Password</FormLabel>
               <FormControl>
-                <Input type='password' placeholder='Enter your current password' {...field} />
+                <PasswordInput type='password' placeholder='Enter your current password' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -100,7 +101,7 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ ...props }) => 
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type='password' placeholder='Enter your password' {...field} />
+                  <PasswordInput type='password' placeholder='Enter your password' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -114,7 +115,7 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ ...props }) => 
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input type='password' placeholder='confirm your password' {...field} />
+                  <PasswordInput type='password' placeholder='confirm your password' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

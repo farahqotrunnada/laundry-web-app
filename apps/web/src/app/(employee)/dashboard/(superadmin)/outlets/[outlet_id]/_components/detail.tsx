@@ -32,7 +32,7 @@ const OutletDetails: React.FC<OutletDetailsProps> = ({ outlet_id, ...props }) =>
 
   return (
     <div className='grid items-start gap-8'>
-      <div className='grid gap-8 lg:grid-cols-2'>
+      <div className='grid items-start gap-8 lg:grid-cols-2'>
         <Card>
           <CardHeader>
             <CardTitle className='text-xl font-bold'>Outlet Details</CardTitle>
@@ -67,7 +67,7 @@ const OutletDetails: React.FC<OutletDetailsProps> = ({ outlet_id, ...props }) =>
                 latitude: data.data.latitude,
                 longitude: data.data.longitude,
               }}
-              className='w-full aspect-video'
+              className='w-full aspect-square lg:aspect-[4/3]'
               setLocation={(location) => null}
             />
           </CardContent>
@@ -88,6 +88,7 @@ const OutletDetails: React.FC<OutletDetailsProps> = ({ outlet_id, ...props }) =>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
+                  <TableHead>Shift</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -98,15 +99,22 @@ const OutletDetails: React.FC<OutletDetailsProps> = ({ outlet_id, ...props }) =>
                     </TableCell>
                   </TableRow>
                 )}
-                {data.data.Employee.map((employee, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell>{employee.User.fullname}</TableCell>
-                    <TableCell>{employee.User.email}</TableCell>
-                    <TableCell>
-                      <Badge>{employee.User.role}</Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {data.data.Employee.map((employee, idx) => {
+                  const shift = employee.Shift && employee.Shift.start + ' - ' + employee.Shift.end;
+
+                  return (
+                    <TableRow key={idx}>
+                      <TableCell>{employee.User.fullname}</TableCell>
+                      <TableCell>{employee.User.email}</TableCell>
+                      <TableCell>
+                        <Badge>{employee.User.role}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant='outline'>{shift ? shift : 'No shift'}</Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>

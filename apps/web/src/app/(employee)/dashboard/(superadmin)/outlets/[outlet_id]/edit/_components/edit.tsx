@@ -211,7 +211,7 @@ const EditOutletForm: React.FC<EditOutletProps> = ({ outlet_id }) => {
               <FormItem>
                 <FormLabel>Location</FormLabel>
                 {location ? (
-                  <Map location={location} setLocation={setLocation} className='aspect-video' />
+                  <Map location={location} setLocation={setLocation} className='aspect-[4/3]' />
                 ) : (
                   <MapLoader />
                 )}

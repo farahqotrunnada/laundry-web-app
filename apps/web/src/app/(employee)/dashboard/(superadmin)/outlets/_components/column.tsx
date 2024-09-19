@@ -111,10 +111,10 @@ const Action: React.FC<ActionProps> = ({ outlet }) => {
         <Link href={'/dashboard/outlets/' + outlet.outlet_id + '/edit'} className='w-full'>
           <DropdownMenuItem>Edit Outlet</DropdownMenuItem>
         </Link>
+        <DropdownMenuItem onClick={handleDelete}>Delete Outlet</DropdownMenuItem>
         <Link href={'/dashboard/outlets/' + outlet.outlet_id + '/employees'} className='w-full'>
           <DropdownMenuItem>Manage Employees</DropdownMenuItem>
         </Link>
-        <DropdownMenuItem onClick={handleDelete}>Delete Outlet</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

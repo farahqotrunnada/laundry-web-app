@@ -55,7 +55,7 @@ const Action: React.FC<ActionProps> = ({ item, className }) => {
   const { confirm } = useConfirm();
   const { mutate } = useLaundryItems();
 
-  const handleDelete = async (item: LaundryItem) => {
+  const handleDelete = async () => {
     confirm({
       variant: 'destructive',
       title: 'Delete Laundry Item',
@@ -91,7 +91,7 @@ const Action: React.FC<ActionProps> = ({ item, className }) => {
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <EditLaundryItemModal item={item} />
-        <DropdownMenuItem onClick={() => handleDelete(item)}>Delete Item</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleDelete()}>Delete Item</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
