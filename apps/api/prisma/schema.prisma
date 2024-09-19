@@ -106,8 +106,8 @@ model Outlet {
 
 model Shift {
   shift_id   String   @id @default(cuid())
-  start      Int
-  end        Int
+  start      String
+  end        String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 

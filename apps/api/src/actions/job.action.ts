@@ -35,8 +35,6 @@ export default class JobAction {
       if (role === 'SuperAdmin') {
         query = {
           where: filter,
-          skip: (page - 1) * limit,
-          take: limit,
           orderBy: order,
         };
       } else {
