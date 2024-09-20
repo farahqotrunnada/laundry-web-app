@@ -1,5 +1,5 @@
-import { MIDTRANS_PASSWORD, MIDTRANS_SERVER_KEY, MIDTRANS_URL, NODE_ENV } from '@/config';
-import { PaymentMethod, Prisma, Role } from '@prisma/client';
+import { DeliveryType, OrderStatus, PaymentMethod, Prisma, ProgressType, Role } from '@prisma/client';
+import { MIDTRANS_PASSWORD, MIDTRANS_SERVER_KEY, MIDTRANS_URL } from '@/config';
 import axios, { isAxiosError } from 'axios';
 
 import ApiError from '@/utils/error.util';
@@ -73,7 +73,12 @@ export default class OrderAction {
             },
             Customer: {
               include: {
-                User: true,
+                User: {
+                  select: {
+                    email: true,
+                    fullname: true,
+                  },
+                },
               },
             },
           },
@@ -148,7 +153,12 @@ export default class OrderAction {
           Outlet: true,
           Customer: {
             include: {
-              User: true,
+              User: {
+                select: {
+                  email: true,
+                  fullname: true,
+                },
+              },
             },
           },
           CustomerAddress: true,
@@ -181,7 +191,12 @@ export default class OrderAction {
           OrderItem: true,
           Customer: {
             include: {
-              User: true,
+              User: {
+                select: {
+                  email: true,
+                  fullname: true,
+                },
+              },
             },
           },
           Payment: true,
@@ -193,7 +208,7 @@ export default class OrderAction {
       if (order.Payment) throw new ApiError(400, 'Theres already a payment for this order');
 
       if (method === 'Manual') {
-        const updated = await prisma.order.update({
+        await prisma.order.update({
           where: { order_id },
           data: {
             is_payable: false,
@@ -209,53 +224,72 @@ export default class OrderAction {
             Payment: true,
           },
         });
+      } else {
+        const { data } = await axios.post(
+          MIDTRANS_URL,
+          {
+            transaction_details: {
+              order_id,
+              gross_amount: Number(order.delivery_fee) + Number(order.laundry_fee),
+              item_details: order.OrderItem.map((item) => ({
+                id: item.order_item_id,
+                quantity: item.quantity,
+              })),
+              customer_details: {
+                first_name: order.Customer.User.fullname,
+                email: order.Customer.User.email,
+              },
+            },
+          },
+          {
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              Authorization: 'Basic ' + Buffer.from(MIDTRANS_SERVER_KEY + ':' + MIDTRANS_PASSWORD).toString('base64'),
+            },
+          }
+        );
 
-        return updated.Payment;
+        await prisma.order.update({
+          where: { order_id },
+          data: {
+            is_payable: false,
+            Payment: {
+              create: {
+                method,
+                payment_url: data.redirect_url,
+                status: 'Paid',
+              },
+            },
+          },
+          include: {
+            Payment: true,
+          },
+        });
       }
 
-      const { data } = await axios.post(
-        MIDTRANS_URL,
-        {
-          transaction_details: {
-            order_id,
-            gross_amount: Number(order.delivery_fee) + Number(order.laundry_fee),
-            item_details: order.OrderItem.map((item) => ({
-              id: item.order_item_id,
-              quantity: item.quantity,
-            })),
-            customer_details: {
-              first_name: order.Customer.User.fullname,
-              email: order.Customer.User.email,
+      if (
+        order.OrderProgress &&
+        order.OrderProgress.find((progress) => progress.status === OrderStatus.WAITING_FOR_PAYMENT)
+      ) {
+        await prisma.order.update({
+          where: { order_id },
+          data: {
+            OrderProgress: {
+              create: {
+                status: OrderStatus.ON_PROGRESS_DROPOFF,
+              },
+            },
+            Delivery: {
+              create: {
+                outlet_id: order.outlet_id,
+                progress: ProgressType.Pending,
+                type: DeliveryType.Dropoff,
+              },
             },
           },
-        },
-        {
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: 'Basic ' + Buffer.from(MIDTRANS_SERVER_KEY + ':' + MIDTRANS_PASSWORD).toString('base64'),
-          },
-        }
-      );
-
-      const updated = await prisma.order.update({
-        where: { order_id },
-        data: {
-          is_payable: false,
-          Payment: {
-            create: {
-              method,
-              payment_url: data.redirect_url,
-              status: 'Paid',
-            },
-          },
-        },
-        include: {
-          Payment: true,
-        },
-      });
-
-      return updated.Payment;
+        });
+      }
     } catch (error) {
       if (isAxiosError(error)) {
         throw new ApiError(

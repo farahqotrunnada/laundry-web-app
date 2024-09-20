@@ -4,7 +4,7 @@ import ApiError from '@/utils/error.util';
 import EmailAction from '@/actions/email.action';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import passport from 'passport';
-import prisma from '@/prisma';
+import prisma from '@/libs/prisma';
 
 const emailAction = new EmailAction();
 

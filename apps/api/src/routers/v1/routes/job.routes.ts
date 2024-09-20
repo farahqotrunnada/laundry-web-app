@@ -23,7 +23,8 @@ export default class JobRouter {
 
     this.router.get('/', this.jobController.index);
     this.router.get('/:job_id', this.jobController.show);
-    this.router.put('/:job_id', this.jobController.update);
+    this.router.post('/:job_id/accept', this.jobController.accept);
+    this.router.post('/:job_id/confirm', this.jobController.confirm);
   }
 
   getRouter() {

@@ -9,7 +9,9 @@ import { cn, formatCurrency, formatDateTime } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import DetailList from '@/components/detail-list';
 import Image from 'next/image';
+import { MapLoader } from '@/components/loader/map';
 import { OrderStatusMapper } from '@/lib/constant';
+import dynamic from 'next/dynamic';
 import { useOrderDetail } from '@/hooks/use-order-detail';
 
 interface ComponentProps {
@@ -19,6 +21,15 @@ interface ComponentProps {
 const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
   const { data, error, isLoading } = useOrderDetail(order_id);
 
+  const MapRange = React.useMemo(
+    () =>
+      dynamic(() => import('@/components/map-range'), {
+        loading: () => <MapLoader />,
+        ssr: false,
+      }),
+    []
+  );
+
   if (isLoading) return <div>Loading...</div>;
   if (error || !data) return <div>failed to load order data, retrying...</div>;
 
@@ -27,7 +38,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
       <div className='flex flex-col gap-8 lg:col-span-3'>
         <Card>
           <CardHeader>
-            <CardTitle className='text-xl font-bold'>Outlet Detail</CardTitle>
+            <CardTitle className='text-xl font-bold'>Order Detail</CardTitle>
             <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
           </CardHeader>
 
@@ -116,6 +127,29 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
       </div>
 
       <div className='flex flex-col gap-8 lg:col-span-2'>
+        <Card>
+          <CardHeader>
+            <CardTitle className='text-xl font-bold'>Order Location</CardTitle>
+            <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <MapRange
+              center={{
+                latitude: data.data.CustomerAddress.latitude,
+                longitude: data.data.CustomerAddress.longitude,
+              }}
+              points={[
+                {
+                  name: data.data.Outlet.name,
+                  latitude: data.data.Outlet.latitude,
+                  longitude: data.data.Outlet.longitude,
+                },
+              ]}
+              className='w-full aspect-square lg:aspect-[4/3]'
+            />
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className='text-xl font-bold'>Order Items</CardTitle>

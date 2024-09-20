@@ -3,7 +3,7 @@ import { MAXIMUM_RADIUS, PRICE_PER_KM } from '@/config';
 
 import ApiError from '@/utils/error.util';
 import { getDistance } from '@/utils/distance.util';
-import prisma from '@/prisma';
+import prisma from '@/libs/prisma';
 
 export default class DeliveryAction {
   index = async (
@@ -53,6 +53,18 @@ export default class DeliveryAction {
               },
             },
           },
+          OR: [
+            {
+              Employee: null,
+            },
+            {
+              Employee: {
+                User: {
+                  user_id,
+                },
+              },
+            },
+          ],
           orderBy: order,
         };
       }
@@ -63,7 +75,18 @@ export default class DeliveryAction {
           skip: (page - 1) * limit,
           take: limit,
           include: {
+            Order: true,
             Outlet: true,
+            Employee: {
+              include: {
+                User: {
+                  select: {
+                    email: true,
+                    fullname: true,
+                  },
+                },
+              },
+            },
           },
         } as Prisma.DeliveryFindManyArgs),
 
@@ -83,34 +106,6 @@ export default class DeliveryAction {
       });
 
       if (!delivery) throw new ApiError(404, 'Delivery not found');
-
-      return delivery;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  create = async (order_id: string, outlet_id: string, type: DeliveryType) => {
-    try {
-      const order = await prisma.order.findUnique({
-        where: { order_id },
-      });
-
-      if (!order) throw new ApiError(404, 'Order not found');
-
-      const outlet = await prisma.outlet.findUnique({
-        where: { outlet_id },
-      });
-
-      if (!outlet) throw new ApiError(404, 'Outlet not found');
-
-      const delivery = await prisma.delivery.create({
-        data: {
-          order_id,
-          outlet_id,
-          type: type,
-        },
-      });
 
       return delivery;
     } catch (error) {
@@ -176,45 +171,75 @@ export default class DeliveryAction {
     }
   };
 
-  update = async (user_id: string, role: 'SuperAdmin' | 'Driver', delivery_id: string, progress: ProgressType) => {
+  update = async (
+    user_id: string,
+    role: 'SuperAdmin' | 'Driver',
+    delivery_id: string,
+    progress: 'Ongoing' | 'Completed'
+  ) => {
     try {
       const delivery = await prisma.delivery.findUnique({
-        where: { delivery_id },
+        where: {
+          delivery_id,
+        },
+        include: {
+          Order: true,
+        },
       });
 
       if (!delivery) throw new ApiError(404, 'Delivery not found');
 
-      if (role !== 'SuperAdmin') {
+      if (role === 'SuperAdmin') {
+        await prisma.delivery.update({
+          where: { delivery_id },
+          data: {
+            progress,
+          },
+        });
+      } else {
         const employee = await prisma.employee.findUnique({
           where: {
             user_id,
             outlet_id: delivery.outlet_id,
           },
+          include: {
+            Delivery: true,
+          },
         });
 
         if (!employee) throw new ApiError(404, 'Employee not found or not assigned to this outlet');
+        if (delivery.employee_id && employee.employee_id !== delivery.employee_id) {
+          throw new ApiError(400, 'Employee not assigned to this delivery');
+        }
+
+        await prisma.delivery.update({
+          where: { delivery_id },
+          data: {
+            progress,
+            employee_id: employee.employee_id,
+          },
+        });
       }
 
-      await prisma.delivery.update({
-        where: { delivery_id },
-        data: { progress },
+      const mapper: Record<DeliveryType, Record<'Ongoing' | 'Completed', OrderStatus>> = {
+        [DeliveryType.Pickup]: {
+          [ProgressType.Ongoing]: OrderStatus.ON_PROGRESS_PICKUP,
+          [ProgressType.Completed]: OrderStatus.ARRIVED_AT_OUTLET,
+        },
+        [DeliveryType.Dropoff]: {
+          [ProgressType.Ongoing]: OrderStatus.ON_PROGRESS_DROPOFF,
+          [ProgressType.Completed]: delivery.Order.is_payable
+            ? OrderStatus.WAITING_FOR_PAYMENT
+            : OrderStatus.COMPLETED_ORDER,
+        },
+      };
+
+      await prisma.orderProgress.create({
+        data: {
+          order_id: delivery.order_id,
+          status: mapper[delivery.type][progress],
+        },
       });
-
-      if (progress === ProgressType.Ongoing) {
-        await prisma.orderProgress.create({
-          data: {
-            order_id: delivery.order_id,
-            status: OrderStatus.ON_PROGRESS_PICKUP,
-          },
-        });
-      } else if (progress === ProgressType.Completed) {
-        await prisma.orderProgress.create({
-          data: {
-            order_id: delivery.order_id,
-            status: OrderStatus.ARRIVED_AT_OUTLET,
-          },
-        });
-      }
 
       return delivery;
     } catch (error) {

@@ -67,24 +67,6 @@ export default class DeliveryController {
     }
   };
 
-  create = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { order_id, outlet_id, type } = await yup
-        .object({
-          order_id: yup.string().required(),
-          outlet_id: yup.string().required(),
-          type: yup.string().oneOf(Object.values(ProgressType)).required(),
-        })
-        .validate(req.body);
-
-      const delivery = await this.deliveryAction.create(order_id, outlet_id, type as DeliveryType);
-
-      return res.status(201).json(new ApiResponse('Delivery created successfully', delivery));
-    } catch (error) {
-      return next(error);
-    }
-  };
-
   request = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { user_id } = req.user as AccessTokenPayload;
@@ -116,7 +98,7 @@ export default class DeliveryController {
 
       const { progress } = await yup
         .object({
-          progress: yup.string().oneOf(Object.values(ProgressType)).required(),
+          progress: yup.string().oneOf(['Ongoing', 'Completed']).required(),
         })
         .validate(req.body);
 

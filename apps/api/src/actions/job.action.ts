@@ -1,12 +1,18 @@
-import { DeliveryType, JobType, Order, OrderStatus, Prisma, ProgressType, Role } from '@prisma/client';
+import { DeliveryType, JobType, OrderStatus, Prisma, ProgressType } from '@prisma/client';
 
 import ApiError from '@/utils/error.util';
 import prisma from '@/libs/prisma';
 
+interface ChoosenItem {
+  name: string;
+  quantity: number;
+  laundry_item_id: string;
+}
+
 export default class JobAction {
   index = async (
     user_id: string,
-    role: Role,
+    role: 'SuperAdmin' | 'WashingWorker' | 'IroningWorker' | 'PackingWorker',
     page: number,
     limit: number,
     id: string | undefined,
@@ -32,6 +38,12 @@ export default class JobAction {
 
       let query;
 
+      const mapper: Record<'WashingWorker' | 'IroningWorker' | 'PackingWorker', JobType> = {
+        WashingWorker: 'Washing',
+        IroningWorker: 'Ironing',
+        PackingWorker: 'Packing',
+      };
+
       if (role === 'SuperAdmin') {
         query = {
           where: filter,
@@ -50,6 +62,19 @@ export default class JobAction {
                 },
               },
             },
+            OR: [
+              {
+                Employee: null,
+              },
+              {
+                Employee: {
+                  User: {
+                    user_id,
+                  },
+                },
+              },
+            ],
+            type: mapper[role],
           },
           orderBy: order,
         };
@@ -61,8 +86,18 @@ export default class JobAction {
           skip: (page - 1) * limit,
           take: limit,
           include: {
-            Outlet: true,
             Order: true,
+            Outlet: true,
+            Employee: {
+              include: {
+                User: {
+                  select: {
+                    email: true,
+                    fullname: true,
+                  },
+                },
+              },
+            },
           },
         } as Prisma.JobFindManyArgs),
 
@@ -75,17 +110,39 @@ export default class JobAction {
     }
   };
 
-  show = async (job_id: string) => {
+  show = async (
+    user_id: string,
+    role: 'SuperAdmin' | 'WashingWorker' | 'IroningWorker' | 'PackingWorker',
+    job_id: string
+  ) => {
     try {
       const job = await prisma.job.findUnique({
-        where: { job_id },
-        include: {
-          Outlet: true,
-          Order: true,
+        where: {
+          job_id,
         },
       });
 
       if (!job) throw new ApiError(404, 'Job not found');
+
+      const mapper: Record<JobType, 'WashingWorker' | 'IroningWorker' | 'PackingWorker'> = {
+        Washing: 'WashingWorker',
+        Ironing: 'IroningWorker',
+        Packing: 'PackingWorker',
+      };
+
+      if (role !== 'SuperAdmin') {
+        const employee = await prisma.employee.findUnique({
+          where: {
+            user_id,
+            outlet_id: job.outlet_id,
+            User: {
+              role: mapper[job.type],
+            },
+          },
+        });
+
+        if (!employee) throw new ApiError(404, 'Employee not found or not assigned to this outlet');
+      }
 
       return job;
     } catch (error) {
@@ -93,57 +150,142 @@ export default class JobAction {
     }
   };
 
-  update = async (
+  accept = async (
     user_id: string,
     role: 'SuperAdmin' | 'WashingWorker' | 'IroningWorker' | 'PackingWorker',
-    job_id: string,
-    progress: ProgressType
+    job_id: string
   ) => {
     try {
       const job = await prisma.job.findUnique({
         where: { job_id },
+      });
+
+      if (!job) throw new ApiError(404, 'Job not found');
+
+      const mapper: Record<JobType, 'WashingWorker' | 'IroningWorker' | 'PackingWorker'> = {
+        Washing: 'WashingWorker',
+        Ironing: 'IroningWorker',
+        Packing: 'PackingWorker',
+      };
+
+      if (role === 'SuperAdmin') {
+        const updated = await prisma.job.update({
+          where: { job_id },
+          data: {
+            progress: ProgressType.Ongoing,
+          },
+        });
+
+        return updated;
+      }
+
+      const employee = await prisma.employee.findUnique({
+        where: {
+          user_id,
+          outlet_id: job.outlet_id,
+          User: {
+            role: mapper[job.type],
+          },
+        },
+      });
+
+      if (!employee) throw new ApiError(404, 'Employee not found or not assigned to this outlet');
+
+      const updated = await prisma.job.update({
+        where: { job_id },
+        data: {
+          progress: ProgressType.Ongoing,
+          employee_id: employee.employee_id,
+        },
+      });
+
+      return updated;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  confirm = async (
+    user_id: string,
+    role: 'SuperAdmin' | 'WashingWorker' | 'IroningWorker' | 'PackingWorker',
+    job_id: string,
+    order_items: ChoosenItem[]
+  ) => {
+    try {
+      const job = await prisma.job.findUnique({
+        where: {
+          job_id,
+        },
         include: {
-          Order: true,
+          Order: {
+            include: {
+              OrderItem: true,
+            },
+          },
         },
       });
 
       if (!job) throw new ApiError(404, 'Job not found');
 
-      if (role !== 'SuperAdmin') {
-        const jobRoleMapper = {
-          WashingWorker: 'Washing',
-          IroningWorker: 'Ironing',
-          PackingWorker: 'Packing',
-        };
+      const compare = (value: ChoosenItem) => {
+        const item = job.Order.OrderItem.find((item) => item.laundry_item_id === value.laundry_item_id);
+        if (!item) return false;
 
-        if (job.type !== jobRoleMapper[role]) {
-          throw new ApiError(400, 'You are not allowed to update this job');
-        }
+        const quantity = item.quantity === value.quantity;
+        const laundry_item_id = item.laundry_item_id === value.laundry_item_id;
 
+        return quantity && laundry_item_id;
+      };
+
+      if (order_items.length !== job.Order.OrderItem.length || !order_items.every(compare)) {
+        throw new ApiError(400, 'Inputted order items does not match with order items in the database');
+      }
+
+      const mapper: Record<JobType, 'WashingWorker' | 'IroningWorker' | 'PackingWorker'> = {
+        Washing: 'WashingWorker',
+        Ironing: 'IroningWorker',
+        Packing: 'PackingWorker',
+      };
+
+      if (role === 'SuperAdmin') {
+        await prisma.job.update({
+          where: { job_id },
+          data: {
+            progress: ProgressType.Completed,
+          },
+        });
+      } else {
         const employee = await prisma.employee.findUnique({
           where: {
             user_id,
             outlet_id: job.outlet_id,
+            User: {
+              role: mapper[job.type],
+            },
           },
         });
 
         if (!employee) throw new ApiError(404, 'Employee not found or not assigned to this outlet');
+        if (job.employee_id && employee.employee_id !== job.employee_id) {
+          throw new ApiError(400, 'Employee not assigned to this job');
+        }
+
+        await prisma.job.update({
+          where: { job_id },
+          data: {
+            progress: ProgressType.Completed,
+            employee_id: employee.employee_id,
+          },
+        });
       }
 
-      await prisma.job.update({
-        where: { job_id },
-        data: { progress },
-      });
-
-      if (progress !== ProgressType.Completed) return job;
-
-      const mapper = {
+      const statusMapper: Record<JobType, OrderStatus> = {
         Washing: OrderStatus.ON_PROGRESS_IRONING,
         Ironing: OrderStatus.ON_PROGRESS_PACKING,
         Packing: job.Order.is_payable ? OrderStatus.WAITING_FOR_PAYMENT : OrderStatus.ON_PROGRESS_DROPOFF,
       };
+      const status = statusMapper[job.type];
 
-      const status = mapper[job.type];
       await prisma.orderProgress.create({
         data: {
           order_id: job.order_id,
@@ -162,7 +304,7 @@ export default class JobAction {
         });
       }
 
-      if (job.type === JobType.Packing) return job;
+      if (job.type === JobType.Packing) return;
 
       await prisma.job.create({
         data: {
@@ -172,8 +314,6 @@ export default class JobAction {
           type: job.type === JobType.Washing ? JobType.Ironing : JobType.Packing,
         },
       });
-
-      return job;
     } catch (error) {
       throw error;
     }

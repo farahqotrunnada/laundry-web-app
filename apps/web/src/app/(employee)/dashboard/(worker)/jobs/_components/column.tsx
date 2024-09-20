@@ -9,14 +9,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Employee, User } from '@/types/user';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import DataTableColumnHeader from '@/components/table/header';
 import { Job } from '@/types/job';
+import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
+import { Order } from '@/types/order';
 import { Outlet } from '@/types/outlet';
-import { ProgressType } from '@/types/shared';
 import axios from '@/lib/axios';
 import useConfirm from '@/hooks/use-confirm';
 import { useSWRConfig } from 'swr';
@@ -24,7 +26,11 @@ import { useToast } from '@/hooks/use-toast';
 
 const columns: ColumnDef<
   Job & {
+    Order: Order;
     Outlet: Outlet;
+    Employee?: Employee & {
+      User: User;
+    };
   }
 >[] = [
   {
@@ -37,6 +43,7 @@ const columns: ColumnDef<
     },
   },
   {
+    enableSorting: false,
     accessorKey: 'Outlet.name',
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='Outlet Name' />;
@@ -52,9 +59,10 @@ const columns: ColumnDef<
     },
   },
   {
-    accessorKey: 'employee_id',
+    enableSorting: false,
+    accessorKey: 'Employee.User.fullname',
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Employee ID' />;
+      return <DataTableColumnHeader column={column} title='Employee Name' />;
     },
   },
   {
@@ -87,23 +95,23 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
   const { toast } = useToast();
   const { confirm } = useConfirm();
 
-  const changeProgress = async (progress: ProgressType) => {
+  const confirmJob = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     confirm({
-      title: 'Update Job Progress',
-      description: 'Are you sure you want to update this job progress?',
+      title: 'Accept Job',
+      description: 'Are you sure you want to accept this job?',
     })
       .then(async () => {
         try {
-          await axios.put('/jobs/' + row.original.job_id, { progress });
+          await axios.post('/jobs/' + row.original.job_id + '/accept');
           toast({
-            title: 'Job progress updated',
-            description: 'Your job progress has been updated successfully',
+            title: 'Job accepted',
+            description: 'Your job has been accepted successfully',
           });
           mutate((key) => Array.isArray(key) && key.includes('/jobs'));
         } catch (error: any) {
           toast({
             variant: 'destructive',
-            title: 'Failed to change progress',
+            title: 'Failed to accept job',
             description: error.message,
           });
         }
@@ -125,11 +133,11 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>View Job</DropdownMenuItem>
-        {row.original.progress === 'Pending' && (
-          <DropdownMenuItem onClick={() => changeProgress('Ongoing')}>Start Job</DropdownMenuItem>
-        )}
+        {row.original.progress === 'Pending' && <DropdownMenuItem onClick={confirmJob}>Start Job</DropdownMenuItem>}
         {row.original.progress === 'Ongoing' && (
-          <DropdownMenuItem onClick={() => changeProgress('Completed')}>Complete Job</DropdownMenuItem>
+          <Link href={`/dashboard/jobs/${row.original.job_id}/complete`}>
+            <DropdownMenuItem>Complete Job</DropdownMenuItem>
+          </Link>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
