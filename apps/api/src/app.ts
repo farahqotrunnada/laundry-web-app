@@ -3,6 +3,7 @@ import express, { Express, NextFunction, Request, Response } from 'express';
 
 import ApiError from '@/utils/error.util';
 import PassportConfig from './libs/passport';
+import { Prisma } from '@prisma/client';
 import { ValidationError } from 'yup';
 import cookie from 'cookie-parser';
 import cors from 'cors';
@@ -62,7 +63,17 @@ export default class App {
       }
 
       console.error('Error : ', err.stack);
-      res.status(500).send('Error !');
+
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        return res.status(500).json({
+          message: 'Internal Server Error',
+        });
+      }
+
+      res.status(500).json({
+        message: 'Internal Server Error',
+        error: err.message,
+      });
     });
   }
 
