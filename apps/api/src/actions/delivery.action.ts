@@ -148,7 +148,12 @@ export default class DeliveryAction {
     }
   };
 
-  update = async (user_id: string, role: 'SuperAdmin' | 'Driver', delivery_id: string, progress: ProgressType) => {
+  update = async (
+    user_id: string,
+    role: 'SuperAdmin' | 'Driver',
+    delivery_id: string,
+    progress: 'Ongoing' | 'Completed'
+  ) => {
     try {
       const delivery = await prisma.delivery.findUnique({
         where: { delivery_id },
@@ -172,18 +177,22 @@ export default class DeliveryAction {
         data: { progress },
       });
 
-      if (progress === ProgressType.Ongoing) {
+      const mapper: Record<DeliveryType, Record<'Ongoing' | 'Completed', OrderStatus>> = {
+        [DeliveryType.Pickup]: {
+          [ProgressType.Ongoing]: OrderStatus.ON_PROGRESS_PICKUP,
+          [ProgressType.Completed]: OrderStatus.ARRIVED_AT_OUTLET,
+        },
+        [DeliveryType.Dropoff]: {
+          [ProgressType.Ongoing]: OrderStatus.ON_PROGRESS_DROPOFF,
+          [ProgressType.Completed]: OrderStatus.COMPLETED_ORDER,
+        },
+      };
+
+      if (mapper) {
         await prisma.orderProgress.create({
           data: {
             order_id: delivery.order_id,
-            status: OrderStatus.ON_PROGRESS_PICKUP,
-          },
-        });
-      } else if (progress === ProgressType.Completed) {
-        await prisma.orderProgress.create({
-          data: {
-            order_id: delivery.order_id,
-            status: OrderStatus.ARRIVED_AT_OUTLET,
+            status: mapper[delivery.type][progress],
           },
         });
       }

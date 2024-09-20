@@ -98,7 +98,7 @@ export default class DeliveryController {
 
       const { progress } = await yup
         .object({
-          progress: yup.string().oneOf(Object.values(ProgressType)).required(),
+          progress: yup.string().oneOf(['Ongoing', 'Completed']).required(),
         })
         .validate(req.body);
 

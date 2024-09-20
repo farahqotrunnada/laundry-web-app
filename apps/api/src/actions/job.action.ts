@@ -1,4 +1,4 @@
-import { JobType, OrderItem, OrderStatus, Prisma, ProgressType } from '@prisma/client';
+import { DeliveryType, JobType, OrderItem, OrderStatus, Prisma, ProgressType } from '@prisma/client';
 
 import ApiError from '@/utils/error.util';
 import prisma from '@/libs/prisma';
@@ -236,7 +236,7 @@ export default class JobAction {
       };
       const status = statusMapper[job.type];
 
-      const [updated, _] = await prisma.$transaction([
+      const [updated, ...rest] = await prisma.$transaction([
         prisma.job.update({
           where: { job_id },
           data: {
@@ -251,6 +251,17 @@ export default class JobAction {
           },
         }),
       ]);
+
+      if (status === OrderStatus.ON_PROGRESS_DROPOFF) {
+        await prisma.delivery.create({
+          data: {
+            order_id: job.order_id,
+            outlet_id: job.outlet_id,
+            progress: ProgressType.Pending,
+            type: DeliveryType.Dropoff,
+          },
+        });
+      }
 
       if (job.type === JobType.Packing) return updated;
 
