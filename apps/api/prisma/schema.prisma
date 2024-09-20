@@ -182,7 +182,7 @@ model Payment {
   created_at  DateTime      @default(now())
   updated_at  DateTime      @updatedAt
 
-  Order Order @relation(fields: [order_id], references: [order_id])
+  Order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
 
   @@map("payments")
 }

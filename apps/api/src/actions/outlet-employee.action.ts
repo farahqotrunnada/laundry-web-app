@@ -34,18 +34,16 @@ export class OutletEmployeeAction {
       const query = {
         where: {
           ...filter,
+          Employee: {
+            outlet_id: outlet_id,
+          },
         },
         orderBy: order,
       };
 
       const [users, count] = await prisma.$transaction([
         prisma.user.findMany({
-          where: {
-            ...filter,
-            Employee: {
-              outlet_id: outlet_id,
-            },
-          },
+          ...query,
           skip: (page - 1) * limit,
           take: limit,
           include: {

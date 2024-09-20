@@ -1,9 +1,9 @@
 import { MAXIMUM_RADIUS, OPENCAGE_API } from '@/config';
-import { Prisma, Role } from '@prisma/client';
 import axios, { isAxiosError } from 'axios';
 import { getDistance, getTreshold } from '@/utils/distance.util';
 
 import ApiError from '@/utils/error.util';
+import { Prisma } from '@prisma/client';
 import prisma from '@/libs/prisma';
 
 export default class OutletsAction {
@@ -187,6 +187,14 @@ export default class OutletsAction {
       });
 
       if (!outlet) throw new ApiError(404, 'Outlet not found');
+
+      await prisma.user.deleteMany({
+        where: {
+          Employee: {
+            outlet_id,
+          },
+        },
+      });
 
       await prisma.outlet.delete({
         where: {
