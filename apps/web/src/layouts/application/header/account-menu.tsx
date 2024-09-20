@@ -6,6 +6,7 @@ import AppMenu from './app-menu';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { NavigationItem } from '@/types/navigation';
+import ThemeToggle from '@/components/theme-toggle';
 import UserAvatar from '@/components/user-avatar';
 import { useAuth } from '@/hooks/use-auth';
 
@@ -20,6 +21,8 @@ const AccountMenu: React.FC<AccountMenuProps> = ({ menus }) => {
     <div className='flex justify-end w-full gap-4'>
       <AppMenu menus={menus} />
 
+      <ThemeToggle />
+
       {user ? (
         <UserAvatar user={user} />
       ) : (
@@ -28,9 +31,13 @@ const AccountMenu: React.FC<AccountMenuProps> = ({ menus }) => {
         </Link>
       )}
 
-      {user && user.role !== 'Customer' && (
+      {user && user.role !== 'Customer' ? (
         <Link href='/dashboard' className='hidden md:block'>
           <Button>Dashboard</Button>
+        </Link>
+      ) : (
+        <Link href='/request' className='hidden md:block'>
+          <Button>Place Order</Button>
         </Link>
       )}
     </div>

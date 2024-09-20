@@ -7,6 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
@@ -19,8 +20,13 @@ interface LoginFormProps {
 
 const registerSchema = yup.object({
   email: yup.string().email().required(),
-  fullname: yup.string().required(),
-  phone: yup.string().required(),
+  fullname: yup.string().min(6, 'Full name is too short').max(50, 'Full name is too long').required(),
+  phone: yup
+    .string()
+    .min(10, 'Phone number is too short')
+    .max(13, 'Phone number is too long')
+    .matches(/^\d+$/, 'Phone number must be a number')
+    .required(),
 });
 
 const RegisterForm: React.FC<LoginFormProps> = ({ ...props }) => {
@@ -64,7 +70,7 @@ const RegisterForm: React.FC<LoginFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder='enter your email' {...field} />
+                <Input placeholder='Enter your email' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -78,7 +84,7 @@ const RegisterForm: React.FC<LoginFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Full Name</FormLabel>
               <FormControl>
-                <Input placeholder='enter your full name' {...field} />
+                <Input placeholder='Enter your full name' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -92,14 +98,15 @@ const RegisterForm: React.FC<LoginFormProps> = ({ ...props }) => {
             <FormItem>
               <FormLabel>Phone</FormLabel>
               <FormControl>
-                <Input placeholder='enter your phone' {...field} />
+                <Input type='number' inputMode='numeric' placeholder='enter your phone' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type='submit' className='w-full'>
+        <Button type='submit' className='w-full' disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting && <Loader2 className='mr-2 size-4 animate-spin' />}
           Register
         </Button>
       </form>

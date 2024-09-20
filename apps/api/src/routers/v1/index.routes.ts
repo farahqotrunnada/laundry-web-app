@@ -1,10 +1,13 @@
 import AuthRouter from '@/routers/v1/routes/auth.routes';
-import DeliveryRoutes from './routes/delivery.routes';
+import DeliveryRouter from './routes/delivery.routes';
+import JobRouter from './routes/job.routes';
 import LaundryItemRouter from './routes/laundry-item.routes';
 import OrderRouter from './routes/order.routes';
-import OutletsRouter from './routes/outltes.routes';
+import OutletsRouter from './routes/outlet.routes';
 import ProfileRouter from '@/routers/v1/routes/profile.routes';
 import { Router } from 'express';
+import { ShiftRouter } from './routes/shift.routes';
+import UploadRouter from './routes/upload.routes';
 import userRouter from './routes/user.routes';
 
 export default class IndexRouter {
@@ -22,8 +25,11 @@ export default class IndexRouter {
       profile: new ProfileRouter(),
       outlets: new OutletsRouter(),
       orders: new OrderRouter(),
-      deliveries: new DeliveryRoutes(),
+      deliveries: new DeliveryRouter(),
       laundryItems: new LaundryItemRouter(),
+      jobs: new JobRouter(),
+      upload: new UploadRouter(),
+      shift: new ShiftRouter(),
     };
 
     this.router.use('/auth', routes.auth.getRouter());
@@ -33,6 +39,9 @@ export default class IndexRouter {
     this.router.use('/orders', routes.orders.getRouter());
     this.router.use('/deliveries', routes.deliveries.getRouter());
     this.router.use('/laundry-items', routes.laundryItems.getRouter());
+    this.router.use('/jobs', routes.jobs.getRouter());
+    this.router.use('/upload', routes.upload.getRouter());
+    this.router.use('/shifts', routes.shift.getRouter());
   }
 
   getRouter(): Router {

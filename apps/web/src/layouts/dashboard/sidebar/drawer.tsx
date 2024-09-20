@@ -7,7 +7,6 @@ import AppIcon from '@/components/app-icon';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Menu } from 'lucide-react';
-import SidebarCard from '@/layouts/dashboard/sidebar/card';
 import SidebarLink from '@/layouts/dashboard/sidebar/sidelink';
 
 interface DrawerProps {
@@ -36,9 +35,7 @@ const SidebarDrawer: React.FC<DrawerProps> = ({ ...props }) => {
           ))}
         </nav>
 
-        <div className='mt-auto'>
-          <SidebarCard />
-        </div>
+        <div className='mt-auto'>{/* <SidebarCard /> */}</div>
       </SheetContent>
     </Sheet>
   );

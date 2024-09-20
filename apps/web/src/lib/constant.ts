@@ -1,18 +1,7 @@
-import {
-  Car,
-  Heart,
-  Home,
-  Lock,
-  PersonStanding,
-  Shirt,
-  ShoppingCart,
-  Store,
-  Timer,
-  Users,
-  Zap,
-  ZoomIn,
-} from 'lucide-react';
+import { Car, Home, Shirt, ShoppingCart, Store, Timer, User, Users, Zap } from 'lucide-react';
 
+import { Location } from '@/types/location';
+import { OrderStatus } from '@/types/order';
 import { SidebarMenu } from '@/types/navigation';
 
 export const PROJECT_NAME = process.env.NEXT_PUBLIC_PROJECT_NAME as string;
@@ -23,17 +12,56 @@ export const SIDEBAR_LINKS: SidebarMenu[] = [
     icon: Home,
     title: 'Dashboard',
     href: '/dashboard',
+    active: '/dashboard',
     roles: ['Driver', 'SuperAdmin', 'OutletAdmin', 'WashingWorker', 'IroningWorker', 'PackingWorker'],
   },
-  { icon: Users, title: 'Users', href: '/dashboard/users', roles: ['SuperAdmin'] },
-  { icon: Store, title: 'Outlets', href: '/dashboard/outlets', roles: ['SuperAdmin'] },
-  { icon: Shirt, title: 'Laundry Item', href: '/dashboard/laundry-items', roles: ['SuperAdmin'] },
-  { icon: ShoppingCart, title: 'Orders', href: '/dashboard/orders', roles: ['SuperAdmin', 'OutletAdmin'] },
-  { icon: Car, title: 'Deliveries', href: '/dashboard/deliveries', roles: ['SuperAdmin', 'Driver'] },
+  {
+    icon: Users,
+    title: 'Users',
+    href: '/dashboard/users',
+    active: '/dashboard/users/**',
+    roles: ['SuperAdmin'],
+  },
+  {
+    icon: Store,
+    title: 'Outlets',
+    href: '/dashboard/outlets',
+    active: '/dashboard/outlets/**',
+    roles: ['SuperAdmin'],
+  },
+  {
+    icon: Timer,
+    title: 'Shifts',
+    href: '/dashboard/shifts',
+    active: '/dashboard/shifts/**',
+    roles: ['SuperAdmin'],
+  },
+  {
+    icon: Shirt,
+    title: 'Laundry Item',
+    href: '/dashboard/laundry-items',
+    active: '/dashboard/laundry-items/**',
+    roles: ['SuperAdmin'],
+  },
+  {
+    icon: ShoppingCart,
+    title: 'Orders',
+    href: '/dashboard/orders',
+    active: '/dashboard/orders/**',
+    roles: ['SuperAdmin', 'OutletAdmin'],
+  },
+  {
+    icon: Car,
+    title: 'Deliveries',
+    href: '/dashboard/deliveries',
+    active: '/dashboard/deliveries/**',
+    roles: ['SuperAdmin', 'Driver'],
+  },
   {
     icon: Zap,
     title: 'Jobs',
     href: '/dashboard/jobs',
+    active: '/dashboard/jobs/**',
     roles: ['SuperAdmin', 'IroningWorker', 'PackingWorker', 'WashingWorker'],
   },
 ];
@@ -60,6 +88,23 @@ export const FEATURES_LIST = [
 ];
 
 export const AVATAR_LINKS = [
-  { title: 'Profile', href: '/profile' },
-  { title: 'Orders', href: '/orders' },
+  { title: 'Profile', href: '/profile', icon: User },
+  { title: 'Orders', href: '/orders', icon: ShoppingCart },
 ];
+
+export const OrderStatusMapper: Record<OrderStatus, string> = {
+  WAITING_FOR_PICKUP: 'Menunggu Penjemputan Driver',
+  ON_PROGRESS_PICKUP: 'Laundry Sedang Menuju Outlet',
+  ARRIVED_AT_OUTLET: 'Laundry Telah Sampai Outlet',
+  ON_PROGRESS_WASHING: 'Laundry Sedang Dicuci',
+  ON_PROGRESS_IRONING: 'Laundry Sedang Disetrika',
+  ON_PROGRESS_PACKING: 'Laundry Sedang Di Packing',
+  WAITING_FOR_PAYMENT: 'Menunggu Pembayaran',
+  ON_PROGRESS_DROPOFF: 'Laundry Sedang Dikirim Menuju Customer',
+  COMPLETED_ORDER: 'Laundry Telah Diterima Customer',
+};
+
+export const DEFAULT_LOCATION: Location = {
+  latitude: -6.1741855,
+  longitude: 106.8283465,
+};

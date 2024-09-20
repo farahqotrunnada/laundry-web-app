@@ -1,7 +1,6 @@
 'use client';
 
 import { Address } from '@/types/address';
-import React from 'react';
 import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
 import { useToast } from './use-toast';
@@ -9,24 +8,15 @@ import { useToast } from './use-toast';
 export const useCustomerAddresses = () => {
   const { toast } = useToast();
 
-  const { data, error, isLoading, mutate } = useSWR<{
+  return useSWR<{
     message: string;
     data: Address[];
-  }>('/profile/addresses', fetcher);
-
-  React.useEffect(() => {
-    if (data) {
+  }>('/profile/addresses', fetcher, {
+    onError: (error) => {
       toast({
-        title: 'Addresses loaded',
-        description: data.data.length ? data.message : 'You have no addresses added yet',
-      });
-    } else if (error) {
-      toast({
-        title: 'Failed to load addresses',
+        title: 'Failed to fetch customer address',
         description: error.message,
       });
-    }
-  }, [data, error, toast]);
-
-  return { data, error, isLoading, mutate };
+    },
+  });
 };

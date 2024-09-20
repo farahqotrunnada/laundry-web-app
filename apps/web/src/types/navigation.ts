@@ -4,6 +4,7 @@ import { Role } from './user';
 export interface NavigationLink {
   title: string;
   href: string;
+  active?: string;
   description?: string;
 }
 
@@ -17,6 +18,7 @@ export interface NavigationItem {
 export interface SidebarMenu {
   title: string;
   href: string;
+  active?: string;
   roles: Role[];
   icon: LucideIcon;
 }

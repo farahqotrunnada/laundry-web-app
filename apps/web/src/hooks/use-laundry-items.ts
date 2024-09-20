@@ -1,34 +1,22 @@
 'use client';
 
-import * as React from 'react';
-
 import { LaundryItem } from '@/types/laundry-item';
 import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from './use-toast';
 
 export const useLaundryItems = () => {
   const { toast } = useToast();
 
-  const { data, error, isLoading } = useSWR<{
+  return useSWR<{
     message: string;
     data: LaundryItem[];
-  }>('/laundry-items', fetcher);
-
-  React.useEffect(() => {
-    if (data) {
+  }>('/laundry-items', fetcher, {
+    onError: (error) => {
       toast({
-        title: 'Laundry Items loaded',
-        description: 'Your laundry items have been loaded successfully',
-      });
-    } else if (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed to load laundry items',
+        title: 'Failed to fetch laundry items',
         description: error.message,
       });
-    }
-  }, [data, error, toast]);
-
-  return { data, error, isLoading };
+    },
+  });
 };

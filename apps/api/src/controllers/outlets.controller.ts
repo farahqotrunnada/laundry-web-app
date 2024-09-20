@@ -54,7 +54,7 @@ export default class OutletsController {
         .object({
           outlet_id: yup.string().required(),
         })
-        .validate(req.query);
+        .validate(req.params);
 
       const outlet = await this.outletsAction.show(outlet_id);
 
@@ -66,29 +66,61 @@ export default class OutletsController {
 
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, description, address, latitude, longitude, employees } = await yup
+      const { name, description, address, latitude, longitude } = await yup
         .object({
           name: yup.string().required(),
           description: yup.string().required(),
           address: yup.string().required(),
           latitude: yup.number().required(),
           longitude: yup.number().required(),
-          employees: yup
-            .array(
-              yup.object({
-                user_id: yup.string().required(),
-                email: yup.string().required(),
-                fullname: yup.string().required(),
-                role: yup.string().oneOf(Object.values(Role)).required(),
-              })
-            )
-            .required(),
         })
         .validate(req.body);
 
-      const created = await this.outletsAction.create(name, description, address, latitude, longitude, employees);
+      const created = await this.outletsAction.create(name, description, address, latitude, longitude);
 
       return res.status(201).json(new ApiResponse('Outlet created successfully', created));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  update = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { outlet_id } = await yup
+        .object({
+          outlet_id: yup.string().required(),
+        })
+        .validate(req.params);
+
+      const { name, description, address, latitude, longitude } = await yup
+        .object({
+          name: yup.string().required(),
+          description: yup.string().required(),
+          address: yup.string().required(),
+          latitude: yup.number().required(),
+          longitude: yup.number().required(),
+        })
+        .validate(req.body);
+
+      const updated = await this.outletsAction.update(outlet_id, name, description, address, latitude, longitude);
+
+      return res.status(200).json(new ApiResponse('Outlet updated successfully', updated));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  destroy = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { outlet_id } = await yup
+        .object({
+          outlet_id: yup.string().required(),
+        })
+        .validate(req.params);
+
+      const deleted = await this.outletsAction.destroy(outlet_id);
+
+      return res.status(200).json(new ApiResponse('Outlet deleted successfully', deleted));
     } catch (error) {
       next(error);
     }
@@ -102,9 +134,9 @@ export default class OutletsController {
         })
         .validate(req.query);
 
-      const outletsDistances = await this.outletsAction.nearest(customer_address_id);
+      const distances = await this.outletsAction.nearest(customer_address_id);
 
-      return res.status(200).json(new ApiResponse('Outlets retrieved successfully', outletsDistances));
+      return res.status(200).json(new ApiResponse('Outlets retrieved successfully', distances));
     } catch (error) {
       next(error);
     }
