@@ -187,7 +187,7 @@ export default class OutletsAction {
       });
 
       if (!outlet) throw new ApiError(404, 'Outlet not found');
-
+      
       await prisma.user.deleteMany({
         where: {
           Employee: {
