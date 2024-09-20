@@ -5,7 +5,6 @@ import { NextFunction, Request, Response } from 'express';
 import { AccessTokenPayload } from '@/type/jwt';
 import ApiResponse from '@/utils/response.util';
 import JobAction from '@/actions/job.action';
-import { ProgressType } from '@prisma/client';
 
 export default class JobController {
   private jobAction: JobAction;
@@ -38,7 +37,16 @@ export default class JobController {
         })
         .validate(req.query);
 
-      const [jobs, count] = await this.jobAction.index(user_id, role, page, limit, id, value, key, desc);
+      const [jobs, count] = await this.jobAction.index(
+        user_id,
+        role as 'SuperAdmin' | 'WashingWorker' | 'IroningWorker' | 'PackingWorker',
+        page,
+        limit,
+        id,
+        value,
+        key,
+        desc
+      );
 
       return res.status(200).json(
         new ApiResponse('Jobs retrieved successfully', {
@@ -53,13 +61,19 @@ export default class JobController {
 
   show = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const { user_id, role } = req.user as AccessTokenPayload;
+
       const { job_id } = await yup
         .object({
           job_id: yup.string().required(),
         })
         .validate(req.params);
 
-      const job = await this.jobAction.show(job_id);
+      const job = await this.jobAction.show(
+        user_id,
+        role as 'SuperAdmin' | 'WashingWorker' | 'IroningWorker' | 'PackingWorker',
+        job_id
+      );
 
       return res.status(200).json(new ApiResponse('Job retrieved successfully', job));
     } catch (error) {
@@ -67,7 +81,7 @@ export default class JobController {
     }
   };
 
-  update = async (req: Request, res: Response, next: NextFunction) => {
+  accept = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { user_id, role } = req.user as AccessTokenPayload;
 
@@ -77,20 +91,52 @@ export default class JobController {
         })
         .validate(req.params);
 
-      const { progress } = await yup
+      const delivery = await this.jobAction.accept(
+        user_id,
+        role as 'SuperAdmin' | 'WashingWorker' | 'IroningWorker' | 'PackingWorker',
+        job_id
+      );
+
+      return res.status(200).json(new ApiResponse('Delivery accepted successfully', delivery));
+    } catch (error) {
+      return next(error);
+    }
+  };
+
+  confirm = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { user_id, role } = req.user as AccessTokenPayload;
+
+      const { job_id } = await yup
         .object({
-          progress: yup.string().oneOf(Object.values(ProgressType)).required(),
+          job_id: yup.string().required(),
+        })
+        .validate(req.params);
+
+      const { order_items } = await yup
+        .object({
+          order_items: yup
+            .array(
+              yup
+                .object({
+                  name: yup.string().required(),
+                  quantity: yup.number().required(),
+                  laundry_item_id: yup.string().required(),
+                })
+                .required()
+            )
+            .required(),
         })
         .validate(req.body);
 
-      const job = await this.jobAction.update(
+      const delivery = await this.jobAction.confirm(
         user_id,
         role as 'SuperAdmin' | 'WashingWorker' | 'IroningWorker' | 'PackingWorker',
         job_id,
-        progress
+        order_items
       );
 
-      return res.status(200).json(new ApiResponse('Job updated successfully', job));
+      return res.status(200).json(new ApiResponse('Delivery confirmed successfully', delivery));
     } catch (error) {
       return next(error);
     }

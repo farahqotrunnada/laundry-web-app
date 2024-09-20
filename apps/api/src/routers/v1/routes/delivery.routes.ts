@@ -23,10 +23,8 @@ export default class DeliveryRoutes {
 
     this.router.use(this.roleMiddleware.role(['Driver', 'SuperAdmin']));
     this.router.get('/', this.deliveryController.index);
-    this.router.post('/', this.deliveryController.create);
     this.router.get('/:delivery_id', this.deliveryController.show);
     this.router.put('/:delivery_id', this.deliveryController.update);
-    this.router.delete('/:delivery_id', this.deliveryController.destroy);
   }
 
   getRouter() {

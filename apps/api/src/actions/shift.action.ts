@@ -1,11 +1,14 @@
 import ApiError from '@/utils/error.util';
-import { Prisma } from '@prisma/client';
 import prisma from '@/libs/prisma';
 
 export class ShiftAction {
   index = async () => {
     try {
-      const shifts = await prisma.shift.findMany();
+      const shifts = await prisma.shift.findMany({
+        orderBy: {
+          start: 'asc',
+        },
+      });
 
       return shifts;
     } catch (error) {
@@ -54,12 +57,11 @@ export class ShiftAction {
     try {
       const shift = await prisma.shift.findFirst({
         where: {
-          start,
-          end,
+          shift_id,
         },
       });
 
-      if (!shift) throw new ApiError(404, 'Shift with this start and end time does not exist');
+      if (!shift) throw new ApiError(404, 'Shift with this shift_id does not exist');
 
       const updated = await prisma.shift.update({
         where: { shift_id },

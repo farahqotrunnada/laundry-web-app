@@ -90,34 +90,6 @@ export default class DeliveryAction {
     }
   };
 
-  create = async (order_id: string, outlet_id: string, type: DeliveryType) => {
-    try {
-      const order = await prisma.order.findUnique({
-        where: { order_id },
-      });
-
-      if (!order) throw new ApiError(404, 'Order not found');
-
-      const outlet = await prisma.outlet.findUnique({
-        where: { outlet_id },
-      });
-
-      if (!outlet) throw new ApiError(404, 'Outlet not found');
-
-      const delivery = await prisma.delivery.create({
-        data: {
-          order_id,
-          outlet_id,
-          type: type,
-        },
-      });
-
-      return delivery;
-    } catch (error) {
-      throw error;
-    }
-  };
-
   request = async (user_id: string, customer_address_id: string, outlet_id: string) => {
     try {
       const customer = await prisma.customer.findUnique({
