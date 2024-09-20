@@ -14,6 +14,7 @@ import { MapLoader } from '@/components/loader/map';
 import { Textarea } from '@/components/ui/textarea';
 import axios from '@/lib/axios';
 import dynamic from 'next/dynamic';
+import { useAddressDetail } from '@/hooks/use-address-detail';
 import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
 import { useLocation } from '@/hooks/use-location';
@@ -21,8 +22,8 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-interface CreateAddressFormProps {
-  //
+interface EditAddressFormProps {
+  customer_address_id: string;
 }
 
 const addressSchema = yup.object({
@@ -32,12 +33,12 @@ const addressSchema = yup.object({
   longitude: yup.number().required(),
 });
 
-const CreateAddressForm: React.FC<CreateAddressFormProps> = ({ ...props }) => {
+const EditAddressForm: React.FC<EditAddressFormProps> = ({ customer_address_id, ...props }) => {
   const router = useRouter();
   const { toast } = useToast();
   const { confirm } = useConfirm();
-  const { state } = useLocation();
   const [location, setLocation] = React.useState<Location>(DEFAULT_LOCATION);
+  const { data: address } = useAddressDetail(customer_address_id);
 
   const Map = React.useMemo(
     () =>
@@ -59,8 +60,15 @@ const CreateAddressForm: React.FC<CreateAddressFormProps> = ({ ...props }) => {
   });
 
   React.useEffect(() => {
-    if (state) setLocation(state);
-  }, [state, form]);
+    if (address) {
+      form.setValue('name', address.data.name);
+      form.setValue('address', address.data.address);
+      setLocation({
+        latitude: address.data.latitude,
+        longitude: address.data.longitude,
+      });
+    }
+  }, [address, form]);
 
   React.useEffect(() => {
     form.setValue('latitude', location.latitude);
@@ -69,21 +77,21 @@ const CreateAddressForm: React.FC<CreateAddressFormProps> = ({ ...props }) => {
 
   const onSubmit = async (formData: yup.InferType<typeof addressSchema>) => {
     confirm({
-      title: 'Create Address',
-      description: 'Are you sure you want to create this address? make sure the details are correct.',
+      title: 'Update Address',
+      description: 'Are you sure you want to update this address? make sure the details are correct.',
     })
       .then(async () => {
         try {
-          await axios.post('/profile/addresses', formData);
+          await axios.put('/profile/addresses/' + customer_address_id, formData);
           toast({
-            title: 'Address saved',
-            description: 'Your address has been saved successfully',
+            title: 'Address updated',
+            description: 'Your address has been updated successfully',
           });
           router.push('/profile/addresses');
         } catch (error: any) {
           toast({
             variant: 'destructive',
-            title: 'Failed to save address',
+            title: 'Failed to update address',
             description: error.message,
           });
         }
@@ -164,7 +172,7 @@ const CreateAddressForm: React.FC<CreateAddressFormProps> = ({ ...props }) => {
         <div className='flex justify-start'>
           <Button type='submit' disabled={form.formState.isSubmitting}>
             {form.formState.isSubmitting && <Loader2 className='mr-2 size-4 animate-spin' />}
-            Create Address
+            Update Address
           </Button>
         </div>
       </form>
@@ -172,4 +180,4 @@ const CreateAddressForm: React.FC<CreateAddressFormProps> = ({ ...props }) => {
   );
 };
 
-export default CreateAddressForm;
+export default EditAddressForm;

@@ -5,7 +5,7 @@ import { OPENCAGE_API } from '@/config';
 import prisma from '@/libs/prisma';
 
 export default class AddressAction {
-  customer = async (user_id: string) => {
+  index = async (user_id: string) => {
     try {
       const addresses = await prisma.customerAdress.findMany({
         where: {
@@ -19,6 +19,25 @@ export default class AddressAction {
       });
 
       return addresses;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  show = async (user_id: string, customer_address_id: string) => {
+    try {
+      const address = await prisma.customerAdress.findUnique({
+        where: {
+          customer_address_id,
+          Customer: {
+            user_id,
+          },
+        },
+      });
+
+      if (!address) throw new ApiError(404, 'Address not found, or not belong to the customer');
+
+      return address;
     } catch (error) {
       throw error;
     }
@@ -77,6 +96,89 @@ export default class AddressAction {
         );
       }
 
+      throw error;
+    }
+  };
+
+  update = async (
+    user_id: string,
+    customer_address_id: string,
+    name: string,
+    address: string,
+    latitude: number,
+    longitude: number
+  ) => {
+    try {
+      const addresses = await prisma.customerAdress.findUnique({
+        where: {
+          customer_address_id,
+          Customer: {
+            user_id,
+          },
+        },
+      });
+
+      if (!addresses) throw new ApiError(404, 'Address not found, or not belong to the customer');
+
+      const url = new URL('https://api.opencagedata.com/geocode/v1/json');
+      url.searchParams.set('q', latitude + '+' + longitude);
+      url.searchParams.set('key', OPENCAGE_API);
+      url.searchParams.set('language', 'id');
+      url.searchParams.set('countrycode', 'id');
+      const output = url.toString();
+
+      const { data } = await axios.get(output);
+      const { formatted, components } = data.results.at(0);
+
+      const updated = await prisma.customerAdress.update({
+        where: { customer_address_id },
+        data: {
+          name,
+          address,
+          latitude,
+          longitude,
+          formatted,
+          city: components.city,
+          road: components.road,
+          region: components.state,
+          suburb: components.suburb,
+          zipcode: components.postcode,
+          city_district: components.city_district,
+        },
+      });
+
+      return updated;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        throw new ApiError(
+          (error.response && error.response.status) || 500,
+          (error.response && error.response.data) || 'Something went wrong'
+        );
+      }
+
+      throw error;
+    }
+  };
+
+  destroy = async (user_id: string, customer_address_id: string) => {
+    try {
+      const address = await prisma.customerAdress.findUnique({
+        where: {
+          customer_address_id,
+          Customer: {
+            user_id,
+          },
+        },
+      });
+
+      if (!address) throw new ApiError(404, 'Address not found, or not belong to the customer');
+
+      await prisma.customerAdress.delete({
+        where: { customer_address_id },
+      });
+
+      return address;
+    } catch (error) {
       throw error;
     }
   };

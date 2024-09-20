@@ -16,8 +16,8 @@ import Link from 'next/link';
 import { MapLoader } from '@/components/loader/map';
 import axios from '@/lib/axios';
 import dynamic from 'next/dynamic';
+import { useAddresses } from '@/hooks/use-addresses';
 import useConfirm from '@/hooks/use-confirm';
-import { useCustomerAddresses } from '@/hooks/use-customer-addresses';
 import { useForm } from 'react-hook-form';
 import { useNearestOutlet } from '@/hooks/use-nearest-outlet';
 import { useRouter } from 'next/navigation';
@@ -60,7 +60,7 @@ const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
   const outlet_id = form.watch('outlet_id');
   const customer_address_id = form.watch('customer_address_id');
 
-  const { data: addresses } = useCustomerAddresses();
+  const { data: addresses } = useAddresses();
   const { data: distances } = useNearestOutlet(customer_address_id);
 
   const address = addresses && addresses.data.find((item) => item.customer_address_id === customer_address_id);
