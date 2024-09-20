@@ -73,7 +73,12 @@ export default class OrderAction {
             },
             Customer: {
               include: {
-                User: true,
+                User: {
+                  select: {
+                    email: true,
+                    fullname: true,
+                  },
+                },
               },
             },
           },
@@ -148,7 +153,12 @@ export default class OrderAction {
           Outlet: true,
           Customer: {
             include: {
-              User: true,
+              User: {
+                select: {
+                  email: true,
+                  fullname: true,
+                },
+              },
             },
           },
           CustomerAddress: true,
@@ -181,7 +191,12 @@ export default class OrderAction {
           OrderItem: true,
           Customer: {
             include: {
-              User: true,
+              User: {
+                select: {
+                  email: true,
+                  fullname: true,
+                },
+              },
             },
           },
           Payment: true,

@@ -124,11 +124,14 @@ model Employee {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  User          User            @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  Outlet        Outlet?         @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
-  Shift         Shift?          @relation(fields: [shift_id], references: [shift_id], onDelete: Cascade)
+  User   User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  Outlet Outlet? @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
+  Shift  Shift?  @relation(fields: [shift_id], references: [shift_id], onDelete: Cascade)
+
   Resolution    Resolution[]
   RequestAccess RequestAccess[]
+  Delivery      Delivery[]
+  Job           Job[]
 
   @@map("employees")
 }
@@ -250,13 +253,15 @@ model Delivery {
   delivery_id String       @id @default(cuid())
   order_id    String
   outlet_id   String
+  employee_id String?
   progress    ProgressType @default(Pending)
   type        DeliveryType
   created_at  DateTime     @default(now())
   updated_at  DateTime     @updatedAt
 
-  Outlet Outlet @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
-  Order  Order  @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  Outlet   Outlet    @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
+  Order    Order     @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  Employee Employee? @relation(fields: [employee_id], references: [employee_id], onDelete: Cascade)
 
   @@map("deliveries")
 }
@@ -268,16 +273,18 @@ enum JobType {
 }
 
 model Job {
-  job_id     String       @id @default(cuid())
-  order_id   String
-  outlet_id  String
-  progress   ProgressType @default(Pending)
-  type       JobType
-  created_at DateTime     @default(now())
-  updated_at DateTime     @updatedAt
+  job_id      String       @id @default(cuid())
+  order_id    String
+  outlet_id   String
+  employee_id String?
+  progress    ProgressType @default(Pending)
+  type        JobType
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
 
-  Outlet Outlet @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
-  Order  Order  @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  Outlet   Outlet    @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
+  Order    Order     @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  Employee Employee? @relation(fields: [employee_id], references: [employee_id], onDelete: Cascade)
 
   @@map("jobs")
 }

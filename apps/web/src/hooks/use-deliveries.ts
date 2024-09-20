@@ -1,8 +1,10 @@
 'use client';
 
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
+import { Employee, User } from '@/types/user';
 
 import { Delivery } from '@/types/delivery';
+import { Order } from '@/types/order';
 import { Outlet } from '@/types/outlet';
 import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
@@ -16,7 +18,11 @@ export const useDeliveries = (filter: ColumnFiltersState, pagination: Pagination
     data: {
       deliveries: Array<
         Delivery & {
+          Order: Order;
           Outlet: Outlet;
+          Employee?: Employee & {
+            User: User;
+          };
         }
       >;
       count: number;

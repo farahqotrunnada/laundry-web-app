@@ -9,12 +9,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Employee, User } from '@/types/user';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import DataTableColumnHeader from '@/components/table/header';
 import { Delivery } from '@/types/delivery';
 import { MoreHorizontal } from 'lucide-react';
+import { Order } from '@/types/order';
 import { Outlet } from '@/types/outlet';
 import { ProgressType } from '@/types/shared';
 import axios from '@/lib/axios';
@@ -24,7 +26,11 @@ import { useToast } from '@/hooks/use-toast';
 
 const columns: ColumnDef<
   Delivery & {
+    Order: Order;
     Outlet: Outlet;
+    Employee?: Employee & {
+      User: User;
+    };
   }
 >[] = [
   {
@@ -37,6 +43,7 @@ const columns: ColumnDef<
     },
   },
   {
+    enableSorting: false,
     accessorKey: 'Outlet.name',
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='Outlet Name' />;
@@ -52,9 +59,10 @@ const columns: ColumnDef<
     },
   },
   {
-    accessorKey: 'employee_id',
+    enableSorting: false,
+    accessorKey: 'Employee.User.fullname',
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Employee ID' />;
+      return <DataTableColumnHeader column={column} title='Employee Name' />;
     },
   },
   {

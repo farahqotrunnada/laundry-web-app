@@ -1,8 +1,10 @@
 'use client';
 
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
+import { Employee, User } from '@/types/user';
 
 import { Job } from '@/types/job';
+import { Order } from '@/types/order';
 import { Outlet } from '@/types/outlet';
 import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
@@ -16,7 +18,11 @@ export const useJobs = (filter: ColumnFiltersState, pagination: PaginationState,
     data: {
       jobs: Array<
         Job & {
+          Order: Order;
           Outlet: Outlet;
+          Employee?: Employee & {
+            User: User;
+          };
         }
       >;
       count: number;

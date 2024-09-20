@@ -1,4 +1,4 @@
-import { DeliveryType, JobType, OrderItem, OrderStatus, Prisma, ProgressType } from '@prisma/client';
+import { DeliveryType, JobType, OrderStatus, Prisma, ProgressType } from '@prisma/client';
 
 import ApiError from '@/utils/error.util';
 import prisma from '@/libs/prisma';
@@ -62,6 +62,18 @@ export default class JobAction {
                 },
               },
             },
+            OR: [
+              {
+                Employee: null,
+              },
+              {
+                Employee: {
+                  User: {
+                    user_id,
+                  },
+                },
+              },
+            ],
             type: mapper[role],
           },
           orderBy: order,
@@ -74,8 +86,18 @@ export default class JobAction {
           skip: (page - 1) * limit,
           take: limit,
           include: {
-            Outlet: true,
             Order: true,
+            Outlet: true,
+            Employee: {
+              include: {
+                User: {
+                  select: {
+                    email: true,
+                    fullname: true,
+                  },
+                },
+              },
+            },
           },
         } as Prisma.JobFindManyArgs),
 
@@ -146,24 +168,34 @@ export default class JobAction {
         Packing: 'PackingWorker',
       };
 
-      if (role !== 'SuperAdmin') {
-        const employee = await prisma.employee.findUnique({
-          where: {
-            user_id,
-            outlet_id: job.outlet_id,
-            User: {
-              role: mapper[job.type],
-            },
+      if (role === 'SuperAdmin') {
+        const updated = await prisma.job.update({
+          where: { job_id },
+          data: {
+            progress: ProgressType.Ongoing,
           },
         });
 
-        if (!employee) throw new ApiError(404, 'Employee not found or not assigned to this outlet');
+        return updated;
       }
+
+      const employee = await prisma.employee.findUnique({
+        where: {
+          user_id,
+          outlet_id: job.outlet_id,
+          User: {
+            role: mapper[job.type],
+          },
+        },
+      });
+
+      if (!employee) throw new ApiError(404, 'Employee not found or not assigned to this outlet');
 
       const updated = await prisma.job.update({
         where: { job_id },
         data: {
           progress: ProgressType.Ongoing,
+          employee_id: employee.employee_id,
         },
       });
 
@@ -195,26 +227,6 @@ export default class JobAction {
 
       if (!job) throw new ApiError(404, 'Job not found');
 
-      const mapper: Record<JobType, 'WashingWorker' | 'IroningWorker' | 'PackingWorker'> = {
-        Washing: 'WashingWorker',
-        Ironing: 'IroningWorker',
-        Packing: 'PackingWorker',
-      };
-
-      if (role !== 'SuperAdmin') {
-        const employee = await prisma.employee.findUnique({
-          where: {
-            user_id,
-            outlet_id: job.outlet_id,
-            User: {
-              role: mapper[job.type],
-            },
-          },
-        });
-
-        if (!employee) throw new ApiError(404, 'Employee not found or not assigned to this outlet');
-      }
-
       const compare = (value: ChoosenItem) => {
         const item = job.Order.OrderItem.find((item) => item.laundry_item_id === value.laundry_item_id);
         if (!item) return false;
@@ -229,6 +241,44 @@ export default class JobAction {
         throw new ApiError(400, 'Inputted order items does not match with order items in the database');
       }
 
+      const mapper: Record<JobType, 'WashingWorker' | 'IroningWorker' | 'PackingWorker'> = {
+        Washing: 'WashingWorker',
+        Ironing: 'IroningWorker',
+        Packing: 'PackingWorker',
+      };
+
+      if (role === 'SuperAdmin') {
+        await prisma.job.update({
+          where: { job_id },
+          data: {
+            progress: ProgressType.Completed,
+          },
+        });
+      } else {
+        const employee = await prisma.employee.findUnique({
+          where: {
+            user_id,
+            outlet_id: job.outlet_id,
+            User: {
+              role: mapper[job.type],
+            },
+          },
+        });
+
+        if (!employee) throw new ApiError(404, 'Employee not found or not assigned to this outlet');
+        if (job.employee_id && employee.employee_id !== job.employee_id) {
+          throw new ApiError(400, 'Employee not assigned to this job');
+        }
+
+        await prisma.job.update({
+          where: { job_id },
+          data: {
+            progress: ProgressType.Completed,
+            employee_id: employee.employee_id,
+          },
+        });
+      }
+
       const statusMapper: Record<JobType, OrderStatus> = {
         Washing: OrderStatus.ON_PROGRESS_IRONING,
         Ironing: OrderStatus.ON_PROGRESS_PACKING,
@@ -236,21 +286,12 @@ export default class JobAction {
       };
       const status = statusMapper[job.type];
 
-      const [updated, ...rest] = await prisma.$transaction([
-        prisma.job.update({
-          where: { job_id },
-          data: {
-            progress: ProgressType.Completed,
-          },
-        }),
-
-        prisma.orderProgress.create({
-          data: {
-            order_id: job.order_id,
-            status: status,
-          },
-        }),
-      ]);
+      await prisma.orderProgress.create({
+        data: {
+          order_id: job.order_id,
+          status: status,
+        },
+      });
 
       if (status === OrderStatus.ON_PROGRESS_DROPOFF) {
         await prisma.delivery.create({
@@ -263,7 +304,7 @@ export default class JobAction {
         });
       }
 
-      if (job.type === JobType.Packing) return updated;
+      if (job.type === JobType.Packing) return;
 
       await prisma.job.create({
         data: {
