@@ -19,8 +19,8 @@ import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import axios from '@/lib/axios';
+import { useAddresses } from '@/hooks/use-addresses';
 import useConfirm from '@/hooks/use-confirm';
-import { useCustomerAddresses } from '@/hooks/use-customer-addresses';
 import { useToast } from '@/hooks/use-toast';
 
 interface AddressListProps {
@@ -30,7 +30,7 @@ interface AddressListProps {
 const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
   const { toast } = useToast();
   const { confirm } = useConfirm();
-  const { data, error, isLoading, mutate } = useCustomerAddresses();
+  const { data, error, isLoading, mutate } = useAddresses();
 
   const handleSetPrimary = async (address: Address) => {
     confirm({
@@ -56,6 +56,33 @@ const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
         } catch (error: any) {
           toast({
             title: 'Failed to set address as primary',
+            description: error.message,
+          });
+        }
+      })
+      .catch(() => {
+        // do nothing
+      });
+  };
+
+  const handleDelete = async (address: Address) => {
+    confirm({
+      variant: 'destructive',
+      title: 'Delete Address',
+      description:
+        'Are you sure you want to delete this address? this action will also delete all related resources that associated with this address, i.e. orders and payments.',
+    })
+      .then(async () => {
+        try {
+          await axios.delete('/profile/addresses/' + address.customer_address_id);
+          toast({
+            title: 'Address deleted',
+            description: 'Your address has been deleted successfully',
+          });
+          mutate();
+        } catch (error: any) {
+          toast({
+            title: 'Failed to delete address',
             description: error.message,
           });
         }
@@ -91,7 +118,7 @@ const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
             <TableRow key={idx}>
               <TableCell>
                 <div className='flex items-center gap-2 font-medium'>
-                  {address.name}
+                  <span className='whitespace-nowrap'>{address.name}</span>
                   {address.is_primary && <Badge>Primary</Badge>}
                 </div>
               </TableCell>
@@ -113,9 +140,10 @@ const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
                     <DropdownMenuContent align='end'>
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <Link href={'/profile/addresses/' + address.customer_address_id} className='w-full'>
-                        <DropdownMenuItem>View Detail</DropdownMenuItem>
+                      <Link href={'/profile/addresses/' + address.customer_address_id + '/edit'} className='w-full'>
+                        <DropdownMenuItem>Edit Address</DropdownMenuItem>
                       </Link>
+                      <DropdownMenuItem onClick={() => handleDelete(address)}>Delete Address</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleSetPrimary(address)}>Set as Primary</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

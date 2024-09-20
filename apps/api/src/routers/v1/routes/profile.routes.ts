@@ -34,8 +34,11 @@ export default class ProfileRouter {
     this.router.get('/orders/:order_id', this.orderController.show);
     this.router.post('/orders/:order_id/payment', this.orderController.payment);
 
-    this.router.get('/addresses', this.addressController.customer);
+    this.router.get('/addresses', this.addressController.index);
     this.router.post('/addresses', this.addressController.create);
+    this.router.get('/addresses/:customer_address_id', this.addressController.show);
+    this.router.put('/addresses/:customer_address_id', this.addressController.update);
+    this.router.delete('/addresses/:customer_address_id', this.addressController.destroy);
     this.router.put('/addresses/:customer_address_id/set-primary', this.addressController.primary);
   }
 

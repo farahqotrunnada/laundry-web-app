@@ -5,7 +5,7 @@ import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
 import { useToast } from './use-toast';
 
-export const useCustomerAddresses = () => {
+export const useAddresses = () => {
   const { toast } = useToast();
 
   return useSWR<{
