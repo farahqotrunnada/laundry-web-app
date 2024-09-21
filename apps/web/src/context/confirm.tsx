@@ -2,7 +2,15 @@
 
 import * as React from 'react';
 
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 import { Button } from '@/components/ui/button';
 import { Check } from 'lucide-react';
@@ -61,8 +69,8 @@ export const ConfirmProvider = ({ children }: { children: React.ReactNode }) => 
         <DialogContent className='sm:max-w-md'>
           <DialogHeader>
             <DialogTitle className='text-start'>{options && options.title}</DialogTitle>
+            <DialogDescription>{options && options.description}</DialogDescription>
           </DialogHeader>
-          <p className='text-sm text-muted-foreground'>{options && options.description}</p>
           <DialogFooter>
             <div className='flex justify-end w-full space-x-2'>
               <DialogClose asChild>

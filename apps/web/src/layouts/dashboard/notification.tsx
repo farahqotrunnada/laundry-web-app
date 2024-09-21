@@ -40,7 +40,7 @@ const Notification: React.FC<NotificationProps> = ({ ...props }) => {
   }>(user && user.role !== 'SuperAdmin' && user.role !== 'Customer' && '/profile/employee', fetcher);
 
   React.useEffect(() => {
-    if (user) {
+    if (user && user.role !== 'Customer') {
       let room = user.role;
       if (data) room = data.data.outlet_id + '-' + user.role;
 

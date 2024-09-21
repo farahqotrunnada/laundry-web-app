@@ -5,7 +5,7 @@ import * as yup from 'yup';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronsUpDown, Loader2 } from 'lucide-react';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
@@ -147,7 +147,6 @@ const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
                       </PopoverTrigger>
                       <PopoverContent className='w-full p-0 popover-content-width-full' align='end'>
                         <Command>
-                          <CommandInput placeholder='Search address...' />
                           <CommandList>
                             <CommandEmpty>No address found.</CommandEmpty>
                             <CommandGroup>
@@ -199,7 +198,6 @@ const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
                       </PopoverTrigger>
                       <PopoverContent className='w-full p-0 popover-content-width-full' align='end'>
                         <Command>
-                          <CommandInput placeholder='Search outlet...' />
                           <CommandList>
                             <CommandEmpty>No outlet found.</CommandEmpty>
                             <CommandGroup>

@@ -21,6 +21,7 @@ const AccountMenu: React.FC<AccountMenuProps> = ({ menus }) => {
   return (
     <div className='flex justify-end w-full space-x-4'>
       <AppMenu menus={menus} />
+
       <ThemeToggle />
 
       {user ? (
