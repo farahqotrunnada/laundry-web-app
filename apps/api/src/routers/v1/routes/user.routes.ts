@@ -19,7 +19,7 @@ export default class userRouter {
 
   private initializeRoutes(): void {
     this.router.use(this.authMiddleware.header);
-    this.router.use(this.roleMiddleware.role('SuperAdmin'));
+    this.router.use(this.roleMiddleware.role(['SuperAdmin']));
 
     this.router.get('/', this.userController.index);
     this.router.post('/', this.userController.create);

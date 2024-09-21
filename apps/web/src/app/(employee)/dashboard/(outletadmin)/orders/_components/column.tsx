@@ -36,7 +36,7 @@ const columns: ColumnDef<
       return <DataTableColumnHeader column={column} title='Order ID' />;
     },
     cell: ({ row }) => {
-      return <span className='block w-32 font-medium uppercase truncate'>{row.original.order_id}</span>;
+      return <span className='font-medium uppercase text-muted-foreground'>{row.original.order_id}</span>;
     },
   },
   {

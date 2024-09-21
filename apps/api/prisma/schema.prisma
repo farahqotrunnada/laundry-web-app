@@ -282,9 +282,10 @@ model Job {
   created_at  DateTime     @default(now())
   updated_at  DateTime     @updatedAt
 
-  Outlet   Outlet    @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
-  Order    Order     @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
-  Employee Employee? @relation(fields: [employee_id], references: [employee_id], onDelete: Cascade)
+  Outlet        Outlet         @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
+  Order         Order          @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  Employee      Employee?      @relation(fields: [employee_id], references: [employee_id], onDelete: Cascade)
+  RequestAccess RequestAccess?
 
   @@map("jobs")
 }
@@ -328,13 +329,16 @@ enum RequestStatus {
 model RequestAccess {
   request_access_id String        @id @default(cuid())
   outlet_id         String
+  job_id            String        @unique
   employee_id       String
+  reason            String
   status            RequestStatus @default(Pending)
   created_at        DateTime      @default(now())
   updated_at        DateTime      @updatedAt
 
   Outlet   Outlet   @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
   Employee Employee @relation(fields: [employee_id], references: [employee_id], onDelete: Cascade)
+  Job      Job?     @relation(fields: [job_id], references: [job_id], onDelete: Cascade)
 
   @@map("request_access")
 }

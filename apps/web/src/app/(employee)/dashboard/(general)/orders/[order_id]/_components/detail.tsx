@@ -13,12 +13,16 @@ import { MapLoader } from '@/components/loader/map';
 import { OrderStatusMapper } from '@/lib/constant';
 import dynamic from 'next/dynamic';
 import { useOrderDetail } from '@/hooks/use-order-detail';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 interface ComponentProps {
   order_id: string;
 }
 
 const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
+  const router = useRouter();
+  const { toast } = useToast();
   const { data, error, isLoading } = useOrderDetail(order_id);
 
   const MapRange = React.useMemo(
@@ -29,6 +33,16 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
       }),
     []
   );
+
+  React.useEffect(() => {
+    if (error) {
+      toast({
+        title: 'Failed to load order detail',
+        description: error.message,
+      });
+      router.push('/');
+    }
+  }, [error, router]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error || !data) return <div>failed to load order data, retrying...</div>;
