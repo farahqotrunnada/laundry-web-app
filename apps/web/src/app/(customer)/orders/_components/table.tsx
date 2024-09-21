@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Complaint } from '@/types/complaint';
 import CreateComplaintModal from './create-modal';
 import Link from 'next/link';
+import Loader from '@/components/loader/loader';
 import { MoreHorizontal } from 'lucide-react';
 import { OrderStatusMapper } from '@/lib/constant';
 import { Outlet } from '@/types/outlet';
@@ -31,7 +32,7 @@ interface CustomerOrderTableProps {
 const CustomerOrderTable: React.FC<CustomerOrderTableProps> = ({ type, ...props }) => {
   const { data, error, isLoading } = useCustomerOrders(type);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loader />;
   if (error || !data) return <div>failed to load orders data, retrying...</div>;
 
   return (

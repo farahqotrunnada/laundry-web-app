@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Complaint } from '@/types/complaint';
 import EditComplaintModal from './edit-modal';
 import Link from 'next/link';
+import Loader from '@/components/loader/loader';
 import { MoreHorizontal } from 'lucide-react';
 import axios from '@/lib/axios';
 import useConfirm from '@/hooks/use-confirm';
@@ -29,7 +30,7 @@ interface CustomerComplaintTableProps {
 const CustomerComplaintGrid: React.FC<CustomerComplaintTableProps> = ({ ...props }) => {
   const { data, error, isLoading } = useCustomerComplaints();
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loader />;
   if (error || !data) return <div>failed to load complaints data, retrying...</div>;
 
   if (data.data.length === 0) {

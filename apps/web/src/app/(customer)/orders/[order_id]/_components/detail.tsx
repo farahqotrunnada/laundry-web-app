@@ -9,6 +9,7 @@ import { cn, formatCurrency, formatDateTime } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import DetailList from '@/components/detail-list';
 import Image from 'next/image';
+import Loader from '@/components/loader/loader';
 import { OrderStatusMapper } from '@/lib/constant';
 import { useOrderDetail } from '@/hooks/use-order-detail';
 
@@ -19,7 +20,7 @@ interface ComponentProps {
 const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
   const { data, error, isLoading } = useOrderDetail(order_id);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loader />;
   if (error || !data) return <div>failed to load order data, retrying...</div>;
 
   return (

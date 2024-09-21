@@ -1,8 +1,10 @@
+import '@/utils/polyfill.util';
+
 import { FRONTEND_URL, PORT, validateEnv } from '@/config';
 import express, { Express, NextFunction, Request, Response } from 'express';
 
 import ApiError from '@/utils/error.util';
-import PassportConfig from './libs/passport';
+import PassportConfig from '@/libs/passport';
 import { Prisma } from '@prisma/client';
 import { ValidationError } from 'yup';
 import cookie from 'cookie-parser';

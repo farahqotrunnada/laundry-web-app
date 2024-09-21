@@ -48,6 +48,15 @@ export default class OutletsController {
     }
   };
 
+  list = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const outlets = await this.outletsAction.list();
+      return res.status(200).json(new ApiResponse('Outlets retrieved successfully', outlets));
+    } catch (error) {
+      next(error);
+    }
+  };
+
   show = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { outlet_id } = await yup

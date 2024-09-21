@@ -1,5 +1,6 @@
 import AuthRouter from '@/routers/v1/routes/auth.routes';
 import ComplaintRouter from './routes/complaints.routes';
+import DashboardRouter from './routes/dashboard.routes';
 import DeliveryRouter from './routes/delivery.routes';
 import JobRouter from './routes/job.routes';
 import LaundryItemRouter from './routes/laundry-item.routes';
@@ -34,6 +35,7 @@ export default class IndexRouter {
       shift: new ShiftRouter(),
       requestAccesses: new RequestAccessRouter(),
       complaints: new ComplaintRouter(),
+      dashboard: new DashboardRouter(),
     };
 
     this.router.use('/auth', routes.auth.getRouter());
@@ -48,6 +50,7 @@ export default class IndexRouter {
     this.router.use('/shifts', routes.shift.getRouter());
     this.router.use('/request-accesses', routes.requestAccesses.getRouter());
     this.router.use('/complaints', routes.complaints.getRouter());
+    this.router.use('/dashboard', routes.dashboard.getRouter());
   }
 
   getRouter(): Router {
