@@ -65,6 +65,18 @@ export default class DeliveryAction {
               },
             ],
           },
+          OR: [
+            {
+              Employee: null,
+            },
+            {
+              Employee: {
+                User: {
+                  user_id,
+                },
+              },
+            },
+          ],
           orderBy: order,
         };
       }
