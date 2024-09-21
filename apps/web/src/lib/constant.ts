@@ -1,4 +1,17 @@
-import { Car, Home, MessageCircle, Shirt, ShoppingCart, Store, Ticket, Timer, User, Users, Zap } from 'lucide-react';
+import {
+  Car,
+  ChartColumnBig,
+  Home,
+  MessageCircle,
+  Shirt,
+  ShoppingCart,
+  Store,
+  Ticket,
+  Timer,
+  User,
+  Users,
+  Zap,
+} from 'lucide-react';
 
 import { Location } from '@/types/location';
 import { OrderStatus } from '@/types/order';
@@ -14,6 +27,13 @@ export const SIDEBAR_LINKS: SidebarMenu[] = [
     href: '/dashboard',
     active: '/dashboard',
     roles: ['Driver', 'SuperAdmin', 'OutletAdmin', 'WashingWorker', 'IroningWorker', 'PackingWorker'],
+  },
+  {
+    icon: ChartColumnBig,
+    title: 'Reports',
+    href: '/dashboard/reports',
+    active: '/dashboard/reports/**',
+    roles: ['SuperAdmin', 'OutletAdmin'],
   },
   {
     icon: Users,

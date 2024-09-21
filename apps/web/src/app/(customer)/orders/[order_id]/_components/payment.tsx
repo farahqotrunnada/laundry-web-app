@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { Button } from '@/components/ui/button';
 import ImageUpload from '@/components/image-upload';
+import Loader from '@/components/loader/loader';
 import { Loader2 } from 'lucide-react';
 import { PaymentMethod } from '@/types/payment';
 import axios from '@/lib/axios';
@@ -111,7 +112,7 @@ const OrderPayment: React.FC<OrderPaymentProps> = ({ order_id, ...props }) => {
 
   const method = form.watch('method');
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loader />;
   if (error || !data) return <div>failed to load order data, retrying...</div>;
 
   return (

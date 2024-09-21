@@ -17,9 +17,9 @@ export const useOrders = (filter: ColumnFiltersState, pagination: PaginationStat
     data: {
       orders: Array<
         Order & {
-          Outlet?: Outlet;
-          Customer?: {
-            User?: User;
+          Outlet: Outlet;
+          Customer: {
+            User: User;
           };
           OrderProgress?: OrderProgress[];
         }

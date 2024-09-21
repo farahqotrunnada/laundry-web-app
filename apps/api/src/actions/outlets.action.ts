@@ -53,6 +53,15 @@ export default class OutletsAction {
     }
   };
 
+  list = async () => {
+    try {
+      const outlets = await prisma.outlet.findMany();
+      return outlets;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   show = async (outlet_id: string) => {
     try {
       const outlet = await prisma.outlet.findUnique({
@@ -187,7 +196,7 @@ export default class OutletsAction {
       });
 
       if (!outlet) throw new ApiError(404, 'Outlet not found');
-      
+
       await prisma.user.deleteMany({
         where: {
           Employee: {

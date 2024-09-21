@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { Badge } from '@/components/ui/badge';
 import DetailList from '@/components/detail-list';
+import Loader from '@/components/loader/loader';
 import { MapLoader } from '@/components/loader/map';
 import dynamic from 'next/dynamic';
 import { useOutletDetail } from '@/hooks/use-outlet-detail';
@@ -27,7 +28,7 @@ const OutletDetails: React.FC<OutletDetailsProps> = ({ outlet_id, ...props }) =>
     []
   );
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loader />;
   if (error || !data) return <div>failed to load outlet data, retrying...</div>;
 
   return (

@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { LaundryItem } from '@/types/laundry-item';
 import LaundryItemCard from '@/app/(employee)/dashboard/(superadmin)/laundry-items/_components/card';
+import Loader from '@/components/loader/loader';
 import axios from '@/lib/axios';
 import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
@@ -119,7 +120,7 @@ const CreateOrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...prop
     setOrderItems(choosen);
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loader />;
   if (error || !data) return <div>failed to load laundry items data, retrying...</div>;
 
   return (

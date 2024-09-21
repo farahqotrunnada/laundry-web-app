@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Button } from '@/components/ui/button';
 import { DEFAULT_LOCATION } from '@/lib/constant';
 import { Input } from '@/components/ui/input';
+import Loader from '@/components/loader/loader';
 import { Loader2 } from 'lucide-react';
 import { Location } from '@/types/location';
 import { MapLoader } from '@/components/loader/map';
@@ -105,7 +106,7 @@ const EditOutletForm: React.FC<EditOutletProps> = ({ outlet_id }) => {
       });
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loader />;
   if (error || !data) return <div>failed to load outlet data, retrying...</div>;
 
   return (

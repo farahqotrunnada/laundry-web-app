@@ -45,7 +45,7 @@ export class ComplaintAction {
             ...filter,
             Order: {
               Outlet: {
-                employee: {
+                Employee: {
                   some: {
                     User: {
                       user_id,
