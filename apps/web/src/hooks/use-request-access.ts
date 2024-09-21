@@ -4,34 +4,32 @@ import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/rea
 import { Employee, User } from '@/types/user';
 
 import { Job } from '@/types/job';
-import { Order } from '@/types/order';
 import { Outlet } from '@/types/outlet';
 import { RequestAccess } from '@/types/request-access';
 import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
 import { useToast } from './use-toast';
 
-export const useJobs = (filter: ColumnFiltersState, pagination: PaginationState, sorting: SortingState) => {
+export const useRequestAccess = (filter: ColumnFiltersState, pagination: PaginationState, sorting: SortingState) => {
   const { toast } = useToast();
 
   return useSWR<{
     message: string;
     data: {
-      jobs: Array<
-        Job & {
-          Order: Order;
+      requestAccesses: Array<
+        RequestAccess & {
+          Job: Job;
           Outlet: Outlet;
-          Employee?: Employee & {
+          Employee: Employee & {
             User: User;
           };
-          RequestAccess?: RequestAccess;
         }
       >;
       count: number;
     };
   }>(
     [
-      '/jobs',
+      '/request-accesses',
       {
         params: {
           page: (pagination.pageIndex + 1).toString(),

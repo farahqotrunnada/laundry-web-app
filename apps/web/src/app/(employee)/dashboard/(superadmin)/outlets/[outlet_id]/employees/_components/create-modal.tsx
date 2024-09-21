@@ -3,7 +3,6 @@
 import * as React from 'react';
 import * as yup from 'yup';
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Dialog,
   DialogClose,
@@ -16,18 +15,19 @@ import {
 } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Loader2, Plus } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/password-input';
 import PasswordMeter from '@/components/password-meter';
 import axios from '@/lib/axios';
 import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
 import { useSWRConfig } from 'swr';
+import { useShifts } from '@/hooks/use-shifts';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useShifts } from '@/hooks/use-shifts';
-import { PasswordInput } from '@/components/password-input';
 
 interface CreateEmployeeModalProps {
   outlet_id: string;

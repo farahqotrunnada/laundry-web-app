@@ -125,23 +125,6 @@ export default class OrderAction {
 
   show = async (user_id: string, role: Role, order_id: string) => {
     try {
-      if (role !== 'SuperAdmin' && role !== 'OutletAdmin') {
-        const user = await prisma.user.findUnique({
-          where: {
-            user_id,
-            Customer: {
-              Order: {
-                some: {
-                  order_id,
-                },
-              },
-            },
-          },
-        });
-
-        if (!user) throw new ApiError(404, 'User not found, or order not belong to this user');
-      }
-
       const order = await prisma.order.findUnique({
         where: { order_id },
         include: {
@@ -168,6 +151,57 @@ export default class OrderAction {
       });
 
       if (!order) throw new ApiError(404, 'Order not found');
+      if (role === 'SuperAdmin') return order;
+
+      const user = await prisma.user.findUnique({
+        where: {
+          user_id,
+        },
+        include: {
+          Customer: true,
+          Employee: {
+            include: {
+              Outlet: true,
+              Job: {
+                where: {
+                  order_id: order.order_id,
+                },
+                include: {
+                  RequestAccess: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!user) throw new ApiError(404, 'User not found');
+
+      if (role === 'Customer') {
+        if (!user.Customer) throw new ApiError(404, 'Customer not found');
+        if (order.customer_id === user.Customer.customer_id) throw new ApiError(400, 'Order not belong to this user');
+      }
+
+      if (role === 'OutletAdmin') {
+        if (!user.Employee) throw new ApiError(404, 'Employee not found');
+        if (!user.Employee.Outlet) throw new ApiError(404, 'Outlet not found');
+        if (order.outlet_id !== user.Employee.Outlet.outlet_id) {
+          throw new ApiError(404, 'Order not belong to this user');
+        }
+      }
+
+      if (role === 'WashingWorker' || role === 'IroningWorker' || role === 'PackingWorker') {
+        if (!user.Employee) throw new ApiError(404, 'Employee not found');
+        if (!user.Employee.Outlet) throw new ApiError(404, 'Outlet not found');
+        if (!user.Employee.Job || user.Employee.Job.length === 0) {
+          throw new ApiError(404, 'Employee not assigned to this job');
+        }
+
+        const job = user.Employee.Job[0];
+        if (!job.RequestAccess || job.RequestAccess.status !== 'Accepted') {
+          throw new ApiError(404, 'Your access request to this order has not been accepted');
+        }
+      }
 
       return order;
     } catch (error) {

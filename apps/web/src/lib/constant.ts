@@ -1,4 +1,4 @@
-import { Car, Home, Shirt, ShoppingCart, Store, Timer, User, Users, Zap } from 'lucide-react';
+import { Car, Home, Shirt, ShoppingCart, Store, Ticket, Timer, User, Users, Zap } from 'lucide-react';
 
 import { Location } from '@/types/location';
 import { OrderStatus } from '@/types/order';
@@ -63,6 +63,13 @@ export const SIDEBAR_LINKS: SidebarMenu[] = [
     href: '/dashboard/jobs',
     active: '/dashboard/jobs/**',
     roles: ['SuperAdmin', 'IroningWorker', 'PackingWorker', 'WashingWorker'],
+  },
+  {
+    icon: Ticket,
+    title: 'Request Access',
+    href: '/dashboard/request-access',
+    active: '/dashboard/request-access/**',
+    roles: ['SuperAdmin', 'OutletAdmin', 'WashingWorker', 'IroningWorker', 'PackingWorker'],
   },
 ];
 

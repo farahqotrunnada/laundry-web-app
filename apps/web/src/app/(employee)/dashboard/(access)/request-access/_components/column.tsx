@@ -14,34 +14,33 @@ import { Employee, User } from '@/types/user';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import DataTableColumnHeader from '@/components/table/header';
+import EditRequestAccessModal from './edit-modal';
 import { Job } from '@/types/job';
-import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
-import { Order } from '@/types/order';
 import { Outlet } from '@/types/outlet';
 import { RequestAccess } from '@/types/request-access';
 import axios from '@/lib/axios';
+import { useAuth } from '@/hooks/use-auth';
 import useConfirm from '@/hooks/use-confirm';
 import { useSWRConfig } from 'swr';
 import { useToast } from '@/hooks/use-toast';
 
 const columns: ColumnDef<
-  Job & {
-    Order: Order;
+  RequestAccess & {
+    Job: Job;
     Outlet: Outlet;
-    Employee?: Employee & {
+    Employee: Employee & {
       User: User;
     };
-    RequestAccess?: RequestAccess;
   }
 >[] = [
   {
-    accessorKey: 'job_id',
+    accessorKey: 'request_access_id',
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Job ID' />;
+      return <DataTableColumnHeader column={column} title='Request Access ID' />;
     },
     cell: ({ row }) => {
-      return <span className='font-medium uppercase text-muted-foreground'>{row.original.job_id}</span>;
+      return <span className='font-medium uppercase text-muted-foreground'>{row.original.request_access_id}</span>;
     },
   },
   {
@@ -52,15 +51,6 @@ const columns: ColumnDef<
     },
   },
   {
-    accessorKey: 'type',
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Type' />;
-    },
-    cell: ({ row }) => {
-      return <Badge variant='secondary'>{row.original.type}</Badge>;
-    },
-  },
-  {
     enableSorting: false,
     accessorKey: 'Employee.User.fullname',
     header: ({ column }) => {
@@ -68,12 +58,12 @@ const columns: ColumnDef<
     },
   },
   {
-    accessorKey: 'progress',
+    accessorKey: 'status',
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Progress' />;
+      return <DataTableColumnHeader column={column} title='Status' />;
     },
     cell: ({ row }) => {
-      return <Badge>{row.original.progress}</Badge>;
+      return <Badge>{row.original.status}</Badge>;
     },
   },
   {
@@ -90,39 +80,41 @@ const columns: ColumnDef<
 
 interface TableActionProps {
   row: Row<
-    Job & {
-      Order: Order;
+    RequestAccess & {
+      Job: Job;
       Outlet: Outlet;
-      Employee?: Employee & {
+      Employee: Employee & {
         User: User;
       };
-      RequestAccess?: RequestAccess;
     }
   >;
 }
 
 const TableAction: React.FC<TableActionProps> = ({ row }) => {
-  const { mutate } = useSWRConfig();
+  const { user } = useAuth();
   const { toast } = useToast();
   const { confirm } = useConfirm();
+  const { mutate } = useSWRConfig();
 
-  const confirmJob = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const handleDelete = async () => {
     confirm({
-      title: 'Accept Job',
-      description: 'Are you sure you want to accept this job?',
+      variant: 'destructive',
+      title: 'Delete Request Access',
+      description:
+        'Are you sure you want to delete this request access? this action will also delete all related data.',
     })
       .then(async () => {
         try {
-          await axios.post('/jobs/' + row.original.job_id + '/accept');
+          await axios.delete('/request-accesses/' + row.original.request_access_id);
           toast({
-            title: 'Job accepted',
-            description: 'Your job has been accepted successfully',
+            title: 'Request access deleted',
+            description: 'Your request access has been deleted successfully',
           });
-          mutate((key) => Array.isArray(key) && key.includes('/jobs'));
+          mutate((key) => Array.isArray(key) && key.includes('/request-accesses'));
         } catch (error: any) {
           toast({
             variant: 'destructive',
-            title: 'Failed to accept job',
+            title: 'Failed to delete request access',
             description: error.message,
           });
         }
@@ -143,18 +135,14 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
       <DropdownMenuContent align='end'>
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {row.original.RequestAccess && row.original.RequestAccess.status === 'Accepted' && (
-          <Link href={`/dashboard/orders/${row.original.order_id}`}>
-            <DropdownMenuItem>View Order</DropdownMenuItem>
-          </Link>
+        {user && (user.role === 'SuperAdmin' || user.role === 'OutletAdmin') ? (
+          <>
+            <EditRequestAccessModal request_access={row.original as RequestAccess} />
+            <DropdownMenuItem onClick={handleDelete}>Delete Request Access</DropdownMenuItem>
+          </>
+        ) : (
+          <DropdownMenuItem>No Actions</DropdownMenuItem>
         )}
-        {row.original.progress === 'Pending' && <DropdownMenuItem onClick={confirmJob}>Start Job</DropdownMenuItem>}
-        {row.original.progress === 'Ongoing' && (
-          <Link href={`/dashboard/jobs/${row.original.job_id}/complete`}>
-            <DropdownMenuItem>Complete Job</DropdownMenuItem>
-          </Link>
-        )}
-        {row.original.progress === 'Completed' && <DropdownMenuItem>No Actions</DropdownMenuItem>}
       </DropdownMenuContent>
     </DropdownMenu>
   );

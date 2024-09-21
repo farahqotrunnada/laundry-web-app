@@ -3,6 +3,7 @@ import { comparePasswords, generateAccessToken, generateHash, generateRefreshTok
 import ApiError from '@/utils/error.util';
 import EmailAction from '@/actions/email.action';
 import { User } from '@prisma/client';
+import moment from 'moment';
 import prisma from '@/libs/prisma';
 
 export default class AuthAction {
@@ -25,6 +26,31 @@ export default class AuthAction {
 
       const valid = await comparePasswords(password, user.password);
       if (!valid) throw new ApiError(400, 'Invalid email or password');
+
+      if (user.role !== 'Customer' && user.role !== 'SuperAdmin') {
+        const employee = await prisma.employee.findUnique({
+          where: {
+            user_id: user.user_id,
+          },
+          include: {
+            Shift: true,
+          },
+        });
+
+        if (!employee) throw new ApiError(400, 'Your shift has not been set by admin');
+        if (!employee.Shift) throw new ApiError(400, 'Your shift has not been set by admin');
+
+        const current = moment();
+        const start = moment(employee.Shift.start, 'HH:mm');
+        const end = moment(employee.Shift.end, 'HH:mm');
+
+        if (!current.isBetween(start, end)) {
+          throw new ApiError(
+            400,
+            'Your shift start at ' + start.format('HH:mm') + ' and end at ' + end.format('HH:mm')
+          );
+        }
+      }
 
       const access_token = generateAccessToken({
         user_id: user.user_id,

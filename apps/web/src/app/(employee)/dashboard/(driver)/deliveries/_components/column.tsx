@@ -39,7 +39,7 @@ const columns: ColumnDef<
       return <DataTableColumnHeader column={column} title='Delivery ID' />;
     },
     cell: ({ row }) => {
-      return <span className='block w-32 font-medium uppercase truncate'>{row.original.delivery_id}</span>;
+      return <span className='font-medium uppercase text-muted-foreground'>{row.original.delivery_id}</span>;
     },
   },
   {
@@ -132,13 +132,13 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
       <DropdownMenuContent align='end'>
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>View Delivery</DropdownMenuItem>
         {row.original.progress === 'Pending' && (
           <DropdownMenuItem onClick={() => changeProgress('Ongoing')}>Start Delivery</DropdownMenuItem>
         )}
         {row.original.progress === 'Ongoing' && (
           <DropdownMenuItem onClick={() => changeProgress('Completed')}>Complete Delivery</DropdownMenuItem>
         )}
+        {row.original.progress === 'Completed' && <DropdownMenuItem>No Actions</DropdownMenuItem>}
       </DropdownMenuContent>
     </DropdownMenu>
   );
