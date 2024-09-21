@@ -21,13 +21,13 @@ interface NotificationProps {
   //
 }
 
-const socket = io(SOCKET_URL);
-
 interface Toast {
   title: string;
   description: string;
   variant: 'default' | 'destructive';
 }
+
+const socket = io(SOCKET_URL);
 
 const Notification: React.FC<NotificationProps> = ({ ...props }) => {
   const { user } = useAuth();
@@ -44,10 +44,7 @@ const Notification: React.FC<NotificationProps> = ({ ...props }) => {
       let room = user.role;
       if (data) room = data.data.outlet_id + '-' + user.role;
 
-      socket.on('connect', function () {
-        socket.emit('room', room);
-      });
-
+      socket.emit('room', room);
       socket.on('notification', ({ title, description, variant = 'default' }: Toast) => {
         toast({
           title,
@@ -58,11 +55,10 @@ const Notification: React.FC<NotificationProps> = ({ ...props }) => {
       });
 
       return () => {
-        socket.off('connect');
         socket.off('notification');
       };
     }
-  }, [data, user]);
+  }, [data, user, socket, toast]);
 
   return (
     <Sheet>

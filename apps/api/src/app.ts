@@ -31,7 +31,6 @@ export default class App {
         allowedHeaders: ['Content-Type', 'Authorization'],
       },
     });
-
     this.passport = new PassportConfig();
 
     this.configure();
@@ -54,7 +53,6 @@ export default class App {
     this.socket.on('connection', (socket) => {
       socket.on('room', (room: string) => {
         socket.join(room);
-        console.log('Socket Joined', room);
       });
 
       socket.on('disconnect', () => {
