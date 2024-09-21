@@ -1,9 +1,16 @@
 import { Prisma, ProgressType, RequestStatus } from '@prisma/client';
 
 import ApiError from '@/utils/error.util';
+import { Socket } from '@/libs/socketio';
 import prisma from '@/libs/prisma';
 
 export default class RequestAccessAction {
+  private socket: Socket;
+
+  constructor() {
+    this.socket = Socket.getInstance();
+  }
+
   index = async (
     user_id: string,
     role: 'SuperAdmin' | 'OutletAdmin' | 'WashingWorker' | 'IroningWorker' | 'PackingWorker',
@@ -187,6 +194,11 @@ export default class RequestAccessAction {
           outlet_id: job.outlet_id,
           employee_id: job.employee_id,
         },
+      });
+
+      this.socket.emitTo(job.outlet_id, ['OutletAdmin'], 'notification', {
+        title: 'New Request Access Created',
+        description: 'A new request access has been created in your outlet, check your dashboard to accept the request',
       });
       return requestAccess;
     } catch (error) {

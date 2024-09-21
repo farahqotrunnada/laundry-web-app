@@ -6,7 +6,6 @@ import * as React from 'react';
 
 import { AuthProvider } from '@/context/auth';
 import { ConfirmProvider } from '@/context/confirm';
-import { SWRConfig } from 'swr';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -30,8 +29,10 @@ export default function Provider({ children }: LayoutProps) {
       <AuthProvider>
         <ConfirmProvider>
           <TooltipProvider>
-            <AosProvider>{children}</AosProvider>
-            <Toaster />
+            <AosProvider>
+              {children}
+              <Toaster />
+            </AosProvider>
           </TooltipProvider>
         </ConfirmProvider>
       </AuthProvider>

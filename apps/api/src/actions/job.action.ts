@@ -1,6 +1,7 @@
 import { DeliveryType, JobType, OrderStatus, Prisma, ProgressType } from '@prisma/client';
 
 import ApiError from '@/utils/error.util';
+import { Socket } from '@/libs/socketio';
 import prisma from '@/libs/prisma';
 
 interface ChoosenItem {
@@ -10,6 +11,12 @@ interface ChoosenItem {
 }
 
 export default class JobAction {
+  private socket: Socket;
+
+  constructor() {
+    this.socket = Socket.getInstance();
+  }
+
   index = async (
     user_id: string,
     role: 'SuperAdmin' | 'WashingWorker' | 'IroningWorker' | 'PackingWorker',
@@ -303,6 +310,11 @@ export default class JobAction {
             type: DeliveryType.Dropoff,
           },
         });
+
+        this.socket.emitTo(job.outlet_id, ['OutletAdmin', 'Driver'], 'notification', {
+          title: 'Delivery Requested',
+          description: 'A new delivery has been requested in your outlet, check your dashboard to accept the delivery',
+        });
       }
 
       if (job.type === JobType.Packing) return;
@@ -312,9 +324,23 @@ export default class JobAction {
           order_id: job.order_id,
           outlet_id: job.outlet_id,
           progress: ProgressType.Pending,
-          type: job.type === JobType.Washing ? JobType.Ironing : JobType.Packing,
+          type: status === OrderStatus.ON_PROGRESS_IRONING ? JobType.Ironing : JobType.Packing,
         },
       });
+
+      if (status === OrderStatus.ON_PROGRESS_IRONING) {
+        this.socket.emitTo(job.outlet_id, ['OutletAdmin', 'IroningWorker'], 'notification', {
+          title: 'Ironing Job Created',
+          description: 'A new ironing job has been created in your outlet, check your dashboard to accept the job',
+        });
+      }
+
+      if (status === OrderStatus.ON_PROGRESS_PACKING) {
+        this.socket.emitTo(job.outlet_id, ['OutletAdmin', 'PackingWorker'], 'notification', {
+          title: 'Packing Job Created',
+          description: 'A new packing job has been created in your outlet, check your dashboard to accept the job',
+        });
+      }
     } catch (error) {
       throw error;
     }

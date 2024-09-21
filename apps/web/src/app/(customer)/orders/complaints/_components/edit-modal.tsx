@@ -19,7 +19,6 @@ import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import axios from '@/lib/axios';
-import { mutate } from 'swr';
 import useConfirm from '@/hooks/use-confirm';
 import { useCustomerComplaints } from '@/hooks/use-user-complaints';
 import { useForm } from 'react-hook-form';

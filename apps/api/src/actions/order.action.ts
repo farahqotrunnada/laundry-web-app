@@ -3,9 +3,16 @@ import { MIDTRANS_PASSWORD, MIDTRANS_SERVER_KEY, MIDTRANS_URL } from '@/config';
 import axios, { isAxiosError } from 'axios';
 
 import ApiError from '@/utils/error.util';
+import { Socket } from '@/libs/socketio';
 import prisma from '@/libs/prisma';
 
 export default class OrderAction {
+  private socket: Socket;
+
+  constructor() {
+    this.socket = Socket.getInstance();
+  }
+
   index = async (
     user_id: string,
     role: Role,
@@ -322,6 +329,11 @@ export default class OrderAction {
           },
         });
       }
+
+      this.socket.emitTo(order.outlet_id, ['OutletAdmin'], 'notification', {
+        title: 'Order Paid',
+        description: 'A new order has been paid, check your dashboard to see the details',
+      });
     } catch (error) {
       if (isAxiosError(error)) {
         throw new ApiError(

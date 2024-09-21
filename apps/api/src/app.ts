@@ -4,20 +4,34 @@ import { FRONTEND_URL, PORT, validateEnv } from '@/config';
 import express, { Express, NextFunction, Request, Response } from 'express';
 
 import ApiError from '@/utils/error.util';
+import type { Server as HttpServer } from 'http';
 import PassportConfig from '@/libs/passport';
 import { Prisma } from '@prisma/client';
+import { Socket } from './libs/socketio';
 import { ValidationError } from 'yup';
 import cookie from 'cookie-parser';
 import cors from 'cors';
+import { createServer } from 'http';
 import path from 'path';
 import v1Router from '@/routers/v1/index.routes';
 
 export default class App {
   private app: Express;
+  private server: HttpServer;
+  private socket: Socket;
   private passport: PassportConfig;
 
   constructor() {
     this.app = express();
+    this.server = createServer(this.app);
+    this.socket = new Socket(this.server, {
+      cors: {
+        credentials: true,
+        origin: FRONTEND_URL,
+        allowedHeaders: ['Content-Type', 'Authorization'],
+      },
+    });
+
     this.passport = new PassportConfig();
 
     this.configure();
@@ -36,6 +50,18 @@ export default class App {
     this.app.use(cookie());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+
+    this.socket.on('connection', (socket) => {
+      socket.on('room', (room: string) => {
+        socket.join(room);
+        console.log('Socket Joined', room);
+      });
+
+      socket.on('disconnect', () => {
+        socket.leave();
+      });
+    });
+
     this.passport.initialize();
   }
 
@@ -44,6 +70,15 @@ export default class App {
 
     this.app.use('/static', express.static(path.join(__dirname, '../public')));
     this.app.get('/_debug/healthcheck', (req: Request, res: Response) => {
+      res.send('OK');
+    });
+    this.app.get('/test', (req: Request, res: Response) => {
+      this.socket.emit('notification', {
+        title: 'Success',
+        description: 'This is a test notification',
+        variant: Math.random() > 0.5 ? 'dangerous' : 'default',
+      });
+
       res.send('OK');
     });
 
@@ -82,7 +117,7 @@ export default class App {
   public start(): void {
     validateEnv()
       .then(() => {
-        this.app.listen(PORT, () => {
+        this.server.listen(PORT, () => {
           console.log(`  ➜  [API] Local:   http://localhost:${PORT}/`);
         });
       })

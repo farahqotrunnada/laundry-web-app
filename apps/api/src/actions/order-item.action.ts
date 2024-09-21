@@ -2,6 +2,7 @@ import { JobType, OrderStatus, ProgressType } from '@prisma/client';
 
 import ApiError from '@/utils/error.util';
 import { PRICE_PER_KG } from '@/config';
+import { Socket } from '@/libs/socketio';
 import prisma from '@/libs/prisma';
 
 interface ChoosenItem {
@@ -11,11 +12,18 @@ interface ChoosenItem {
 }
 
 export default class OrderItemAction {
+  private socket: Socket;
+
+  constructor() {
+    this.socket = Socket.getInstance();
+  }
+
   create = async (order_id: string, order_items: ChoosenItem[], weight: number) => {
     try {
       const order = await prisma.order.findUnique({
         where: { order_id },
         include: {
+          Outlet: true,
           OrderProgress: true,
         },
       });
@@ -71,6 +79,11 @@ export default class OrderItemAction {
           },
         }),
       ]);
+
+      this.socket.emitTo(order.outlet_id, ['OutletAdmin', 'WashingWorker'], 'notification', {
+        title: 'New Washing Job Created',
+        description: 'A new washing job has been created in your outlet, check your dashboard to accept the job',
+      });
 
       return order;
     } catch (error) {

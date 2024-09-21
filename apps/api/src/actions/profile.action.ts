@@ -57,6 +57,20 @@ export default class ProfileAction {
     }
   };
 
+  employee = async (user_id: string) => {
+    try {
+      const employee = await prisma.employee.findUnique({
+        where: { user_id },
+      });
+
+      if (!employee) throw new ApiError(404, 'Employee not found');
+
+      return employee;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   changePassword = async (user_id: string, password: string, new_password: string) => {
     try {
       const user = await prisma.user.findUnique({

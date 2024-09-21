@@ -2,10 +2,17 @@ import { DeliveryType, OrderStatus, Prisma, ProgressType, Role } from '@prisma/c
 import { MAXIMUM_RADIUS, PRICE_PER_KM } from '@/config';
 
 import ApiError from '@/utils/error.util';
+import { Socket } from '@/libs/socketio';
 import { getDistance } from '@/utils/distance.util';
 import prisma from '@/libs/prisma';
 
 export default class DeliveryAction {
+  private socket: Socket;
+
+  constructor() {
+    this.socket = Socket.getInstance();
+  }
+
   index = async (
     user_id: string,
     role: Role,
@@ -145,7 +152,7 @@ export default class DeliveryAction {
 
       if (distance > MAXIMUM_RADIUS) throw new ApiError(400, 'Customer address is too far from outlet');
 
-      await prisma.order.create({
+      const order = await prisma.order.create({
         data: {
           customer_id: customer.customer_id,
           customer_address_id: customer_address_id,
@@ -165,6 +172,11 @@ export default class DeliveryAction {
             },
           },
         },
+      });
+
+      this.socket.emitTo(order.outlet_id, ['OutletAdmin', 'Driver'], 'notification', {
+        title: 'Delivery Requested',
+        description: 'A new delivery has been requested in your outlet, check your dashboard to accept the delivery',
       });
     } catch (error) {
       throw error;
@@ -234,17 +246,36 @@ export default class DeliveryAction {
         },
       };
 
-      await prisma.order.update({
+      const status = mapper[delivery.type][progress];
+
+      const order = await prisma.order.update({
         where: { order_id: delivery.order_id },
         data: {
-          is_completed: mapper[delivery.type][progress] === OrderStatus.COMPLETED_ORDER,
+          is_completed: status === OrderStatus.COMPLETED_ORDER,
           OrderProgress: {
             create: {
-              status: mapper[delivery.type][progress],
+              status,
             },
           },
         },
+        include: {
+          Outlet: true,
+        },
       });
+
+      if (status === OrderStatus.ARRIVED_AT_OUTLET) {
+        this.socket.emitTo(order.outlet_id, ['OutletAdmin'], 'notification', {
+          title: 'Order Arrived',
+          description: 'Your Order has been arrived at the outlet, check your dashboard to assign the order items',
+        });
+      }
+
+      if (status === OrderStatus.COMPLETED_ORDER) {
+        this.socket.emitTo(order.outlet_id, ['OutletAdmin'], 'notification', {
+          title: 'Order Completed',
+          description: 'Your Order has been completed, check your dashboard to see the results',
+        });
+      }
 
       return delivery;
     } catch (error) {

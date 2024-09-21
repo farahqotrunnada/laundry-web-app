@@ -66,6 +66,9 @@ const columns: ColumnDef<
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='Employee Name' />;
     },
+    cell: ({ row }) => {
+      return <span>{row.original.Employee ? row.original.Employee.User.fullname : null}</span>;
+    },
   },
   {
     accessorKey: 'progress',

@@ -2,8 +2,7 @@
 
 import * as React from 'react';
 
-import { User, UserToken } from '@/types/user';
-
+import { UserToken } from '@/types/user';
 import axios from '@/lib/axios';
 import { jwtDecode } from 'jwt-decode';
 import { useLocalStorage } from 'usehooks-ts';

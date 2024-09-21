@@ -154,7 +154,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ outlet_id, user_i
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder='Enter your email' {...field} />
+                      <Input placeholder='Enter your email' {...field} disabled readOnly />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

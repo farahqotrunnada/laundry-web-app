@@ -54,6 +54,16 @@ export default class ProfileController {
     }
   };
 
+  employee = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { user_id } = req.user as AccessTokenPayload;
+      const employee = await this.profileAction.employee(user_id);
+      return res.status(200).json(new ApiResponse('Employee retrieved successfully', employee));
+    } catch (error) {
+      next(error);
+    }
+  };
+
   changePassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { user_id } = req.user as AccessTokenPayload;

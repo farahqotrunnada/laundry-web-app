@@ -30,6 +30,7 @@ export default class ProfileRouter {
 
     this.router.get('/', this.profileController.show);
     this.router.put('/', this.profileController.update);
+    this.router.get('/employee', this.profileController.employee);
     this.router.post('/change-password', this.profileController.changePassword);
     this.router.post('/change-email', this.profileController.changeEmail);
 
