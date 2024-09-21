@@ -11,6 +11,7 @@ export default async function Layout({ children }: LayoutProps): Promise<React.J
     { title: 'All Orders', href: '/orders' },
     { title: 'Ongoing Order', href: '/orders/ongoing' },
     { title: 'Completed Order', href: '/orders/completed' },
+    { title: 'Order Complaints', href: '/orders/complaints' },
   ];
 
   return (

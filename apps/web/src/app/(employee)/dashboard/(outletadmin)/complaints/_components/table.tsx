@@ -23,8 +23,8 @@ import { Input } from '@/components/ui/input';
 import TableLoader from '@/components/loader/table';
 import ToggleColumn from '@/components/table/column-toggle';
 import columns from './column';
+import { useComplaints } from '@/hooks/use-complaints';
 import { useDebounceValue } from 'usehooks-ts';
-import { useUsers } from '@/hooks/use-user';
 
 interface DataTableProps<TData, TValue> {
   data: TData[];
@@ -78,9 +78,9 @@ const DataTable = <TData, TValue>({
       <div className='flex flex-col mb-6 space-y-4 lg:justify-between lg:flex-row lg:items-center lg:space-y-0 lg:space-x-4'>
         <Input
           autoFocus
-          placeholder='Filter name'
-          value={(table.getColumn('fullname')?.getFilterValue() as string) ?? ''}
-          onChange={(event) => table.getColumn('fullname')?.setFilterValue(event.target.value)}
+          placeholder='Filter Complaint by ID'
+          value={(table.getColumn('complaint_id')?.getFilterValue() as string) ?? ''}
+          onChange={(event) => table.getColumn('complaint_id')?.setFilterValue(event.target.value)}
           className='w-full lg:max-w-md'
         />
 
@@ -129,7 +129,11 @@ const DataTable = <TData, TValue>({
   );
 };
 
-const UserTable = () => {
+interface ComplaintTableProps {
+  //
+}
+
+const ComplaintTable: React.FC<ComplaintTableProps> = ({ ...props }) => {
   const router = useRouter();
   const pathname = usePathname();
   const search = useSearchParams();
@@ -143,7 +147,7 @@ const UserTable = () => {
 
   const [filter] = useDebounceValue<ColumnFiltersState>(columnFilters, 500);
 
-  const { data, error, isLoading } = useUsers(filter, pagination, sorting);
+  const { data, error, isLoading } = useComplaints(filter, pagination, sorting);
 
   React.useEffect(() => {
     if (search.has('page')) {
@@ -193,23 +197,21 @@ const UserTable = () => {
   }, [router, pathname, pagination, sorting, filter]);
 
   if (isLoading) return <TableLoader />;
-  if (error || !data) return <div>failed to load user data, retrying...</div>;
+  if (error || !data) return <div>failed to load complaints data, retrying...</div>;
 
   return (
-    <>
-      <DataTable
-        columns={columns}
-        data={data.data.users}
-        pageCount={Math.ceil(data.data.count / pagination.pageSize)}
-        sorting={sorting}
-        onSortingChange={setSorting}
-        pagination={pagination}
-        onPaginationChange={setPagination}
-        columnFilters={columnFilters}
-        setColumnFilters={setColumnFilters}
-      />
-    </>
+    <DataTable
+      columns={columns}
+      data={data.data.complaints}
+      pageCount={Math.ceil(data.data.count / pagination.pageSize)}
+      sorting={sorting}
+      onSortingChange={setSorting}
+      pagination={pagination}
+      onPaginationChange={setPagination}
+      columnFilters={columnFilters}
+      setColumnFilters={setColumnFilters}
+    />
   );
 };
 
-export default UserTable;
+export default ComplaintTable;

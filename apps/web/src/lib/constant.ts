@@ -1,4 +1,4 @@
-import { Car, Home, Shirt, ShoppingCart, Store, Ticket, Timer, User, Users, Zap } from 'lucide-react';
+import { Car, Home, MessageCircle, Shirt, ShoppingCart, Store, Ticket, Timer, User, Users, Zap } from 'lucide-react';
 
 import { Location } from '@/types/location';
 import { OrderStatus } from '@/types/order';
@@ -71,6 +71,13 @@ export const SIDEBAR_LINKS: SidebarMenu[] = [
     active: '/dashboard/request-access/**',
     roles: ['SuperAdmin', 'OutletAdmin', 'WashingWorker', 'IroningWorker', 'PackingWorker'],
   },
+  {
+    icon: MessageCircle,
+    title: 'Complaints',
+    href: '/dashboard/complaints',
+    active: '/dashboard/complaints/**',
+    roles: ['SuperAdmin', 'OutletAdmin'],
+  },
 ];
 
 export const FEATURES_LIST = [
@@ -101,13 +108,13 @@ export const AVATAR_LINKS = [
 
 export const OrderStatusMapper: Record<OrderStatus, string> = {
   WAITING_FOR_PICKUP: 'Menunggu Penjemputan Driver',
-  ON_PROGRESS_PICKUP: 'Laundry Sedang Menuju Outlet',
+  ON_PROGRESS_PICKUP: 'Laundry Dikirim Ke Outlet',
   ARRIVED_AT_OUTLET: 'Laundry Telah Sampai Outlet',
   ON_PROGRESS_WASHING: 'Laundry Sedang Dicuci',
   ON_PROGRESS_IRONING: 'Laundry Sedang Disetrika',
   ON_PROGRESS_PACKING: 'Laundry Sedang Di Packing',
   WAITING_FOR_PAYMENT: 'Menunggu Pembayaran',
-  ON_PROGRESS_DROPOFF: 'Laundry Sedang Dikirim Menuju Customer',
+  ON_PROGRESS_DROPOFF: 'Laundry Dikirim Ke Customer',
   COMPLETED_ORDER: 'Laundry Telah Diterima Customer',
 };
 

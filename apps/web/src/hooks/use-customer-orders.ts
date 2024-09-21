@@ -2,6 +2,7 @@
 
 import { Order, OrderProgress } from '@/types/order';
 
+import { Complaint } from '@/types/complaint';
 import { Outlet } from '@/types/outlet';
 import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
@@ -15,6 +16,7 @@ export const useCustomerOrders = (type: 'All' | 'Ongoing' | 'Completed') => {
     data: Array<
       Order & {
         Outlet?: Outlet;
+        Complaint?: Complaint;
         OrderProgress?: OrderProgress[];
       }
     >;

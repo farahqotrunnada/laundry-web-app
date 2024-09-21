@@ -3,7 +3,6 @@
 import * as React from 'react';
 import * as yup from 'yup';
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Dialog,
   DialogClose,
@@ -15,18 +14,19 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Loader2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Loader2 } from 'lucide-react';
 import axios from '@/lib/axios';
 import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
+import { useOutletEmployee } from '@/hooks/use-outlet-employee';
 import { useSWRConfig } from 'swr';
+import { useShifts } from '@/hooks/use-shifts';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useShifts } from '@/hooks/use-shifts';
-import { useOutletEmployee } from '@/hooks/use-outlet-employee';
 
 interface EditEmployeeModalProps {
   outlet_id: string;
@@ -108,7 +108,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ outlet_id, user_i
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <span className='block w-full px-2 py-1.5 text-sm rounded-sm hover:bg-muted'>Edit Employee</span>
+        <div className='block w-full px-2 py-1.5 text-sm rounded-sm hover:bg-muted cursor-default'>Edit Employee</div>
       </DialogTrigger>
 
       <DialogContent className='w-full max-w-lg'>

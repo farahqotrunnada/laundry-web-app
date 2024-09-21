@@ -18,14 +18,14 @@ import { Loader2, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Shift } from '@/types/shift';
 import axios from '@/lib/axios';
+import moment from 'moment';
 import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
+import { useShifts } from '@/hooks/use-shifts';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useShifts } from '@/hooks/use-shifts';
-import moment from 'moment';
-import { Shift } from '@/types/shift';
 
 interface EditShiftProps {
   shift: Shift;
@@ -92,7 +92,7 @@ const EditShiftModal: React.FC<EditShiftProps> = ({ shift, ...props }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <span className='block w-full px-2 py-1.5 text-sm rounded-sm hover:bg-muted'>Edit Shift</span>
+        <div className='block w-full px-2 py-1.5 text-sm rounded-sm hover:bg-muted cursor-default'>Edit Shift</div>
       </DialogTrigger>
 
       <DialogContent className='sm:max-w-md'>

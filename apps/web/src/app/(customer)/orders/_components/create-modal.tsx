@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from 'react';
 import * as yup from 'yup';
 
@@ -16,59 +14,55 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 import { Button } from '@/components/ui/button';
-import ImageUpload from '@/components/image-upload';
 import { Input } from '@/components/ui/input';
-import { LaundryItem } from '@/types/laundry-item';
 import { Loader2 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 import axios from '@/lib/axios';
 import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
-import { useLaundryItems } from '@/hooks/use-laundry-items';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-interface EditLaundryItemModalProps {
-  item: LaundryItem;
+interface CreateComplaintModalProps {
+  order_id: string;
 }
 
-const laundryItemSchema = yup.object({
-  name: yup.string().required(),
-  icon_url: yup.string().url().required(),
+const complaintSchema = yup.object({
+  order_id: yup.string().required(),
+  description: yup.string().min(10, 'Description is too short').max(250, 'Description is too long').required(),
 });
 
-const EditLaundryItemModal: React.FC<EditLaundryItemModalProps> = ({ item, ...props }) => {
+const CreateComplaintModal: React.FC<CreateComplaintModalProps> = ({ order_id, ...props }) => {
   const { toast } = useToast();
   const { confirm } = useConfirm();
-  const { mutate } = useLaundryItems();
   const [open, setOpen] = React.useState(false);
 
-  const form = useForm<yup.InferType<typeof laundryItemSchema>>({
-    resolver: yupResolver(laundryItemSchema),
+  const form = useForm<yup.InferType<typeof complaintSchema>>({
+    resolver: yupResolver(complaintSchema),
     defaultValues: {
-      name: item.name,
-      icon_url: item.icon_url,
+      order_id: order_id,
+      description: '',
     },
   });
 
-  const onSubmit = async (formData: yup.InferType<typeof laundryItemSchema>) => {
+  const onSubmit = async (formData: yup.InferType<typeof complaintSchema>) => {
     confirm({
-      title: 'Update Laundry Item',
-      description: 'Are you sure you want to update this laundry item? make sure the details are correct.',
+      title: 'Create Complaint',
+      description: 'Are you sure you want to create this complaint? make sure the details are correct.',
     })
       .then(async () => {
         try {
-          await axios.put('/laundry-items/' + item.laundry_item_id, formData);
+          await axios.post('/profile/complaints', formData);
           toast({
-            title: 'Laundry Item updated',
-            description: 'Your laundry item has been updated successfully',
+            title: 'Complaint created',
+            description: 'Your complaint has been created successfully',
           });
           form.reset();
           setOpen(false);
-          mutate();
         } catch (error: any) {
           toast({
             variant: 'destructive',
-            title: 'Failed to update laundry item',
+            title: 'Failed to create complaint',
             description: error.message,
           });
         }
@@ -81,25 +75,27 @@ const EditLaundryItemModal: React.FC<EditLaundryItemModalProps> = ({ item, ...pr
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className='block w-full px-2 py-1.5 text-sm rounded-sm hover:bg-muted cursor-default'>Edit Item</div>
+        <div className='block w-full px-2 py-1.5 text-sm rounded-sm hover:bg-muted cursor-default'>
+          Create Complaint
+        </div>
       </DialogTrigger>
 
       <DialogContent className='sm:max-w-md'>
         <DialogHeader>
-          <DialogTitle>Update Laundry Item</DialogTitle>
-          <DialogDescription>Update laundry item.</DialogDescription>
+          <DialogTitle>Create Complaint</DialogTitle>
+          <DialogDescription>Create a complaint for this order.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className='grid gap-4'>
               <FormField
                 control={form.control}
-                name='name'
+                name='order_id'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Order ID</FormLabel>
                     <FormControl>
-                      <Input placeholder='Enter your name' {...field} />
+                      <Input placeholder='Enter your Order ID' {...field} disabled readOnly />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -108,19 +104,13 @@ const EditLaundryItemModal: React.FC<EditLaundryItemModalProps> = ({ item, ...pr
 
               <FormField
                 control={form.control}
-                name='icon_url'
+                name='description'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Image</FormLabel>
-                    <ImageUpload
-                      imageWidth={300}
-                      imageHeight={300}
-                      asset_folder={'laundry_items'}
-                      src={form.watch('icon_url')}
-                      eager='w_200,h_200,c_fill'
-                      onChangeImage={(original, eager) => form.setValue('icon_url', eager ? eager : original)}
-                      className='overflow-hidden border rounded-lg bg-accent aspect-square'
-                    />
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder='Enter your description' {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -135,7 +125,7 @@ const EditLaundryItemModal: React.FC<EditLaundryItemModalProps> = ({ item, ...pr
               </DialogClose>
               <Button type='submit' disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && <Loader2 className='mr-2 size-4 animate-spin' />}
-                Update Laundry Item
+                Create Complaint
               </Button>
             </DialogFooter>
           </form>
@@ -145,4 +135,4 @@ const EditLaundryItemModal: React.FC<EditLaundryItemModalProps> = ({ item, ...pr
   );
 };
 
-export default EditLaundryItemModal;
+export default CreateComplaintModal;

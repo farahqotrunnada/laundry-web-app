@@ -4,6 +4,7 @@ import { Customer, User } from '@/types/user';
 import { Order, OrderItem, OrderProgress } from '@/types/order';
 
 import { Address } from '@/types/address';
+import { Complaint } from '@/types/complaint';
 import { LaundryItem } from '@/types/laundry-item';
 import { Outlet } from '@/types/outlet';
 import { Payment } from '@/types/payment';
@@ -29,6 +30,7 @@ export const useOrderDetail = (order_id: string) => {
       CustomerAddress: Address;
       OrderProgress: OrderProgress[];
       Payment?: Payment;
+      Comlaint: Complaint;
     };
   }>('/orders/' + order_id, fetcher, {
     onError: (error) => {

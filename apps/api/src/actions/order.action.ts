@@ -109,6 +109,7 @@ export default class OrderAction {
         },
         include: {
           Outlet: true,
+          Complaint: true,
           OrderProgress: {
             orderBy: {
               created_at: 'desc',
@@ -147,6 +148,7 @@ export default class OrderAction {
           CustomerAddress: true,
           OrderProgress: true,
           Payment: true,
+          Complaint: true,
         },
       });
 
@@ -176,11 +178,7 @@ export default class OrderAction {
       });
 
       if (!user) throw new ApiError(404, 'User not found');
-
-      if (role === 'Customer') {
-        if (!user.Customer) throw new ApiError(404, 'Customer not found');
-        if (order.customer_id === user.Customer.customer_id) throw new ApiError(400, 'Order not belong to this user');
-      }
+      if (user.Customer && order.customer_id !== user.Customer.customer_id) return order;
 
       if (role === 'OutletAdmin') {
         if (!user.Employee) throw new ApiError(404, 'Employee not found');
