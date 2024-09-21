@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import CustomerOrderTable from '../_components/table';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 
 interface PageProps {
   //

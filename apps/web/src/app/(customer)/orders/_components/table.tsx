@@ -16,6 +16,8 @@ import { formatCurrency, formatDateTime } from '@/lib/utils';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Complaint } from '@/types/complaint';
+import CreateComplaintModal from './create-modal';
 import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
 import { OrderStatusMapper } from '@/lib/constant';
@@ -84,6 +86,7 @@ const CustomerOrderTable: React.FC<CustomerOrderTableProps> = ({ type, ...props 
 interface TableActionProps {
   order: Order & {
     Outlet?: Outlet;
+    Complaint?: Complaint;
     OrderProgress?: OrderProgress[];
   };
 }
@@ -108,6 +111,7 @@ const TableAction: React.FC<TableActionProps> = ({ order }) => {
             <DropdownMenuItem>Process Payment</DropdownMenuItem>
           </Link>
         )}
+        {order.is_completed && !order.Complaint && <CreateComplaintModal order_id={order.order_id} />}
       </DropdownMenuContent>
     </DropdownMenu>
   );

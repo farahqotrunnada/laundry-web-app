@@ -246,10 +246,15 @@ export default class DeliveryAction {
         },
       };
 
-      await prisma.orderProgress.create({
+      await prisma.order.update({
+        where: { order_id: delivery.order_id },
         data: {
-          order_id: delivery.order_id,
-          status: mapper[delivery.type][progress],
+          is_completed: mapper[delivery.type][progress] === OrderStatus.COMPLETED_ORDER,
+          OrderProgress: {
+            create: {
+              status: mapper[delivery.type][progress],
+            },
+          },
         },
       });
 

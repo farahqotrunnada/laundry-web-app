@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Order, OrderProgress } from '@/types/order';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -70,7 +70,7 @@ const columns: ColumnDef<
       return <DataTableColumnHeader column={column} title='Created' />;
     },
     cell: ({ row }) => {
-      return <span className='whitespace-nowrap'>{formatDate(row.getValue('created_at') as string)}</span>;
+      return <span className='whitespace-nowrap'>{formatDateTime(row.getValue('created_at') as string)}</span>;
     },
   },
   {

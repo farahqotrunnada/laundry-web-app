@@ -86,7 +86,9 @@ const EditRequestAccessModal: React.FC<EditRequestAccessModalProps> = ({ request
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <span className='block w-full px-2 py-1.5 text-sm rounded-sm hover:bg-muted'>Edit Request Access</span>
+        <div className='block w-full px-2 py-1.5 text-sm rounded-sm hover:bg-muted cursor-default'>
+          Edit Request Access
+        </div>
       </DialogTrigger>
 
       <DialogContent className='sm:max-w-md'>

@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from 'react';
 import * as yup from 'yup';
 
@@ -14,72 +12,63 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Loader2, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { Complaint } from '@/types/complaint';
 import { Input } from '@/components/ui/input';
-import PasswordMeter from '@/components/password-meter';
+import { Loader2 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 import axios from '@/lib/axios';
 import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
 import { useSWRConfig } from 'swr';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { PasswordInput } from '@/components/password-input';
 
-interface AddUserModalProps {
-  //
+interface EditComplaintModalProps {
+  complaint: Complaint;
 }
 
-const createUserSchema = yup.object({
-  email: yup.string().email().required(),
-  fullname: yup.string().required(),
-  phone: yup.string().required(),
-  password: yup
-    .string()
-    .min(10, 'Password is too short')
-    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .matches(/[0-9]/, 'Password must contain at least one number')
-    .matches(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
-    .required(),
+const complaintSchema = yup.object({
+  order_id: yup.string().required(),
+  description: yup.string().min(10, 'Description is too short').max(250, 'Description is too long').required(),
+  resolution: yup.string().min(10, 'Description is too short').max(250, 'Description is too long').required(),
 });
 
-const AddUserModal: React.FC<AddUserModalProps> = ({ ...props }) => {
+const EditComplaintModal: React.FC<EditComplaintModalProps> = ({ complaint, ...props }) => {
   const { toast } = useToast();
   const { confirm } = useConfirm();
   const { mutate } = useSWRConfig();
   const [open, setOpen] = React.useState(false);
 
-  const form = useForm<yup.InferType<typeof createUserSchema>>({
-    resolver: yupResolver(createUserSchema),
+  const form = useForm<yup.InferType<typeof complaintSchema>>({
+    resolver: yupResolver(complaintSchema),
     defaultValues: {
-      email: '',
-      fullname: '',
-      phone: '',
-      password: '',
+      order_id: complaint.order_id,
+      description: complaint.description,
+      resolution: complaint.resolution,
     },
   });
 
-  const onSubmit = async (formData: yup.InferType<typeof createUserSchema>) => {
+  const onSubmit = async (formData: yup.InferType<typeof complaintSchema>) => {
     confirm({
-      title: 'Create User',
-      description: 'Are you sure you want to create this user? make sure the details are correct.',
+      title: 'Update Complaint',
+      description: 'Are you sure you want to update this complaint? make sure the details are correct.',
     })
       .then(async () => {
         try {
-          await axios.post('/users', formData);
+          await axios.put('/complaints/' + complaint.complaint_id, formData);
           toast({
-            title: 'User created',
-            description: 'Your user has been created successfully',
+            title: 'Complaint updated',
+            description: 'Your complaint has been updated successfully',
           });
           form.reset();
           setOpen(false);
-          mutate((key) => Array.isArray(key) && key.includes('/users'));
+          mutate((key) => Array.isArray(key) && key.includes('/complaints'));
         } catch (error: any) {
           toast({
             variant: 'destructive',
-            title: 'Failed to create user',
+            title: 'Failed to update complaint',
             description: error.message,
           });
         }
@@ -92,28 +81,25 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ ...props }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className='w-full'>
-          <Plus className='inline-block w-4 h-4 mr-2' />
-          <span>Add Users</span>
-        </Button>
+        <div className='block w-full px-2 py-1.5 text-sm rounded-sm hover:bg-muted cursor-default'>Edit Complaint</div>
       </DialogTrigger>
 
       <DialogContent className='sm:max-w-md'>
         <DialogHeader>
-          <DialogTitle>Create New Employee</DialogTitle>
-          <DialogDescription>Create a new employee for your outlet.</DialogDescription>
+          <DialogTitle>Update Complaint</DialogTitle>
+          <DialogDescription>Update a complaint for this order.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className='grid gap-4'>
               <FormField
                 control={form.control}
-                name='fullname'
+                name='order_id'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>Order ID</FormLabel>
                     <FormControl>
-                      <Input placeholder='Enter your full name' {...field} />
+                      <Input placeholder='Enter your Order ID' {...field} disabled readOnly />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -122,12 +108,12 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ ...props }) => {
 
               <FormField
                 control={form.control}
-                name='phone'
+                name='description'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone</FormLabel>
+                    <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Input type='number' inputMode='numeric' placeholder='enter your phone' {...field} />
+                      <Textarea placeholder='Enter your description' {...field} disabled readOnly />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -136,33 +122,17 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ ...props }) => {
 
               <FormField
                 control={form.control}
-                name='email'
+                name='resolution'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Resolution</FormLabel>
                     <FormControl>
-                      <Input placeholder='Enter your email' {...field} />
+                      <Textarea placeholder='Enter your resolution' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name='password'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <PasswordInput type='password' placeholder='Enter your password' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <PasswordMeter password={form.watch('password')} />
             </div>
 
             <DialogFooter className='mt-4 sm:justify-end'>
@@ -173,7 +143,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ ...props }) => {
               </DialogClose>
               <Button type='submit' disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && <Loader2 className='mr-2 size-4 animate-spin' />}
-                Create Employee
+                Update Complaint
               </Button>
             </DialogFooter>
           </form>
@@ -183,4 +153,4 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ ...props }) => {
   );
 };
 
-export default AddUserModal;
+export default EditComplaintModal;
