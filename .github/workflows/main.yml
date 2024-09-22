@@ -17,6 +17,7 @@ jobs:
       - name: Build Project
         run: |
           npm install
+          npx prisma generate --schema=./apps/api/prisma/schema.prisma
           npm run build
       - name: Deploy to VPS
         uses: appleboy/scp-action@master
