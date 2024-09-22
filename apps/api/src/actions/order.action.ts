@@ -1,6 +1,4 @@
-import { DeliveryType, OrderStatus, PaymentMethod, Prisma, ProgressType, Role } from '@prisma/client';
-import { MIDTRANS_PASSWORD, MIDTRANS_SERVER_KEY, MIDTRANS_URL } from '@/config';
-import axios, { isAxiosError } from 'axios';
+import { Prisma, Role } from '@prisma/client';
 
 import ApiError from '@/utils/error.util';
 import { Socket } from '@/libs/socketio';
@@ -100,19 +98,35 @@ export default class OrderAction {
     }
   };
 
-  customer = async (user_id: string, type: 'All' | 'Ongoing' | 'Completed' | undefined) => {
+  customer = async (user_id: string, type: 'All' | 'Ongoing' | 'Paid' | 'Completed' | undefined) => {
     try {
       const customer = await prisma.customer.findUnique({
         where: { user_id },
       });
       if (!customer) throw new ApiError(404, 'Customer not found');
 
+      let filter: Prisma.OrderWhereInput | undefined;
+
+      if (type === 'Ongoing') {
+        filter = {
+          is_completed: false,
+        };
+      } else if (type === 'Paid') {
+        filter = {
+          Payment: {
+            isNot: null,
+          },
+        };
+      } else if (type === 'Completed') {
+        filter = {
+          is_completed: true,
+        };
+      }
+
       const orders = await prisma.order.findMany({
         where: {
           customer_id: customer.customer_id,
-          ...(type !== 'All' && {
-            is_completed: type === 'Completed',
-          }),
+          ...filter,
         },
         include: {
           Outlet: true,
@@ -122,6 +136,9 @@ export default class OrderAction {
               created_at: 'desc',
             },
           },
+        },
+        orderBy: {
+          created_at: 'desc',
         },
       });
 
@@ -210,138 +227,6 @@ export default class OrderAction {
 
       return order;
     } catch (error) {
-      throw error;
-    }
-  };
-
-  payment = async (user_id: string, order_id: string, method: PaymentMethod, receipt_url: string | undefined) => {
-    try {
-      const order = await prisma.order.findUnique({
-        where: {
-          order_id,
-          Customer: {
-            User: {
-              user_id,
-            },
-          },
-        },
-        include: {
-          OrderProgress: true,
-          OrderItem: true,
-          Customer: {
-            include: {
-              User: {
-                select: {
-                  email: true,
-                  fullname: true,
-                },
-              },
-            },
-          },
-          Payment: true,
-        },
-      });
-
-      if (!order) throw new ApiError(404, 'Order not found, or not belong to this user');
-      if (!order.is_payable) throw new ApiError(400, 'Order cannot be paid, please check your order progress');
-      if (order.Payment) throw new ApiError(400, 'Theres already a payment for this order');
-
-      if (method === 'Manual') {
-        await prisma.order.update({
-          where: { order_id },
-          data: {
-            is_payable: false,
-            Payment: {
-              create: {
-                method,
-                receipt_url,
-                status: 'Paid',
-              },
-            },
-          },
-          include: {
-            Payment: true,
-          },
-        });
-      } else {
-        const { data } = await axios.post(
-          MIDTRANS_URL,
-          {
-            transaction_details: {
-              order_id,
-              gross_amount: Number(order.delivery_fee) + Number(order.laundry_fee),
-              item_details: order.OrderItem.map((item) => ({
-                id: item.order_item_id,
-                quantity: item.quantity,
-              })),
-              customer_details: {
-                first_name: order.Customer.User.fullname,
-                email: order.Customer.User.email,
-              },
-            },
-          },
-          {
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-              Authorization: 'Basic ' + Buffer.from(MIDTRANS_SERVER_KEY + ':' + MIDTRANS_PASSWORD).toString('base64'),
-            },
-          }
-        );
-
-        await prisma.order.update({
-          where: { order_id },
-          data: {
-            is_payable: false,
-            Payment: {
-              create: {
-                method,
-                payment_url: data.redirect_url,
-                status: 'Paid',
-              },
-            },
-          },
-          include: {
-            Payment: true,
-          },
-        });
-      }
-
-      if (
-        order.OrderProgress &&
-        order.OrderProgress.find((progress) => progress.status === OrderStatus.WAITING_FOR_PAYMENT)
-      ) {
-        await prisma.order.update({
-          where: { order_id },
-          data: {
-            OrderProgress: {
-              create: {
-                status: OrderStatus.ON_PROGRESS_DROPOFF,
-              },
-            },
-            Delivery: {
-              create: {
-                outlet_id: order.outlet_id,
-                progress: ProgressType.Pending,
-                type: DeliveryType.Dropoff,
-              },
-            },
-          },
-        });
-      }
-
-      this.socket.emitTo(order.outlet_id, ['OutletAdmin'], 'notification', {
-        title: 'Order Paid',
-        description: 'A new order has been paid, check your dashboard to see the details',
-      });
-    } catch (error) {
-      if (isAxiosError(error)) {
-        throw new ApiError(
-          (error.response && error.response.status) || 500,
-          (error.response && error.response.data) || 'Something went wrong'
-        );
-      }
-
       throw error;
     }
   };

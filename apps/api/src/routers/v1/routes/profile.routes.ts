@@ -2,6 +2,7 @@ import AddressController from '@/controllers/address.controller';
 import { AuthMiddleware } from '@/middlewares/auth.middleware';
 import { ComplaintController } from '@/controllers/complaint.controller';
 import OrderController from '@/controllers/order.controller';
+import PaymentController from '@/controllers/payment.controller';
 import ProfileController from '@/controllers/profile.controller';
 import { Router } from 'express';
 
@@ -12,6 +13,7 @@ export default class ProfileRouter {
   private authMiddleware: AuthMiddleware;
   private orderController: OrderController;
   private complaintController: ComplaintController;
+  private paymentController: PaymentController;
 
   constructor() {
     this.router = Router();
@@ -21,6 +23,7 @@ export default class ProfileRouter {
     this.addressController = new AddressController();
     this.orderController = new OrderController();
     this.complaintController = new ComplaintController();
+    this.paymentController = new PaymentController();
 
     this.initializeRoutes();
   }
@@ -36,7 +39,7 @@ export default class ProfileRouter {
 
     this.router.get('/orders', this.orderController.customer);
     this.router.get('/orders/:order_id', this.orderController.show);
-    this.router.post('/orders/:order_id/payment', this.orderController.payment);
+    this.router.post('/orders/:order_id/payment', this.paymentController.create);
 
     this.router.get('/addresses', this.addressController.index);
     this.router.post('/addresses', this.addressController.create);

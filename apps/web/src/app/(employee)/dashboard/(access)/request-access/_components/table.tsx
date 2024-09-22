@@ -52,7 +52,9 @@ const DataTable = <TData, TValue>({
   onPaginationChange,
 }: DataTableProps<TData, TValue>) => {
   const { user } = useAuth();
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+    request_access_id: false,
+  });
 
   const table = useReactTable({
     data: data,

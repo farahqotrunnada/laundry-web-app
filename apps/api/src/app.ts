@@ -12,6 +12,7 @@ import { ValidationError } from 'yup';
 import cookie from 'cookie-parser';
 import cors from 'cors';
 import { createServer } from 'http';
+import morgan from 'morgan';
 import path from 'path';
 import v1Router from '@/routers/v1/index.routes';
 
@@ -47,6 +48,7 @@ export default class App {
       })
     );
     this.app.use(cookie());
+    this.app.use(morgan('dev'));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
 

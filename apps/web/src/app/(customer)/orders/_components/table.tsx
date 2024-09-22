@@ -26,7 +26,7 @@ import { Outlet } from '@/types/outlet';
 import { useCustomerOrders } from '@/hooks/use-customer-orders';
 
 interface CustomerOrderTableProps {
-  type: 'All' | 'Ongoing' | 'Completed';
+  type: 'All' | 'Ongoing' | 'Paid' | 'Completed';
 }
 
 const CustomerOrderTable: React.FC<CustomerOrderTableProps> = ({ type, ...props }) => {
@@ -56,7 +56,7 @@ const CustomerOrderTable: React.FC<CustomerOrderTableProps> = ({ type, ...props 
             </TableRow>
           )}
           {data.data.map((order, idx) => {
-            const latest = order.OrderProgress && order.OrderProgress.at(0);
+            const latest = order.OrderProgress.at(0);
 
             return (
               <TableRow key={idx}>
@@ -96,11 +96,18 @@ const TableAction: React.FC<TableActionProps> = ({ order }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant='ghost' className='w-8 h-8 p-0'>
+        <Button variant='outline' className='relative w-8 h-8 p-0'>
+          {order.is_payable && (
+            <>
+              <div className='absolute top-0 right-0 -m-0.5 rounded-full bg-primary size-2 animate-ping' />
+              <div className='absolute top-0 right-0 -m-0.5 rounded-full bg-primary size-2' />
+            </>
+          )}
           <span className='sr-only'>Open menu</span>
           <MoreHorizontal className='w-4 h-4' />
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent align='end'>
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -109,7 +116,7 @@ const TableAction: React.FC<TableActionProps> = ({ order }) => {
         </Link>
         {order.is_payable && (
           <Link href={'/orders/' + order.order_id + '/payment'} className='w-full'>
-            <DropdownMenuItem>Process Payment</DropdownMenuItem>
+            <DropdownMenuItem className='text-primary'>Process Payment</DropdownMenuItem>
           </Link>
         )}
         {order.is_completed && !order.Complaint && <CreateComplaintModal order_id={order.order_id} />}

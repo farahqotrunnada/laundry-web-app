@@ -6,6 +6,7 @@ import JobRouter from './routes/job.routes';
 import LaundryItemRouter from './routes/laundry-item.routes';
 import OrderRouter from './routes/order.routes';
 import OutletsRouter from './routes/outlet.routes';
+import PaymentRouter from './routes/payment.routes';
 import ProfileRouter from '@/routers/v1/routes/profile.routes';
 import RequestAccessRouter from './routes/request-access.routes';
 import { Router } from 'express';
@@ -36,6 +37,7 @@ export default class IndexRouter {
       requestAccesses: new RequestAccessRouter(),
       complaints: new ComplaintRouter(),
       dashboard: new DashboardRouter(),
+      payment: new PaymentRouter(),
     };
 
     this.router.use('/auth', routes.auth.getRouter());
@@ -51,6 +53,7 @@ export default class IndexRouter {
     this.router.use('/request-accesses', routes.requestAccesses.getRouter());
     this.router.use('/complaints', routes.complaints.getRouter());
     this.router.use('/dashboard', routes.dashboard.getRouter());
+    this.router.use('/payments', routes.payment.getRouter());
   }
 
   getRouter(): Router {

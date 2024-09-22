@@ -12,7 +12,7 @@ interface PageProps {
   };
 }
 
-export default async function Page({ params, ...props }: PageProps): Promise<React.JSX.Element> {
+export default async function Page({ params }: PageProps): Promise<React.JSX.Element> {
   try {
     const { order_id } = await yup
       .object({

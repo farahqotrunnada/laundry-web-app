@@ -38,6 +38,15 @@ const columns: ColumnDef<
   }
 >[] = [
   {
+    accessorKey: 'request_access_id',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Request Access ID' />;
+    },
+    cell: ({ row }) => {
+      return <span className='font-medium uppercase text-muted-foreground'>{row.original.request_access_id}</span>;
+    },
+  },
+  {
     enableSorting: false,
     accessorKey: 'Outlet.name',
     header: ({ column }) => {

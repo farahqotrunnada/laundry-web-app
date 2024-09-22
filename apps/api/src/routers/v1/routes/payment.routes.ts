@@ -12,7 +12,7 @@ export default class PaymentRouter {
   }
 
   private initializeRoutes() {
-    this.router.post('/payment/callback', this.paymentController.callback);
+    this.router.post('/callback', this.paymentController.callback);
   }
 
   getRouter() {

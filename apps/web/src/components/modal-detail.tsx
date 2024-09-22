@@ -70,14 +70,13 @@ const DetailModal: React.FC<DetailModalProps> = ({ title, description, details, 
                       className='text-muted-foreground'
                       defaultValue={detail.key.includes('ID') ? detail.value.toUpperCase() : detail.value}
                     />
-                    <div className='absolute right-0 p-2 transform -translate-y-1/2 cursor-pointer me-1 top-1/2 '>
+                    <div
+                      onClick={() => handleCopy(detail.value)}
+                      className='absolute right-0 p-2 transform -translate-y-1/2 cursor-pointer me-1 top-1/2 '>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
-                            <Clipboard
-                              className='size-3 text-muted-foreground'
-                              onClick={() => handleCopy(detail.value)}
-                            />
+                            <Clipboard className='size-3 text-muted-foreground' />
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Copy to clipboard</p>

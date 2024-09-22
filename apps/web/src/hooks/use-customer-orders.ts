@@ -8,7 +8,7 @@ import { fetcher } from '@/lib/axios';
 import useSWR from 'swr';
 import { useToast } from './use-toast';
 
-export const useCustomerOrders = (type: 'All' | 'Ongoing' | 'Completed') => {
+export const useCustomerOrders = (type: 'All' | 'Ongoing' | 'Paid' | 'Completed') => {
   const { toast } = useToast();
 
   return useSWR<{
@@ -17,7 +17,7 @@ export const useCustomerOrders = (type: 'All' | 'Ongoing' | 'Completed') => {
       Order & {
         Outlet?: Outlet;
         Complaint?: Complaint;
-        OrderProgress?: OrderProgress[];
+        OrderProgress: OrderProgress[];
       }
     >;
   }>(

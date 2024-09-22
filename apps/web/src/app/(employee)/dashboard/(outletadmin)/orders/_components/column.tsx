@@ -31,6 +31,15 @@ const columns: ColumnDef<
   }
 >[] = [
   {
+    accessorKey: 'order_id',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Order ID' />;
+    },
+    cell: ({ row }) => {
+      return <span className='font-medium uppercase text-muted-foreground'>{row.original.order_id}</span>;
+    },
+  },
+  {
     enableSorting: false,
     accessorKey: 'Customer.User.fullname',
     header: ({ column }) => {

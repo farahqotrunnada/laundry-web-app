@@ -37,6 +37,15 @@ const columns: ColumnDef<
   }
 >[] = [
   {
+    accessorKey: 'delivery_id',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Delivery ID' />;
+    },
+    cell: ({ row }) => {
+      return <span className='font-medium uppercase text-muted-foreground'>{row.original.delivery_id}</span>;
+    },
+  },
+  {
     enableSorting: false,
     accessorKey: 'Outlet.name',
     header: ({ column }) => {

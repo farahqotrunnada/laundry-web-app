@@ -64,13 +64,16 @@ const OrderPayment: React.FC<OrderPaymentProps> = ({ order_id, ...props }) => {
         return;
       }
 
-      if (data.data.Payment && data.data.Payment.status === 'Paid') {
+      if (!data.data.Payment) return;
+
+      if (data.data.Payment.status === 'Paid') {
         toast({
           title: 'Order has been paid',
           description: 'Your order has been paid successfully',
         });
         router.back();
-        return;
+      } else if (data.data.Payment.payment_url) {
+        window.location.href = data.data.Payment.payment_url;
       }
     }
   }, [data]);
@@ -83,20 +86,15 @@ const OrderPayment: React.FC<OrderPaymentProps> = ({ order_id, ...props }) => {
       .then(async () => {
         try {
           const { data } = await axios.post('/profile/orders/' + order_id + '/payment', formData);
-          if (data.data.method === 'Manual') {
-            toast({
-              title: 'Order payment updated',
-              description: 'Your order payment has been updated successfully',
-            });
-            router.push('/orders');
-            return;
-          } else if (data.data.method === 'PaymentGateway') {
-            toast({
-              title: 'Order payment created',
-              description: 'Your order payment has been created successfully',
-            });
-            window.location.href = data.data.payment_url;
-          }
+
+          toast({
+            title: 'Order payment updated',
+            description: 'Your order payment has been updated successfully',
+          });
+
+          const method = data.data.method;
+          if (method === 'Manual') router.push('/orders');
+          else if (method === 'PaymentGateway') window.location.href = data.data.payment_url;
         } catch (error: any) {
           toast({
             variant: 'destructive',
