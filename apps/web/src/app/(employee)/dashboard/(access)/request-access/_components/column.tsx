@@ -147,6 +147,10 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
               value: row.original.request_access_id,
             },
             {
+              key: 'Order ID',
+              value: row.original.Job.order_id,
+            },
+            {
               key: 'Job ID',
               value: row.original.Job.job_id,
             },
