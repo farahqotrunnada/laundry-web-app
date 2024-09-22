@@ -21,7 +21,7 @@ export const useOrders = (filter: ColumnFiltersState, pagination: PaginationStat
           Customer: {
             User: User;
           };
-          OrderProgress?: OrderProgress[];
+          OrderProgress: OrderProgress[];
         }
       >;
       count: number;

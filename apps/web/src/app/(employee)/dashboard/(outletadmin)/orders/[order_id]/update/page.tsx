@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as yup from 'yup';
 
-import CreateOrderItemsForm from './_components/create';
+import EditOrderItemsForm from './_components/edit';
 import { redirect } from 'next/navigation';
 
 interface PageProps {
@@ -10,7 +10,7 @@ interface PageProps {
   };
 }
 
-export default async function Page({ params, ...props }: PageProps): Promise<React.JSX.Element> {
+export default async function Page({ params }: PageProps): Promise<React.JSX.Element> {
   try {
     const { order_id } = await yup
       .object({
@@ -29,7 +29,7 @@ export default async function Page({ params, ...props }: PageProps): Promise<Rea
           </p>
         </div>
 
-        <CreateOrderItemsForm order_id={order_id} />
+        <EditOrderItemsForm order_id={order_id} />
       </>
     );
   } catch (error) {

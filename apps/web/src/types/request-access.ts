@@ -7,4 +7,6 @@ export type RequestAccess = {
   reason: string;
   outlet_id: string;
   status: RequestAccessStatus;
+  created_at: string;
+  updated_at: string;
 };

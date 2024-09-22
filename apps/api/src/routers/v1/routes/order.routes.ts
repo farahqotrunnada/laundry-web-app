@@ -27,7 +27,7 @@ export default class OrderRouter {
 
     this.router.use(this.roleMiddleware.role(['OutletAdmin', 'SuperAdmin']));
     this.router.get('/', this.orderController.index);
-    this.router.post('/:order_id/items', this.orderItemController.create);
+    this.router.post('/:order_id/items', this.orderItemController.update);
   }
 
   getRouter(): Router {

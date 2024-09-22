@@ -10,10 +10,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Employee, User } from '@/types/user';
+import { formatDateTime, relativeTime } from '@/lib/utils';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import DataTableColumnHeader from '@/components/table/header';
+import DetailModal from '@/components/modal-detail';
 import { Job } from '@/types/job';
 import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
@@ -21,6 +23,7 @@ import { Order } from '@/types/order';
 import { Outlet } from '@/types/outlet';
 import { RequestAccess } from '@/types/request-access';
 import axios from '@/lib/axios';
+import { progressColor } from '@/lib/constant';
 import useConfirm from '@/hooks/use-confirm';
 import { useSWRConfig } from 'swr';
 import { useToast } from '@/hooks/use-toast';
@@ -36,15 +39,6 @@ const columns: ColumnDef<
   }
 >[] = [
   {
-    accessorKey: 'job_id',
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Job ID' />;
-    },
-    cell: ({ row }) => {
-      return <span className='font-medium uppercase text-muted-foreground'>{row.original.job_id}</span>;
-    },
-  },
-  {
     enableSorting: false,
     accessorKey: 'Outlet.name',
     header: ({ column }) => {
@@ -57,7 +51,7 @@ const columns: ColumnDef<
       return <DataTableColumnHeader column={column} title='Type' />;
     },
     cell: ({ row }) => {
-      return <Badge variant='secondary'>{row.original.type}</Badge>;
+      return <Badge>{row.original.type}</Badge>;
     },
   },
   {
@@ -76,7 +70,16 @@ const columns: ColumnDef<
       return <DataTableColumnHeader column={column} title='Progress' />;
     },
     cell: ({ row }) => {
-      return <Badge>{row.original.progress}</Badge>;
+      return <Badge className={progressColor[row.original.progress]}>{row.original.progress}</Badge>;
+    },
+  },
+  {
+    accessorKey: 'created_at',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Created' />;
+    },
+    cell: ({ row }) => {
+      return <span className='whitespace-nowrap'>{relativeTime(row.getValue('created_at') as string)}</span>;
     },
   },
   {
@@ -146,6 +149,41 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
       <DropdownMenuContent align='end'>
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DetailModal
+          title='Job Details'
+          description='View the details of this job, including the job ID, outlet name, type, created and updated date.'
+          details={[
+            {
+              key: 'Job ID',
+              value: row.original.job_id,
+            },
+            {
+              key: 'Order ID',
+              value: row.original.Order.order_id,
+            },
+            {
+              key: 'Outlet Name',
+              value: row.original.Outlet.name,
+            },
+            {
+              key: 'Employee In Charge',
+              value: row.original.Employee ? row.original.Employee.User.fullname : 'None',
+            },
+            {
+              key: 'Type',
+              value: row.original.type,
+            },
+            {
+              key: 'Created',
+              value: formatDateTime(row.original.created_at),
+            },
+            {
+              key: 'Updated',
+              value: formatDateTime(row.original.updated_at),
+            },
+          ]}>
+          <div className='block w-full px-2 py-1.5 text-sm rounded-sm hover:bg-muted cursor-default'>View Detail</div>
+        </DetailModal>
         {row.original.RequestAccess && row.original.RequestAccess.status === 'Accepted' && (
           <Link href={`/dashboard/orders/${row.original.order_id}`}>
             <DropdownMenuItem>View Order</DropdownMenuItem>
@@ -157,7 +195,6 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
             <DropdownMenuItem>Complete Job</DropdownMenuItem>
           </Link>
         )}
-        {row.original.progress === 'Completed' && <DropdownMenuItem>No Actions</DropdownMenuItem>}
       </DropdownMenuContent>
     </DropdownMenu>
   );

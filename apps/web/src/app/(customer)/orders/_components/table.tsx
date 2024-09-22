@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Order, OrderProgress } from '@/types/order';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { formatCurrency, formatDateTime } from '@/lib/utils';
+import { formatCurrency, relativeTime } from '@/lib/utils';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -70,7 +70,7 @@ const CustomerOrderTable: React.FC<CustomerOrderTableProps> = ({ type, ...props 
                   {latest && <Badge className='whitespace-nowrap'>{OrderStatusMapper[latest.status]}</Badge>}
                 </TableCell>
                 <TableCell>
-                  <span className='whitespace-nowrap text-muted-foreground'>{formatDateTime(order.created_at)}</span>
+                  <span className='whitespace-nowrap text-muted-foreground'>{relativeTime(order.created_at)}</span>
                 </TableCell>
                 <TableCell>
                   <TableAction order={order} />

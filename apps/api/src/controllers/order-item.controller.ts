@@ -12,7 +12,7 @@ export default class OrderItemController {
     this.orderItemAction = new OrderItemAction();
   }
 
-  create = async (req: Request, res: Response, next: NextFunction) => {
+  update = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { order_id } = await yup
         .object({
@@ -37,7 +37,7 @@ export default class OrderItemController {
         })
         .validate(req.body);
 
-      const created = await this.orderItemAction.create(order_id, order_items, weight);
+      const created = await this.orderItemAction.update(order_id, order_items, weight);
 
       return res.status(201).json(new ApiResponse('Order items created successfully', created));
     } catch (error) {

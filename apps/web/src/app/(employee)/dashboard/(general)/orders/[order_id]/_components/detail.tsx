@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { cn, formatCurrency, formatDateTime } from '@/lib/utils';
+import { cn, formatCurrency, relativeTime } from '@/lib/utils';
 
 import { Badge } from '@/components/ui/badge';
 import DetailList from '@/components/detail-list';
@@ -89,7 +89,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
                   </div>
                   <div className='flex items-center justify-between w-full'>
                     <span className='font-medium'>{OrderStatusMapper[item.status]}</span>
-                    <Badge variant='outline'>{formatDateTime(item.created_at)}</Badge>
+                    <Badge variant='outline'>{relativeTime(item.created_at)}</Badge>
                   </div>
                 </div>
               ))}
@@ -121,8 +121,8 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
                 <DetailList title='Payment ID' data={data.data.Payment.payment_id.toUpperCase()} />
                 <DetailList title='Payment Status' data={data.data.Payment.status} />
                 <DetailList title='Payment Method' data={data.data.Payment.method} />
-                <DetailList title='Created' data={formatDateTime(data.data.Payment.created_at)} />
-                <DetailList title='Updated' data={formatDateTime(data.data.Payment.updated_at)} />
+                <DetailList title='Created' data={relativeTime(data.data.Payment.created_at)} />
+                <DetailList title='Updated' data={relativeTime(data.data.Payment.updated_at)} />
                 {data.data.Payment.receipt_url && (
                   <div className='flex flex-col space-y-4 text-sm'>
                     <span className='text-sm'>Receipt</span>

@@ -15,6 +15,8 @@ import {
 
 import { Location } from '@/types/location';
 import { OrderStatus } from '@/types/order';
+import { ProgressType } from '@/types/shared';
+import { RequestAccessStatus } from '@/types/request-access';
 import { SidebarMenu } from '@/types/navigation';
 
 export const PROJECT_NAME = process.env.NEXT_PUBLIC_PROJECT_NAME as string;
@@ -142,4 +144,16 @@ export const OrderStatusMapper: Record<OrderStatus, string> = {
 export const DEFAULT_LOCATION: Location = {
   latitude: -6.1741855,
   longitude: 106.8283465,
+};
+
+export const progressColor: Record<ProgressType, string> = {
+  Pending: 'bg-muted text-muted-foreground hover:bg-muted/50',
+  Ongoing: 'bg-amber-500 hover:bg-amber-600 text-white',
+  Completed: 'bg-green-500 hover:bg-green-600 text-white',
+};
+
+export const statusColor: Record<RequestAccessStatus, string> = {
+  Pending: 'bg-muted text-muted-foreground hover:bg-muted/50',
+  Accepted: 'bg-green-500 hover:bg-green-600 text-white',
+  Rejected: 'bg-red-500 hover:bg-red-600 text-white',
 };

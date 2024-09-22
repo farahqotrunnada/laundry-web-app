@@ -27,6 +27,10 @@ const chartConfig = {
     label: 'Packing Worker',
     color: 'hsl(var(--chart-4))',
   },
+  Driver: {
+    label: 'Driver',
+    color: 'hsl(var(--chart-5))',
+  },
 } satisfies ChartConfig;
 
 interface EmployeeChartProps {

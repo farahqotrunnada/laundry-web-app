@@ -82,6 +82,7 @@ export default class RequestAccessAction {
           skip: (page - 1) * limit,
           take: limit,
           include: {
+            Job: true,
             Outlet: true,
             Employee: {
               include: {

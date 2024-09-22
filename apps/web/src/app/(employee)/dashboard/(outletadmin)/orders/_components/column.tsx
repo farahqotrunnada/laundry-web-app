@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Order, OrderProgress } from '@/types/order';
-import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils';
+import { formatCurrency, relativeTime } from '@/lib/utils';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -27,18 +27,9 @@ const columns: ColumnDef<
     Customer?: {
       User?: User;
     };
-    OrderProgress?: OrderProgress;
+    OrderProgress: OrderProgress[];
   }
 >[] = [
-  {
-    accessorKey: 'order_id',
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Order ID' />;
-    },
-    cell: ({ row }) => {
-      return <span className='font-medium uppercase text-muted-foreground'>{row.original.order_id}</span>;
-    },
-  },
   {
     enableSorting: false,
     accessorKey: 'Customer.User.fullname',
@@ -70,7 +61,7 @@ const columns: ColumnDef<
       return <DataTableColumnHeader column={column} title='Created' />;
     },
     cell: ({ row }) => {
-      return <span className='whitespace-nowrap'>{formatDateTime(row.getValue('created_at') as string)}</span>;
+      return <span className='whitespace-nowrap'>{relativeTime(row.getValue('created_at') as string)}</span>;
     },
   },
   {
@@ -80,11 +71,8 @@ const columns: ColumnDef<
       return <DataTableColumnHeader column={column} title='Order Progress' />;
     },
     cell: ({ row }) => {
-      return (
-        <Badge className='whitespace-nowrap'>
-          {row.original.OrderProgress && OrderStatusMapper[row.original.OrderProgress.status]}
-        </Badge>
-      );
+      const last = row.original.OrderProgress[0];
+      return <Badge className='whitespace-nowrap'>{last ? OrderStatusMapper[last.status] : 'No Progress'}</Badge>;
     },
   },
   {
@@ -109,9 +97,9 @@ const columns: ColumnDef<
             <Link href={'/dashboard/orders/' + row.original.order_id} className='w-full'>
               <DropdownMenuItem>View Order</DropdownMenuItem>
             </Link>
-            {row.original.OrderProgress && row.original.OrderProgress.status === 'ARRIVED_AT_OUTLET' && (
-              <Link href={'/dashboard/orders/' + row.original.order_id + '/create'} className='w-full'>
-                <DropdownMenuItem>Add Order Items</DropdownMenuItem>
+            {row.original.OrderProgress.find((progress) => progress.status === 'ARRIVED_AT_OUTLET') && (
+              <Link href={'/dashboard/orders/' + row.original.order_id + '/update'} className='w-full'>
+                <DropdownMenuItem>Update Order Items</DropdownMenuItem>
               </Link>
             )}
           </DropdownMenuContent>

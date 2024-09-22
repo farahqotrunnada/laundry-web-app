@@ -14,12 +14,15 @@ import { Employee, User } from '@/types/user';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import DataTableColumnHeader from '@/components/table/header';
+import DetailModal from '@/components/modal-detail';
 import EditRequestAccessModal from './edit-modal';
 import { Job } from '@/types/job';
 import { MoreHorizontal } from 'lucide-react';
 import { Outlet } from '@/types/outlet';
 import { RequestAccess } from '@/types/request-access';
 import axios from '@/lib/axios';
+import { formatDateTime } from '@/lib/utils';
+import { statusColor } from '@/lib/constant';
 import { useAuth } from '@/hooks/use-auth';
 import useConfirm from '@/hooks/use-confirm';
 import { useSWRConfig } from 'swr';
@@ -34,15 +37,6 @@ const columns: ColumnDef<
     };
   }
 >[] = [
-  {
-    accessorKey: 'request_access_id',
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title='Request Access ID' />;
-    },
-    cell: ({ row }) => {
-      return <span className='font-medium uppercase text-muted-foreground'>{row.original.request_access_id}</span>;
-    },
-  },
   {
     enableSorting: false,
     accessorKey: 'Outlet.name',
@@ -63,7 +57,7 @@ const columns: ColumnDef<
       return <DataTableColumnHeader column={column} title='Status' />;
     },
     cell: ({ row }) => {
-      return <Badge>{row.original.status}</Badge>;
+      return <Badge className={statusColor[row.original.status]}>{row.original.status}</Badge>;
     },
   },
   {
@@ -135,13 +129,51 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
       <DropdownMenuContent align='end'>
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {user && (user.role === 'SuperAdmin' || user.role === 'OutletAdmin') ? (
+        <DetailModal
+          title='Request Access Details'
+          description='View the details of this request access, including the request access ID, job ID, reason, status, created and updated date.'
+          details={[
+            {
+              key: 'Request Access ID',
+              value: row.original.request_access_id,
+            },
+            {
+              key: 'Job ID',
+              value: row.original.Job.job_id,
+            },
+            {
+              key: 'Outlet Name',
+              value: row.original.Outlet.name,
+            },
+            {
+              key: 'Employee In Charge',
+              value: row.original.Employee ? row.original.Employee.User.fullname : 'None',
+            },
+            {
+              key: 'Reason',
+              value: row.original.reason,
+              long: true,
+            },
+            {
+              key: 'Status',
+              value: row.original.status,
+            },
+            {
+              key: 'Created',
+              value: formatDateTime(row.original.created_at),
+            },
+            {
+              key: 'Updated',
+              value: formatDateTime(row.original.updated_at),
+            },
+          ]}>
+          <div className='block w-full px-2 py-1.5 text-sm rounded-sm hover:bg-muted cursor-default'>View Detail</div>
+        </DetailModal>
+        {user && (user.role === 'SuperAdmin' || user.role === 'OutletAdmin') && (
           <>
             <EditRequestAccessModal request_access={row.original as RequestAccess} />
             <DropdownMenuItem onClick={handleDelete}>Delete Request Access</DropdownMenuItem>
           </>
-        ) : (
-          <DropdownMenuItem>No Actions</DropdownMenuItem>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

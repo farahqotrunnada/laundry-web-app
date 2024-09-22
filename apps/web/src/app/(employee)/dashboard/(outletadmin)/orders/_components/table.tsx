@@ -197,7 +197,8 @@ const OrderTable = () => {
   return (
     <DataTable
       columns={columns}
-      data={data.data.orders.map((order) => ({ ...order, OrderProgress: order.OrderProgress!.at(0) }))}
+      // data={data.data.orders.map((order) => ({ ...order, OrderProgress: order.OrderProgress!.at(0) }))}
+      data={data.data.orders}
       pageCount={Math.ceil(data.data.count / pagination.pageSize)}
       sorting={sorting}
       onSortingChange={setSorting}

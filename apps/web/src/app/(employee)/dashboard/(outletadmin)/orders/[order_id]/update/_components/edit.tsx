@@ -17,6 +17,7 @@ import axios from '@/lib/axios';
 import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
 import { useLaundryItems } from '@/hooks/use-laundry-items';
+import { useOrderDetail } from '@/hooks/use-order-detail';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -46,10 +47,11 @@ interface ChoosenItem {
   laundry_item_id: string;
 }
 
-const CreateOrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...props }) => {
+const EditOrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...props }) => {
   const router = useRouter();
   const { toast } = useToast();
   const { confirm } = useConfirm();
+  const { data: order } = useOrderDetail(order_id);
   const { data, error, isLoading } = useLaundryItems();
   const [orderItems, setOrderItems] = React.useState<ChoosenItem[]>([]);
 
@@ -62,26 +64,39 @@ const CreateOrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...prop
   });
 
   React.useEffect(() => {
+    if (order) {
+      form.setValue('weight', order.data.weight);
+      setOrderItems(
+        order.data.OrderItem.map((item) => ({
+          name: item.LaundryItem.name,
+          quantity: item.quantity,
+          laundry_item_id: item.LaundryItem.laundry_item_id,
+        }))
+      );
+    }
+  }, [form, order]);
+
+  React.useEffect(() => {
     form.setValue('order_items', orderItems);
   }, [form, orderItems]);
 
   const onSubmit = async (formData: yup.InferType<typeof orderItemsSchema>) => {
     confirm({
-      title: 'Create Order Items',
+      title: 'Update Order Items',
       description: 'Are you sure you want to update this order? make sure the details are correct.',
     })
       .then(async () => {
         try {
           await axios.post('/orders/' + order_id + '/items', formData);
           toast({
-            title: 'Order created',
-            description: 'Your order has been created successfully',
+            title: 'Order updated',
+            description: 'Your order has been updated successfully',
           });
           router.push('/dashboard/orders');
         } catch (error: any) {
           toast({
             variant: 'destructive',
-            title: 'Failed to create order',
+            title: 'Failed to update order',
             description: error.message,
           });
         }
@@ -203,9 +218,17 @@ const CreateOrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...prop
                   name='weight'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Total Weight</FormLabel>
+                      <FormLabel>
+                        Total Weight
+                        {order && order.data.Payment && <span className='text-destructive'> (Already Paid)</span>}
+                      </FormLabel>
                       <FormControl>
-                        <Input type='number' placeholder='Enter total weight' {...field} />
+                        <Input
+                          type='number'
+                          placeholder='Enter total weight'
+                          {...field}
+                          disabled={order && order.data.Payment ? true : false}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -217,7 +240,7 @@ const CreateOrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...prop
               <div className='flex justify-end w-full'>
                 <Button type='submit' disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting && <Loader2 className='mr-2 size-4 animate-spin' />}
-                  Confirm Order
+                  Update Order
                 </Button>
               </div>
             </CardFooter>
@@ -228,4 +251,4 @@ const CreateOrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...prop
   );
 };
 
-export default CreateOrderItemsForm;
+export default EditOrderItemsForm;

@@ -18,7 +18,7 @@ export default class OrderItemAction {
     this.socket = Socket.getInstance();
   }
 
-  create = async (order_id: string, order_items: ChoosenItem[], weight: number) => {
+  update = async (order_id: string, order_items: ChoosenItem[], weight: number) => {
     try {
       const order = await prisma.order.findUnique({
         where: { order_id },
