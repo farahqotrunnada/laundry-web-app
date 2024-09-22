@@ -6,16 +6,322 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-model Sample {
-  id        Int      @id @default(autoincrement())
-  name      String
-  code      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum Role {
+  Driver
+  Customer
+  Employee
+  SuperAdmin
+  OutletAdmin
+  WashingWorker
+  IroningWorker
+  PackingWorker
+}
 
-  @@map("samples") // if you want to use snake_case format
+model User {
+  user_id     String   @id @default(cuid())
+  fullname    String
+  email       String   @unique
+  phone       String?
+  role        Role     @default(Customer)
+  password    String?
+  google_id   String?  @unique
+  avatar_url  String?
+  is_verified Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  Customer Customer?
+  Employee Employee?
+
+  @@map("users")
+}
+
+model Customer {
+  customer_id String @id @default(cuid())
+  user_id     String @unique
+
+  User           User             @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  CustomerAdress CustomerAdress[]
+  Order          Order[]
+  Complaint      Complaint[]
+
+  @@map("customers")
+}
+
+model CustomerAdress {
+  customer_address_id String   @id @default(cuid())
+  customer_id         String
+  is_primary          Boolean  @default(false)
+  name                String   @default("Home")
+  address             String
+  formatted           String?
+  road                String?
+  city                String?
+  city_district       String?
+  region              String?
+  suburb              String?
+  zipcode             String?
+  latitude            Decimal  @db.Decimal(11, 7)
+  longitude           Decimal  @db.Decimal(11, 7)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  Customer Customer @relation(fields: [customer_id], references: [customer_id], onDelete: Cascade)
+  Order    Order[]
+
+  @@map("customer_addresses")
+}
+
+model Outlet {
+  outlet_id     String   @id @default(cuid())
+  name          String
+  description   String
+  address       String
+  formatted     String?
+  road          String?
+  city          String?
+  city_district String?
+  region        String?
+  suburb        String?
+  zipcode       String?
+  latitude      Decimal  @db.Decimal(11, 7)
+  longitude     Decimal  @db.Decimal(11, 7)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  Employee      Employee[]
+  Delivery      Delivery[]
+  Order         Order[]
+  Job           Job[]
+  RequestAccess RequestAccess[]
+
+  @@map("outlets")
+}
+
+model Shift {
+  shift_id   String   @id @default(cuid())
+  start      String
+  end        String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  Employee Employee[]
+
+  @@map("shifts")
+}
+
+model Employee {
+  employee_id String   @id @default(cuid())
+  user_id     String   @unique
+  outlet_id   String?
+  shift_id    String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  User   User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  Outlet Outlet? @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
+  Shift  Shift?  @relation(fields: [shift_id], references: [shift_id], onDelete: Cascade)
+
+  RequestAccess RequestAccess[]
+  Delivery      Delivery[]
+  Job           Job[]
+
+  @@map("employees")
+}
+
+model Order {
+  order_id            String   @id @default(cuid())
+  outlet_id           String
+  customer_id         String
+  customer_address_id String
+  weight              Decimal  @default(1) @db.Decimal(8, 2)
+  is_completed        Boolean  @default(false)
+  is_payable          Boolean  @default(false)
+  laundry_fee         Decimal  @default(0) @db.Decimal(8, 2)
+  delivery_fee        Decimal  @default(0) @db.Decimal(8, 2)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  Outlet          Outlet         @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
+  Customer        Customer       @relation(fields: [customer_id], references: [customer_id], onDelete: Cascade)
+  CustomerAddress CustomerAdress @relation(fields: [customer_address_id], references: [customer_address_id], onDelete: Cascade)
+
+  OrderItem     OrderItem[]
+  OrderProgress OrderProgress[]
+  Delivery      Delivery[]
+  Job           Job[]
+  Payment       Payment?
+  Complaint     Complaint?
+
+  @@map("orders")
+}
+
+enum PaymentStatus {
+  Pending
+  Paid
+  Cancelled
+  Refunded
+}
+
+enum PaymentMethod {
+  PaymentGateway
+  Manual
+}
+
+model Payment {
+  payment_id  String        @id @default(cuid())
+  order_id    String        @unique
+  method      PaymentMethod
+  payment_url String?
+  receipt_url String?
+  status      PaymentStatus @default(Pending)
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+
+  Order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model LaundryItem {
+  laundry_item_id String   @id @default(cuid())
+  name            String
+  icon_url        String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  OrderItem OrderItem[]
+
+  @@map("laundry_items")
+}
+
+model OrderItem {
+  order_item_id   String @id @default(cuid())
+  order_id        String
+  laundry_item_id String
+  quantity        Int
+
+  Order       Order       @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  LaundryItem LaundryItem @relation(fields: [laundry_item_id], references: [laundry_item_id], onDelete: Cascade)
+
+  @@map("order_items")
+}
+
+enum OrderStatus {
+  WAITING_FOR_PICKUP
+  ON_PROGRESS_PICKUP
+  ARRIVED_AT_OUTLET
+  ON_PROGRESS_WASHING
+  ON_PROGRESS_IRONING
+  ON_PROGRESS_PACKING
+  WAITING_FOR_PAYMENT
+  ON_PROGRESS_DROPOFF
+  COMPLETED_ORDER
+}
+
+model OrderProgress {
+  order_progress_id String      @id @default(cuid()) @map("order_progrses_id")
+  order_id          String
+  status            OrderStatus
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @updatedAt
+
+  Order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+
+  @@map("order_progresses")
+}
+
+enum ProgressType {
+  Pending
+  Ongoing
+  Completed
+}
+
+enum DeliveryType {
+  Pickup
+  Dropoff
+}
+
+model Delivery {
+  delivery_id String       @id @default(cuid())
+  order_id    String
+  outlet_id   String
+  employee_id String?
+  progress    ProgressType @default(Pending)
+  type        DeliveryType
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+
+  Outlet   Outlet    @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
+  Order    Order     @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  Employee Employee? @relation(fields: [employee_id], references: [employee_id], onDelete: Cascade)
+
+  @@map("deliveries")
+}
+
+enum JobType {
+  Washing
+  Ironing
+  Packing
+}
+
+model Job {
+  job_id      String       @id @default(cuid())
+  order_id    String
+  outlet_id   String
+  employee_id String?
+  progress    ProgressType @default(Pending)
+  type        JobType
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+
+  Outlet        Outlet         @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
+  Order         Order          @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  Employee      Employee?      @relation(fields: [employee_id], references: [employee_id], onDelete: Cascade)
+  RequestAccess RequestAccess?
+
+  @@map("jobs")
+}
+
+model Complaint {
+  complaint_id String   @id @default(cuid())
+  order_id     String   @unique
+  customer_id  String
+  description  String
+  resolution   String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  Order    Order    @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  Customer Customer @relation(fields: [customer_id], references: [customer_id], onDelete: Cascade)
+
+  @@map("complaints")
+}
+
+enum RequestStatus {
+  Pending
+  Accepted
+  Rejected
+}
+
+model RequestAccess {
+  request_access_id String        @id @default(cuid())
+  outlet_id         String
+  job_id            String        @unique
+  employee_id       String
+  reason            String
+  status            RequestStatus @default(Pending)
+  created_at        DateTime      @default(now())
+  updated_at        DateTime      @updatedAt
+
+  Outlet   Outlet   @relation(fields: [outlet_id], references: [outlet_id], onDelete: Cascade)
+  Employee Employee @relation(fields: [employee_id], references: [employee_id], onDelete: Cascade)
+  Job      Job?     @relation(fields: [job_id], references: [job_id], onDelete: Cascade)
+
+  @@map("request_access")
 }
