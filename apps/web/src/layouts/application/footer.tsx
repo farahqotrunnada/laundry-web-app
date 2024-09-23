@@ -29,6 +29,9 @@ const Footer: React.FC<FooterProps> = ({ menus }) => {
                 <p>South Jakarta</p>
                 <p>Indonesia</p>
               </div>
+              <div className='flex flex-col max-w-lg text-sm leading-relaxed tracking-tight text-left text-muted-foreground'>
+                <Link href='/'>&copy; Group-5</Link>
+              </div>
             </div>
           </div>
           <div className='grid items-start gap-10 lg:grid-cols-3'>
