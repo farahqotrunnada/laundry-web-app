@@ -34,7 +34,7 @@ const Showcase: React.FC<ShowcaseProps> = ({ images, ...props }) => {
     <Carousel setApi={setApi} className='flex justify-center w-full' {...props}>
       <CarouselContent className='w-full'>
         {urls.map((url, index) => (
-          <CarouselItem className='basis-1/3 lg:basis-1/6' key={index}>
+          <CarouselItem className='basis-1/3 lg:basis-40' key={index}>
             <div className='flex rounded-md bg-muted items-center justify-center p-6'>
               <Image src={url} alt='Logo' width={200} height={200} />
             </div>

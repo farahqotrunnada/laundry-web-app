@@ -43,7 +43,7 @@ const HowTo: React.FC<HowToProps> = ({ ...props }) => {
     <div className='py-20 text-white bg-primary dark:bg-muted' {...props}>
       <div className='container'>
         <div className='flex flex-col items-center space-y-2'>
-          <h2 className='text-4xl font-bold'>How it works?</h2>
+          <h2 id='how' className='text-4xl font-bold'>How it works?</h2>
           <p className='leading-relaxed tracking-tight text-left text-muted'>
             Book Your Laundry Delivery in 4 Simple Steps, and we will handle the rest.
           </p>
