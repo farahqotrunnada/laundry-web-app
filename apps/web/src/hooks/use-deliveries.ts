@@ -1,8 +1,9 @@
 'use client';
 
 import { ColumnFiltersState, PaginationState, SortingState } from '@tanstack/react-table';
-import { Employee, User } from '@/types/user';
+import { Customer, Employee, User } from '@/types/user';
 
+import { Address } from '@/types/address';
 import { Delivery } from '@/types/delivery';
 import { Order } from '@/types/order';
 import { Outlet } from '@/types/outlet';
@@ -18,7 +19,12 @@ export const useDeliveries = (filter: ColumnFiltersState, pagination: Pagination
     data: {
       deliveries: Array<
         Delivery & {
-          Order: Order;
+          Order: Order & {
+            Customer: Customer & {
+              User: User;
+            };
+            CustomerAddress: Address;
+          };
           Outlet: Outlet;
           Employee?: Employee & {
             User: User;

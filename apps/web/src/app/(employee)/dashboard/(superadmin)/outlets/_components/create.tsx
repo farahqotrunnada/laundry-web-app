@@ -80,7 +80,7 @@ const CreateOutletForm: React.FC<OutletCreateProps> = ({ ...props }) => {
           await axios.post('/outlets', formData);
           toast({
             title: 'Outlet created',
-            description: 'Your outlet has been created successfully',
+            description: 'Outlet has been created successfully',
           });
           router.push('/dashboard/outlets');
         } catch (error: any) {

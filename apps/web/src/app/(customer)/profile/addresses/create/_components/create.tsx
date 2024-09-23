@@ -77,7 +77,7 @@ const CreateAddressForm: React.FC<CreateAddressFormProps> = ({ ...props }) => {
           await axios.post('/profile/addresses', formData);
           toast({
             title: 'Address saved',
-            description: 'Your address has been saved successfully',
+            description: 'Address has been saved successfully',
           });
           router.push('/profile/addresses');
         } catch (error: any) {

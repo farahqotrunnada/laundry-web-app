@@ -59,7 +59,7 @@ const CreateRequestAccessModal: React.FC<CreateRequestAccessModalProps> = ({ ...
           await axios.post('/request-accesses', formData);
           toast({
             title: 'Request access created',
-            description: 'Your request access has been created successfully',
+            description: 'Request access has been created successfully',
           });
           form.reset();
           setOpen(false);

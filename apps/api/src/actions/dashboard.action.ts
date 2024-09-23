@@ -84,7 +84,7 @@ export class DashboardAction {
               SUM(delivery_fee) AS delivery_fee,
               COUNT(order_id) AS order_count
             FROM orders
-            WHERE outlet_id = ${outlet_id} AND created_at BETWEEN ${start} AND ${end}
+            WHERE outlet_id = ${selected_id} AND created_at BETWEEN ${start} AND ${end}
             GROUP BY DATE_TRUNC('day', created_at)
           `
         );
@@ -95,7 +95,7 @@ export class DashboardAction {
               role,
               COUNT(users.user_id) AS user_count
             FROM users join employees on users.user_id = employees.user_id
-            WHERE employees.outlet_id = ${outlet_id}
+            WHERE employees.outlet_id = ${selected_id}
             GROUP BY role
           `
         );

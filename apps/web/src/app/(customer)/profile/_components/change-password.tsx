@@ -8,13 +8,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
+import { PasswordInput } from '@/components/password-input';
 import PasswordMeter from '@/components/password-meter';
 import { useAuth } from '@/hooks/use-auth';
 import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { PasswordInput } from '@/components/password-input';
 
 interface ChangePasswordFormProps {
   //
@@ -60,7 +60,7 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ ...props }) => 
           await changePassword(formData);
           toast({
             title: 'Password changed',
-            description: 'Your password has been changed successfully',
+            description: 'Password has been changed successfully',
           });
           form.reset();
         } catch (error: any) {

@@ -11,6 +11,9 @@ module.exports = {
       },
     },
     extend: {
+      maxHeight: {
+        modal: '70vh',
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',

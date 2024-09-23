@@ -55,7 +55,7 @@ const CreateComplaintModal: React.FC<CreateComplaintModalProps> = ({ order_id, .
           await axios.post('/profile/complaints', formData);
           toast({
             title: 'Complaint created',
-            description: 'Your complaint has been created successfully',
+            description: 'Complaint has been created successfully',
           });
           form.reset();
           setOpen(false);

@@ -157,3 +157,15 @@ export const statusColor: Record<RequestAccessStatus, string> = {
   Accepted: 'bg-green-500 hover:bg-green-600 text-white',
   Rejected: 'bg-red-500 hover:bg-red-600 text-white',
 };
+
+export const orderColor: Record<OrderStatus, string> = {
+  WAITING_FOR_PICKUP: 'bg-blue-500 hover:bg-blue-600 text-white',
+  ON_PROGRESS_PICKUP: 'bg-blue-500 hover:bg-blue-600 text-white',
+  ARRIVED_AT_OUTLET: 'bg-violet-500 hover:bg-violet-600 text-white',
+  ON_PROGRESS_WASHING: 'bg-violet-500 hover:bg-violet-600 text-white',
+  ON_PROGRESS_IRONING: 'bg-violet-500 hover:bg-violet-600 text-white',
+  ON_PROGRESS_PACKING: 'bg-violet-500 hover:bg-violet-600 text-white',
+  WAITING_FOR_PAYMENT: 'bg-amber-500 hover:bg-amber-600 text-white',
+  ON_PROGRESS_DROPOFF: 'bg-blue-500 hover:bg-blue-600 text-white',
+  COMPLETED_ORDER: 'bg-green-500 hover:bg-green-600 text-white',
+};

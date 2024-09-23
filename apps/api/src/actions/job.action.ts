@@ -313,7 +313,7 @@ export default class JobAction {
 
         this.socket.emitTo(job.outlet_id, ['OutletAdmin', 'Driver'], 'notification', {
           title: 'Delivery Requested',
-          description: 'A new delivery has been requested in your outlet, check your dashboard to accept the delivery',
+          description: 'New delivery has been requested in your outlet, check your dashboard to accept the delivery',
         });
       }
 
@@ -331,14 +331,14 @@ export default class JobAction {
       if (status === OrderStatus.ON_PROGRESS_IRONING) {
         this.socket.emitTo(job.outlet_id, ['OutletAdmin', 'IroningWorker'], 'notification', {
           title: 'Ironing Job Created',
-          description: 'A new ironing job has been created in your outlet, check your dashboard to accept the job',
+          description: 'New ironing job has been created in your outlet, check your dashboard to accept the job',
         });
       }
 
       if (status === OrderStatus.ON_PROGRESS_PACKING) {
         this.socket.emitTo(job.outlet_id, ['OutletAdmin', 'PackingWorker'], 'notification', {
           title: 'Packing Job Created',
-          description: 'A new packing job has been created in your outlet, check your dashboard to accept the job',
+          description: 'New packing job has been created in your outlet, check your dashboard to accept the job',
         });
       }
     } catch (error) {

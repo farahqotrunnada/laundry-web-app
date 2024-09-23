@@ -33,7 +33,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ allowed, children }) => {
       } catch (error: any) {
         toast({
           title: 'Your session has expired',
-          description: 'Your session has expired, please login again',
+          description: 'Session has expired, please login again',
         });
         setToken(null);
         router.push('/auth/login');

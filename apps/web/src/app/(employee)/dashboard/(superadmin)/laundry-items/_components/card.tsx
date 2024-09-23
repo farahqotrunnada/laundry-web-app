@@ -66,7 +66,7 @@ const Action: React.FC<ActionProps> = ({ item, className }) => {
         await axios.delete('/laundry-items/' + item.laundry_item_id);
         toast({
           title: 'Laundry Item deleted',
-          description: 'Your laundry item has been deleted successfully',
+          description: 'Laundry item has been deleted successfully',
         });
         mutate();
       } catch (error: any) {

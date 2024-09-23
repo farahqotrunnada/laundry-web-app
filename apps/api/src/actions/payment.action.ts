@@ -27,7 +27,11 @@ export default class PaymentAction {
           },
         },
         include: {
-          OrderProgress: true,
+          OrderProgress: {
+            orderBy: {
+              created_at: 'desc',
+            },
+          },
           OrderItem: true,
           Customer: {
             include: {
@@ -47,6 +51,7 @@ export default class PaymentAction {
       if (!order.is_payable) throw new ApiError(400, 'Order cannot be paid, please check your order progress');
       if (order.Payment) throw new ApiError(400, 'Theres already a payment for this order');
 
+      const ready = order.OrderProgress.find((progress) => progress.status === OrderStatus.WAITING_FOR_PAYMENT);
       let payment;
 
       if (method === 'Manual') {
@@ -58,7 +63,7 @@ export default class PaymentAction {
               create: {
                 method,
                 receipt_url,
-                status: 'Paid',
+                status: PaymentStatus.Paid,
               },
             },
           },
@@ -66,6 +71,36 @@ export default class PaymentAction {
             Payment: true,
           },
         });
+
+        this.socket.emitTo(order.outlet_id, ['OutletAdmin'], 'notification', {
+          title: 'Order Paid',
+          description: 'Order has been paid, check your dashboard to see the details',
+        });
+
+        if (ready) {
+          await prisma.order.update({
+            where: { order_id },
+            data: {
+              OrderProgress: {
+                create: {
+                  status: OrderStatus.ON_PROGRESS_DROPOFF,
+                },
+              },
+              Delivery: {
+                create: {
+                  outlet_id: order.outlet_id,
+                  progress: ProgressType.Pending,
+                  type: DeliveryType.Dropoff,
+                },
+              },
+            },
+          });
+
+          this.socket.emitTo(order.outlet_id, ['OutletAdmin', 'Driver'], 'notification', {
+            title: 'Delivery Dropoff',
+            description: 'New Delivery dropoff has been created, check your dashboard to see the details',
+          });
+        }
 
         payment = updated.Payment;
       } else {
@@ -114,34 +149,6 @@ export default class PaymentAction {
         payment = updated.Payment;
       }
 
-      if (
-        order.OrderProgress &&
-        order.OrderProgress.find((progress) => progress.status === OrderStatus.WAITING_FOR_PAYMENT)
-      ) {
-        await prisma.order.update({
-          where: { order_id },
-          data: {
-            OrderProgress: {
-              create: {
-                status: OrderStatus.ON_PROGRESS_DROPOFF,
-              },
-            },
-            Delivery: {
-              create: {
-                outlet_id: order.outlet_id,
-                progress: ProgressType.Pending,
-                type: DeliveryType.Dropoff,
-              },
-            },
-          },
-        });
-      }
-
-      this.socket.emitTo(order.outlet_id, ['OutletAdmin'], 'notification', {
-        title: 'Order Paid',
-        description: 'A new order has been paid, check your dashboard to see the details',
-      });
-
       return payment;
     } catch (error) {
       if (isAxiosError(error)) {
@@ -169,6 +176,9 @@ export default class PaymentAction {
         where: {
           order_id,
         },
+        include: {
+          OrderProgress: true,
+        },
       });
 
       if (!order) throw new ApiError(404, 'Order not found');
@@ -183,18 +193,55 @@ export default class PaymentAction {
         .digest('hex');
 
       if (calculated_signature !== signature_key) throw new ApiError(400, 'Signature is invalid');
+      const ready = order.OrderProgress.find((progress) => progress.status === OrderStatus.WAITING_FOR_PAYMENT);
 
-      await prisma.order.update({
-        where: { order_id },
-        data: {
-          is_payable: false,
-          Payment: {
-            update: {
-              status: PaymentStatus.Paid,
+      this.socket.emitTo(order.outlet_id, ['OutletAdmin'], 'notification', {
+        title: 'Order Paid',
+        description: 'Order has been paid, check your dashboard to see the details',
+      });
+
+      if (ready) {
+        await prisma.order.update({
+          where: { order_id },
+          data: {
+            is_payable: false,
+            Payment: {
+              update: {
+                status: PaymentStatus.Paid,
+              },
+            },
+            OrderProgress: {
+              create: {
+                status: OrderStatus.ON_PROGRESS_DROPOFF,
+              },
+            },
+            Delivery: {
+              create: {
+                outlet_id: order.outlet_id,
+                progress: ProgressType.Pending,
+                type: DeliveryType.Dropoff,
+              },
             },
           },
-        },
-      });
+        });
+
+        this.socket.emitTo(order.outlet_id, ['OutletAdmin', 'Driver'], 'notification', {
+          title: 'Delivery Dropoff',
+          description: 'New Delivery dropoff has been created, check your dashboard to see the details',
+        });
+      } else {
+        await prisma.order.update({
+          where: { order_id },
+          data: {
+            is_payable: false,
+            Payment: {
+              update: {
+                status: PaymentStatus.Paid,
+              },
+            },
+          },
+        });
+      }
     } catch (error) {
       throw error;
     }

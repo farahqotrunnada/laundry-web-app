@@ -61,7 +61,7 @@ const CreateLaundryItemModal: React.FC<CreateLaundryItemProps> = ({ ...props }) 
           await axios.post('/laundry-items', formData);
           toast({
             title: 'Laundry Item created',
-            description: 'Your laundry item has been created successfully',
+            description: 'Laundry item has been created successfully',
           });
           form.reset();
           setOpen(false);

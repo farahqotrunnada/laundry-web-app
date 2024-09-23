@@ -96,7 +96,7 @@ const Action: React.FC<ActionProps> = ({ complaint }) => {
           await axios.delete('/profile/complaints/' + complaint.complaint_id);
           toast({
             title: 'Complaint deleted',
-            description: 'Your complaint has been deleted successfully',
+            description: 'Complaint has been deleted successfully',
           });
           mutate();
         } catch (error: any) {

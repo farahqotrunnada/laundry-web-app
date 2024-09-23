@@ -18,7 +18,6 @@ import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
 import { useLaundryItems } from '@/hooks/use-laundry-items';
 import { useOrderDetail } from '@/hooks/use-order-detail';
-import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -48,7 +47,6 @@ interface ChoosenItem {
 }
 
 const EditOrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...props }) => {
-  const router = useRouter();
   const { toast } = useToast();
   const { confirm } = useConfirm();
   const { data: order } = useOrderDetail(order_id);
@@ -68,8 +66,8 @@ const EditOrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...props 
       form.setValue('weight', order.data.weight);
       setOrderItems(
         order.data.OrderItem.map((item) => ({
-          name: item.LaundryItem.name,
           quantity: item.quantity,
+          name: item.LaundryItem.name,
           laundry_item_id: item.LaundryItem.laundry_item_id,
         }))
       );
@@ -90,9 +88,8 @@ const EditOrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...props 
           await axios.post('/orders/' + order_id + '/items', formData);
           toast({
             title: 'Order updated',
-            description: 'Your order has been updated successfully',
+            description: 'Order has been updated successfully',
           });
-          router.push('/dashboard/orders');
         } catch (error: any) {
           toast({
             variant: 'destructive',
@@ -184,21 +181,21 @@ const EditOrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...props 
                           </TableRow>
                         )}
 
-                        {form.watch('order_items').map((orderItem: ChoosenItem, idx) => (
-                          <TableRow key={idx}>
-                            <TableCell className='font-medium'>{orderItem.name}</TableCell>
+                        {form.watch('order_items').map((item) => (
+                          <TableRow key={item.laundry_item_id}>
+                            <TableCell className='font-medium'>{item.name}</TableCell>
                             <TableCell className='font-medium text-end'>
                               <div className='flex items-center justify-end space-x-2'>
                                 <Button
-                                  onClick={() => handleQuantityChange(orderItem, 'decrease')}
+                                  onClick={() => handleQuantityChange(item, 'decrease')}
                                   type='button'
                                   variant='outline'
                                   size='icon'>
                                   <Minus className='size-4' />
                                 </Button>
-                                <span>{orderItem.quantity}</span>
+                                <span>{item.quantity}</span>
                                 <Button
-                                  onClick={() => handleQuantityChange(orderItem, 'increase')}
+                                  onClick={() => handleQuantityChange(item, 'increase')}
                                   type='button'
                                   variant='outline'
                                   size='icon'>

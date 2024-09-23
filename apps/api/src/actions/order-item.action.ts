@@ -25,6 +25,8 @@ export default class OrderItemAction {
         include: {
           Outlet: true,
           OrderProgress: true,
+          OrderItem: true,
+          Payment: true,
         },
       });
 
@@ -43,49 +45,66 @@ export default class OrderItemAction {
 
       if (laundry_items.length !== order_items.length) throw new ApiError(400, 'Some laundry items not found');
 
-      await prisma.$transaction([
+      const is_paid = order.Payment;
+      const is_update = order.OrderProgress.find((item) => item.status === OrderStatus.ON_PROGRESS_WASHING);
+
+      const [updated, _] = await prisma.$transaction([
         prisma.order.update({
           where: { order_id },
           data: {
             weight,
-            is_payable: true,
-            laundry_fee: Math.ceil(weight) * PRICE_PER_KG,
-          },
-        }),
-
-        ...order_items.map((item) =>
-          prisma.orderItem.create({
-            data: {
-              order_id,
-              quantity: item.quantity,
-              laundry_item_id: item.laundry_item_id,
+            is_payable: is_paid ? false : true,
+            laundry_fee: is_paid ? order.laundry_fee : Math.ceil(weight) * PRICE_PER_KG,
+            OrderItem: {
+              deleteMany: {
+                //
+              },
             },
-          })
-        ),
-
-        prisma.orderProgress.create({
-          data: {
-            order_id,
-            status: OrderStatus.ON_PROGRESS_WASHING,
           },
         }),
 
-        prisma.job.create({
-          data: {
+        prisma.orderItem.createMany({
+          data: order_items.map((item) => ({
             order_id,
-            outlet_id: order.outlet_id,
-            progress: ProgressType.Pending,
-            type: JobType.Washing,
-          },
+            quantity: item.quantity,
+            laundry_item_id: item.laundry_item_id,
+          })),
         }),
       ]);
 
+      if (!is_update) {
+        await prisma.$transaction([
+          prisma.orderProgress.create({
+            data: {
+              order_id,
+              status: OrderStatus.ON_PROGRESS_WASHING,
+            },
+          }),
+
+          prisma.job.create({
+            data: {
+              order_id,
+              outlet_id: order.outlet_id,
+              progress: ProgressType.Pending,
+              type: JobType.Washing,
+            },
+          }),
+        ]);
+
+        this.socket.emitTo(order.outlet_id, ['OutletAdmin', 'WashingWorker'], 'notification', {
+          title: 'New Washing Job Created',
+          description: 'New washing job has been created in your outlet, check your dashboard to accept the job',
+        });
+
+        return updated;
+      }
+
       this.socket.emitTo(order.outlet_id, ['OutletAdmin', 'WashingWorker'], 'notification', {
-        title: 'New Washing Job Created',
-        description: 'A new washing job has been created in your outlet, check your dashboard to accept the job',
+        title: 'Order Updated',
+        description: 'Order with ID ' + order.order_id + ' has been updated',
       });
 
-      return order;
+      return updated;
     } catch (error) {
       throw error;
     }

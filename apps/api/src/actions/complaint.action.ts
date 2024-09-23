@@ -1,9 +1,16 @@
 import { Prisma, Role } from '@prisma/client';
 
 import ApiError from '@/utils/error.util';
+import { Socket } from '@/libs/socketio';
 import prisma from '@/libs/prisma';
 
 export class ComplaintAction {
+  private socket: Socket;
+
+  constructor() {
+    this.socket = Socket.getInstance();
+  }
+
   index = async (
     user_id: string,
     role: 'SuperAdmin' | 'OutletAdmin',
@@ -198,6 +205,11 @@ export class ComplaintAction {
           resolution: "We're sorry for the inconvenience, we will resolve this as soon as possible.",
           customer_id: order.customer_id,
         },
+      });
+
+      this.socket.emitTo(order.outlet_id, ['OutletAdmin'], 'notification', {
+        title: 'Complaint Created',
+        description: 'New complaint has been created in your order, check your dashboard to see the details',
       });
 
       return created;

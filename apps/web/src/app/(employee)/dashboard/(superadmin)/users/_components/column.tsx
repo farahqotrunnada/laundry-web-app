@@ -41,7 +41,7 @@ const columns: ColumnDef<User>[] = [
       return <DataTableColumnHeader column={column} title='Role' />;
     },
     cell: ({ row }) => {
-      return <Badge className='whitespace-nowrap'>{row.original.role}</Badge>;
+      return <Badge>{row.original.role}</Badge>;
     },
   },
 ];

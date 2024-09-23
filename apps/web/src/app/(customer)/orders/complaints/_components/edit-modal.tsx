@@ -58,7 +58,7 @@ const EditComplaintModal: React.FC<EditComplaintModalProps> = ({ complaint, ...p
           await axios.put('/profile/complaints/' + complaint.complaint_id, formData);
           toast({
             title: 'Complaint updated',
-            description: 'Your complaint has been updated successfully',
+            description: 'Complaint has been updated successfully',
           });
           form.reset();
           setOpen(false);

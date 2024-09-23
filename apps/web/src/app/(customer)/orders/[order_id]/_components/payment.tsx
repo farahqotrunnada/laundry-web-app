@@ -69,7 +69,7 @@ const OrderPayment: React.FC<OrderPaymentProps> = ({ order_id, ...props }) => {
       if (data.data.Payment.status === 'Paid') {
         toast({
           title: 'Order has been paid',
-          description: 'Your order has been paid successfully',
+          description: 'Order has been paid successfully',
         });
         router.back();
       } else if (data.data.Payment.payment_url) {
@@ -89,7 +89,7 @@ const OrderPayment: React.FC<OrderPaymentProps> = ({ order_id, ...props }) => {
 
           toast({
             title: 'Order payment updated',
-            description: 'Your order payment has been updated successfully',
+            description: 'Order payment has been updated successfully',
           });
 
           const method = data.data.method;

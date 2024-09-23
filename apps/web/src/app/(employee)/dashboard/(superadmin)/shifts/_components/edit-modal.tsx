@@ -71,7 +71,7 @@ const EditShiftModal: React.FC<EditShiftProps> = ({ shift, ...props }) => {
           await axios.put('/shifts/' + shift.shift_id, formData);
           toast({
             title: 'Shift updated',
-            description: 'Your shift has been updated successfully',
+            description: 'Shift has been updated successfully',
           });
           form.reset();
           setOpen(false);

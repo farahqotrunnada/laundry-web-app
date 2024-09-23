@@ -1,6 +1,7 @@
 'use client';
 
 import { ColumnDef, Row } from '@tanstack/react-table';
+import { Customer, Employee, User } from '@/types/user';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,9 +10,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Employee, User } from '@/types/user';
 import { formatDateTime, relativeTime } from '@/lib/utils';
 
+import { Address } from '@/types/address';
+import AddressModal from '@/components/modal-address';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import DataTableColumnHeader from '@/components/table/header';
@@ -29,7 +31,12 @@ import { useToast } from '@/hooks/use-toast';
 
 const columns: ColumnDef<
   Delivery & {
-    Order: Order;
+    Order: Order & {
+      Customer: Customer & {
+        User: User;
+      };
+      CustomerAddress: Address;
+    };
     Outlet: Outlet;
     Employee?: Employee & {
       User: User;
@@ -104,7 +111,12 @@ const columns: ColumnDef<
 interface TableActionProps {
   row: Row<
     Delivery & {
-      Order: Order;
+      Order: Order & {
+        Customer: Customer & {
+          User: User;
+        };
+        CustomerAddress: Address;
+      };
       Outlet: Outlet;
       Employee?: Employee & {
         User: User;
@@ -128,7 +140,7 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
           await axios.put('/deliveries/' + row.original.delivery_id, { progress });
           toast({
             title: 'Delivery progress updated',
-            description: 'Your delivery progress has been updated successfully',
+            description: 'Delivery progress has been updated successfully',
           });
           mutate((key) => Array.isArray(key) && key.includes('/deliveries'));
         } catch (error: any) {
@@ -190,6 +202,15 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
           ]}>
           <div className='block w-full px-2 py-1.5 text-sm rounded-sm hover:bg-muted cursor-default'>View Detail</div>
         </DetailModal>
+        <AddressModal
+          title='Delivery Address'
+          description='View the address of this delivery, including the delivery ID, outlet name, type, created and updated date.'
+          data={{
+            customer: row.original.Order.Customer,
+            address: row.original.Order.CustomerAddress,
+          }}>
+          <div className='block w-full px-2 py-1.5 text-sm rounded-sm hover:bg-muted cursor-default'>View Address</div>
+        </AddressModal>
         {row.original.progress === 'Pending' && (
           <DropdownMenuItem onClick={() => changeProgress('Ongoing')}>Start Delivery</DropdownMenuItem>
         )}

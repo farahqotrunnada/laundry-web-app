@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Order, OrderProgress } from '@/types/order';
-import { formatCurrency, relativeTime } from '@/lib/utils';
+import { cn, formatCurrency, relativeTime } from '@/lib/utils';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import DataTableColumnHeader from '@/components/table/header';
 import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
-import { OrderStatusMapper } from '@/lib/constant';
+import { OrderStatusMapper, orderColor } from '@/lib/constant';
 import { Outlet } from '@/types/outlet';
 import { User } from '@/types/user';
 
@@ -81,7 +81,11 @@ const columns: ColumnDef<
     },
     cell: ({ row }) => {
       const last = row.original.OrderProgress[0];
-      return <Badge className='whitespace-nowrap'>{last ? OrderStatusMapper[last.status] : 'No Progress'}</Badge>;
+      return (
+        <Badge className={cn('whitespace-nowrap', orderColor[last.status])}>
+          {last ? OrderStatusMapper[last.status] : 'No Progress'}
+        </Badge>
+      );
     },
   },
   {

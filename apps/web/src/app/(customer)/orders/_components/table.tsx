@@ -21,7 +21,7 @@ import CreateComplaintModal from './create-modal';
 import Link from 'next/link';
 import Loader from '@/components/loader/loader';
 import { MoreHorizontal } from 'lucide-react';
-import { OrderStatusMapper } from '@/lib/constant';
+import { OrderStatusMapper, orderColor } from '@/lib/constant';
 import { Outlet } from '@/types/outlet';
 import { useCustomerOrders } from '@/hooks/use-customer-orders';
 
@@ -67,7 +67,7 @@ const CustomerOrderTable: React.FC<CustomerOrderTableProps> = ({ type, ...props 
                   <Badge variant='secondary'>{formatCurrency(order.laundry_fee)}</Badge>
                 </TableCell>
                 <TableCell>
-                  {latest && <Badge className='whitespace-nowrap'>{OrderStatusMapper[latest.status]}</Badge>}
+                  {latest && <Badge className={orderColor[latest.status]}>{OrderStatusMapper[latest.status]}</Badge>}
                 </TableCell>
                 <TableCell>
                   <span className='whitespace-nowrap text-muted-foreground'>{relativeTime(order.created_at)}</span>
