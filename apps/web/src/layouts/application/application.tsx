@@ -15,7 +15,7 @@ export default async function Application({
 }: ApplicationProps): Promise<React.JSX.Element> {
   const menus: NavigationItem[] = [
     {
-      title: 'Customer Support',
+      title: 'Help & Support',
       description: 'Clean Clothes with LaundryXpert',
       items: [
         {
@@ -24,14 +24,9 @@ export default async function Application({
           description: 'Frequently Ask Questions',
         },
         {
-          title: 'Contact Support',
-          href: '/support',
-          description: 'Reach out to us directly for personalized assistance with any of your queries.',
-        },
-        {
-          title: 'Help Center',
-          href: '/help',
-          description: 'Find detailed guides and support articles to resolve any issues.',
+          title: 'Partnership',
+          href: '/partnership',
+          description: 'Explore opportunities to collaborate and grow with us through strategic partnerships.',
         },
       ],
     },
@@ -42,7 +37,6 @@ export default async function Application({
         { title: 'About us', href: '/about' },
         { title: 'Privacy Policy', href: '/privacy-policy' },
         { title: 'Terms of Service', href: '/terms-of-service' },
-        { title: 'Contact us', href: '/contact' },
       ],
     },
   ];

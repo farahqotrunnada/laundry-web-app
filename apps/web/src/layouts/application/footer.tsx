@@ -9,7 +9,7 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = ({ menus }) => {
   return (
-    <div className='w-full py-20 lg:py-40 bg-muted'>
+    <div className='w-full py-14 lg:py-30 bg-muted'>
       <div className='container mx-auto'>
         <div className='grid items-center gap-10 lg:grid-cols-2'>
           <div className='flex flex-col items-start gap-8'>
@@ -34,7 +34,7 @@ const Footer: React.FC<FooterProps> = ({ menus }) => {
               </div>
             </div>
           </div>
-          <div className='grid items-start gap-10 lg:grid-cols-3'>
+          <div className='grid items-start grid-cols-2 gap-10 lg:grid-cols-3'>
             {menus.map((item) => (
               <div key={item.title} className='flex flex-col items-start gap-1 text-base'>
                 <div className='flex flex-col gap-2'>
