@@ -14,6 +14,14 @@ interface HeroProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const Hero: React.FC<HeroProps> = ({ className, ...props }) => {
+
+  const handleScroll = () => {
+    const howSection = document.getElementById('how');
+    if (howSection) {
+      howSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className={cn('w-full flex flex-col space-y-6 justify-center', className)} {...props}>
       <div className='flex flex-col items-center text-center space-y-4'>
@@ -28,8 +36,8 @@ const Hero: React.FC<HeroProps> = ({ className, ...props }) => {
       </div>
 
       <div className='flex items-center space-x-4 justify-center'>
-        <Button variant='outline'>How it Works</Button>
-        <Button variant='default'>Premium Features</Button>
+        <Button variant='outline' onClick={handleScroll}>How it Works</Button>
+        <Button variant='default'>Download Now</Button>
       </div>
 
       <div className='flex items-center justify-center space-x-4'>
