@@ -82,7 +82,21 @@ export default class DeliveryAction {
           skip: (page - 1) * limit,
           take: limit,
           include: {
-            Order: true,
+            Order: {
+              include: {
+                Customer: {
+                  include: {
+                    User: {
+                      select: {
+                        fullname: true,
+                        phone: true,
+                      },
+                    },
+                  },
+                },
+                CustomerAddress: true,
+              },
+            },
             Outlet: true,
             Employee: {
               include: {
@@ -176,7 +190,7 @@ export default class DeliveryAction {
 
       this.socket.emitTo(order.outlet_id, ['OutletAdmin', 'Driver'], 'notification', {
         title: 'Delivery Requested',
-        description: 'A new delivery has been requested in your outlet, check your dashboard to accept the delivery',
+        description: 'New delivery has been requested in your outlet, check your dashboard to accept the delivery',
       });
     } catch (error) {
       throw error;
@@ -266,14 +280,14 @@ export default class DeliveryAction {
       if (status === OrderStatus.ARRIVED_AT_OUTLET) {
         this.socket.emitTo(order.outlet_id, ['OutletAdmin'], 'notification', {
           title: 'Order Arrived',
-          description: 'Your Order has been arrived at the outlet, check your dashboard to assign the order items',
+          description: 'Order has been arrived at the outlet, check your dashboard to assign the order items',
         });
       }
 
       if (status === OrderStatus.COMPLETED_ORDER) {
         this.socket.emitTo(order.outlet_id, ['OutletAdmin'], 'notification', {
           title: 'Order Completed',
-          description: 'Your Order has been completed, check your dashboard to see the results',
+          description: 'Order has been completed, check your dashboard to see the results',
         });
       }
 

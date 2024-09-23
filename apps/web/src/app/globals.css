@@ -129,4 +129,8 @@
     width: var(--radix-popover-trigger-width);
     max-height: var(--radix-popover-content-available-height);
   }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }

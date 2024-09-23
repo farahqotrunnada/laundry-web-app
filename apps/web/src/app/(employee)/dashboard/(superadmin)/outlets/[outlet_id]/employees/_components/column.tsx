@@ -1,10 +1,5 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { ColumnDef } from '@tanstack/react-table';
-import DataTableColumnHeader from '@/components/table/header';
-import { Employee, User } from '@/types/user';
-import { Shift } from '@/types/shift';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,13 +8,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal } from 'lucide-react';
+import { Employee, User } from '@/types/user';
+
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+import { ColumnDef } from '@tanstack/react-table';
+import DataTableColumnHeader from '@/components/table/header';
+import EditEmployeeModal from './edit-modal';
+import { MoreHorizontal } from 'lucide-react';
+import { Shift } from '@/types/shift';
+import axios from '@/lib/axios';
 import useConfirm from '@/hooks/use-confirm';
 import { useSWRConfig } from 'swr';
-import axios from '@/lib/axios';
-import EditEmployeeModal from './edit-modal';
+import { useToast } from '@/hooks/use-toast';
 
 const columns: ColumnDef<
   User & {
@@ -67,7 +68,7 @@ const columns: ColumnDef<
       return <DataTableColumnHeader column={column} title='Role' />;
     },
     cell: ({ row }) => {
-      return <Badge className='whitespace-nowrap'>{row.original.role}</Badge>;
+      return <Badge>{row.original.role}</Badge>;
     },
   },
   {
@@ -106,7 +107,7 @@ const Action: React.FC<ActionProps> = ({ outlet_id, user_id }) => {
           await axios.delete('/outlets/' + outlet_id + '/employees/' + user_id);
           toast({
             title: 'Employee deleted',
-            description: 'Your employee has been deleted successfully',
+            description: 'Employee has been deleted successfully',
           });
           mutate((key) => Array.isArray(key) && key.includes('/outlets/' + outlet_id + '/employees'));
         } catch (error: any) {

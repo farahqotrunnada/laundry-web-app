@@ -1,7 +1,6 @@
-import { Shift } from '@/types/shift';
-import { Clock, MoreHorizontal } from 'lucide-react';
-import moment from 'moment';
 import * as React from 'react';
+
+import { Clock, MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,13 +9,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useShifts } from '@/hooks/use-shifts';
-import useConfirm from '@/hooks/use-confirm';
-import axios from '@/lib/axios';
-import { useToast } from '@/hooks/use-toast';
+
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import EditShiftModal from './edit-modal';
+import { Shift } from '@/types/shift';
+import axios from '@/lib/axios';
+import { cn } from '@/lib/utils';
+import moment from 'moment';
+import useConfirm from '@/hooks/use-confirm';
+import { useShifts } from '@/hooks/use-shifts';
+import { useToast } from '@/hooks/use-toast';
 
 interface ShiftCardProps {
   shift: Shift;
@@ -71,7 +73,7 @@ const Action: React.FC<ActionProps> = ({ className, shift }) => {
         await axios.delete('/shifts/' + shift.shift_id);
         toast({
           title: 'Shift deleted',
-          description: 'Your shift has been deleted successfully',
+          description: 'Shift has been deleted successfully',
         });
         mutate();
       } catch (error: any) {

@@ -85,7 +85,7 @@ const EditAddressForm: React.FC<EditAddressFormProps> = ({ customer_address_id, 
           await axios.put('/profile/addresses/' + customer_address_id, formData);
           toast({
             title: 'Address updated',
-            description: 'Your address has been updated successfully',
+            description: 'Address has been updated successfully',
           });
           router.push('/profile/addresses');
         } catch (error: any) {

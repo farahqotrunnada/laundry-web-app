@@ -42,7 +42,7 @@ const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
           if (address.is_primary) {
             toast({
               title: 'Address already set as primary',
-              description: 'Your address is already set as primary.',
+              description: 'Address is already set as primary.',
             });
             return;
           }
@@ -50,7 +50,7 @@ const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
           await axios.put(`/profile/addresses/${address.customer_address_id}/set-primary`);
           toast({
             title: 'Address set as primary',
-            description: 'Your address has been set as primary.',
+            description: 'Address has been set as primary.',
           });
           mutate();
         } catch (error: any) {
@@ -77,7 +77,7 @@ const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
           await axios.delete('/profile/addresses/' + address.customer_address_id);
           toast({
             title: 'Address deleted',
-            description: 'Your address has been deleted successfully',
+            description: 'Address has been deleted successfully',
           });
           mutate();
         } catch (error: any) {

@@ -131,7 +131,7 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
           await axios.post('/jobs/' + row.original.job_id + '/accept');
           toast({
             title: 'Job accepted',
-            description: 'Your job has been accepted successfully',
+            description: 'Job has been accepted successfully',
           });
           mutate((key) => Array.isArray(key) && key.includes('/jobs'));
         } catch (error: any) {

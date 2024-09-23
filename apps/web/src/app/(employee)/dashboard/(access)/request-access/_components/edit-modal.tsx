@@ -65,7 +65,7 @@ const EditRequestAccessModal: React.FC<EditRequestAccessModalProps> = ({ request
           await axios.put('/request-accesses/' + request_access.request_access_id, formData);
           toast({
             title: 'Request access updated',
-            description: 'Your request access has been updated successfully',
+            description: 'Request access has been updated successfully',
           });
           form.reset();
           setOpen(false);

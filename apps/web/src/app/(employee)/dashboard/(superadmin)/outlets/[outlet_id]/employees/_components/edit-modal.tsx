@@ -87,7 +87,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ outlet_id, user_i
           await axios.put('/outlets/' + outlet_id + '/employees/' + user_id, formData);
           toast({
             title: 'Employee updated',
-            description: 'Your user has been updated successfully',
+            description: 'User has been updated successfully',
           });
           form.reset();
           setOpen(false);
@@ -111,126 +111,127 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ outlet_id, user_i
         <div className='block w-full px-2 py-1.5 text-sm rounded-sm hover:bg-muted cursor-default'>Edit Employee</div>
       </DialogTrigger>
 
-      <DialogContent className='w-full max-w-lg'>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Update Employee</DialogTitle>
           <DialogDescription>Update employee data in this outlet.</DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className='grid gap-4'>
-              <FormField
-                control={form.control}
-                name='fullname'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Enter your full name' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='phone'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone</FormLabel>
-                    <FormControl>
-                      <Input type='number' inputMode='numeric' placeholder='enter your phone' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name='email'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Enter your email' {...field} disabled readOnly />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className='grid grid-cols-2 gap-4'>
+        <div className='h-full overflow-y-scroll max-h-modal hide-scrollbar'>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div className='grid gap-4 px-1'>
                 <FormField
                   control={form.control}
-                  name='shift_id'
+                  name='fullname'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Shift</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder='Select shift' />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {!shifts || shifts.data.length === 0 ? (
-                            <SelectItem value=''>No shifts found</SelectItem>
-                          ) : (
-                            shifts.data.map((shift) => (
-                              <SelectItem key={shift.shift_id} value={shift.shift_id}>
-                                {shift.start} - {shift.end}
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder='Enter your full name' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='phone'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone</FormLabel>
+                      <FormControl>
+                        <Input type='number' inputMode='numeric' placeholder='enter your phone' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='email'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder='Enter your email' {...field} disabled readOnly />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className='grid grid-cols-2 gap-4'>
+                  <FormField
+                    control={form.control}
+                    name='shift_id'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Shift</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder='Select shift' />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {!shifts || shifts.data.length === 0 ? (
+                              <SelectItem value=''>No shifts found</SelectItem>
+                            ) : (
+                              shifts.data.map((shift) => (
+                                <SelectItem key={shift.shift_id} value={shift.shift_id}>
+                                  {shift.start} - {shift.end}
+                                </SelectItem>
+                              ))
+                            )}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name='role'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Role</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder='Select role for this employee' />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {roles.map((role) => (
+                              <SelectItem key={role} value={role}>
+                                {role}
                               </SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='role'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Role</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder='Select role for this employee' />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {roles.map((role) => (
-                            <SelectItem key={role} value={role}>
-                              {role}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
-            </div>
-
-            <DialogFooter className='mt-4 sm:justify-end'>
-              <DialogClose asChild>
-                <Button type='button' variant='secondary'>
-                  Close
+              <DialogFooter className='mt-4 sm:justify-end'>
+                <DialogClose asChild>
+                  <Button type='button' variant='secondary'>
+                    Close
+                  </Button>
+                </DialogClose>
+                <Button type='submit' disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting && <Loader2 className='mr-2 size-4 animate-spin' />}
+                  Create Employee
                 </Button>
-              </DialogClose>
-              <Button type='submit' disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting && <Loader2 className='mr-2 size-4 animate-spin' />}
-                Create Employee
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+              </DialogFooter>
+            </form>
+          </Form>
+        </div>
       </DialogContent>
     </Dialog>
   );

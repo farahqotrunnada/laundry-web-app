@@ -19,12 +19,12 @@ import { Loader2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import axios from '@/lib/axios';
+import moment from 'moment';
 import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
+import { useShifts } from '@/hooks/use-shifts';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useShifts } from '@/hooks/use-shifts';
-import moment from 'moment';
 
 interface CreateShiftProps {
   //
@@ -70,7 +70,7 @@ const CreateShiftModal: React.FC<CreateShiftProps> = ({ ...props }) => {
           await axios.post('/shifts', formData);
           toast({
             title: 'Shift created',
-            description: 'Your shift has been created successfully',
+            description: 'Shift has been created successfully',
           });
           form.reset();
           setOpen(false);

@@ -102,7 +102,7 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
           await axios.delete('/complaints/' + row.original.complaint_id);
           toast({
             title: 'Complaint deleted',
-            description: 'Your complaint has been deleted successfully',
+            description: 'Complaint has been deleted successfully',
           });
           mutate((key) => Array.isArray(key) && key.includes('/complaints'));
         } catch (error: any) {

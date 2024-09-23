@@ -10,13 +10,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { Clipboard } from 'lucide-react';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -45,14 +45,14 @@ const DetailModal: React.FC<DetailModalProps> = ({ title, description, details, 
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
-      <DialogContent className='max-w-xl'>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
-        <div className='grid gap-4'>
-          <div className='grid gap-4 text-sm lg:grid-cols-2'>
+        <div className='h-full overflow-y-scroll max-h-modal hide-scrollbar'>
+          <div className='grid gap-4 px-1 py-2 text-sm lg:grid-cols-2'>
             {details.map((detail, idx) => {
               const Component = detail.long ? Textarea : Input;
 
@@ -91,7 +91,7 @@ const DetailModal: React.FC<DetailModalProps> = ({ title, description, details, 
           </div>
         </div>
 
-        <DialogFooter className='mt-4 sm:justify-end'>
+        <DialogFooter className='sm:justify-end'>
           <DialogClose asChild>
             <Button type='button' variant='secondary'>
               Close

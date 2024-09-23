@@ -9,13 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Loader from '@/components/loader/loader';
 import { Loader2 } from 'lucide-react';
+import { PasswordInput } from '@/components/password-input';
 import { useAuth } from '@/hooks/use-auth';
 import useConfirm from '@/hooks/use-confirm';
 import { useForm } from 'react-hook-form';
 import { useProfile } from '@/hooks/use-profile';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { PasswordInput } from '@/components/password-input';
 
 interface ChangeEmailFormProps {
   //
@@ -56,7 +56,7 @@ const ChangeEmailForm: React.FC<ChangeEmailFormProps> = ({ ...props }) => {
           await changeEmail(formData);
           toast({
             title: 'Email changed',
-            description: 'Your email has been changed successfully',
+            description: 'Email has been changed successfully',
           });
           mutate();
         } catch (error: any) {

@@ -60,7 +60,7 @@ const EditLaundryItemModal: React.FC<EditLaundryItemModalProps> = ({ item, ...pr
           await axios.put('/laundry-items/' + item.laundry_item_id, formData);
           toast({
             title: 'Laundry Item updated',
-            description: 'Your laundry item has been updated successfully',
+            description: 'Laundry item has been updated successfully',
           });
           form.reset();
           setOpen(false);

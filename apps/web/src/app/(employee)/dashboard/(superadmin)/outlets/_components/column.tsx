@@ -78,7 +78,7 @@ const Action: React.FC<ActionProps> = ({ outlet }) => {
           await axios.delete('/outlets/' + outlet.outlet_id);
           toast({
             title: 'Outlet deleted',
-            description: 'Your outlet has been deleted successfully',
+            description: 'Outlet has been deleted successfully',
           });
           mutate((key) => Array.isArray(key) && key.includes('/outlets'));
         } catch (error: any) {

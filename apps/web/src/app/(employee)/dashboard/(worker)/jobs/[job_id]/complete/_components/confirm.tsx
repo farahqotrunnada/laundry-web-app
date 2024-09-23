@@ -75,7 +75,7 @@ const ConfirmOrderItemsForm: React.FC<OrderItemsFormProps> = ({ job_id, ...props
           await axios.post('/jobs/' + job_id + '/confirm', formData);
           toast({
             title: 'Order confirmed',
-            description: 'Your order has been confirmed successfully',
+            description: 'Order has been confirmed successfully',
           });
           mutate((key) => Array.isArray(key) && key.includes('/jobs'));
           router.push('/dashboard/jobs');

@@ -76,7 +76,7 @@ const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
           await axios.post('/deliveries/request', formData);
           toast({
             title: 'Order created',
-            description: 'Your order has been created successfully',
+            description: 'Order has been created successfully',
           });
           router.push('/orders');
         } catch (error: any) {

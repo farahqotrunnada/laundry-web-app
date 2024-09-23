@@ -68,7 +68,7 @@ const EditProfileForm: React.FC<ProfileFormProps> = ({ ...props }) => {
           await update(formData);
           toast({
             title: 'Profile saved',
-            description: 'Your profile has been saved successfully',
+            description: 'Profile has been saved successfully',
           });
           mutate();
         } catch (error: any) {

@@ -89,7 +89,7 @@ const EditOutletForm: React.FC<EditOutletProps> = ({ outlet_id }) => {
           await axios.put('/outlets/' + outlet_id, formData);
           toast({
             title: 'Outlet updated',
-            description: 'Your outlet has been updated successfully',
+            description: 'Outlet has been updated successfully',
           });
           mutate();
           router.push('/dashboard/outlets');

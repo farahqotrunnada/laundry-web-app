@@ -199,7 +199,7 @@ export default class RequestAccessAction {
 
       this.socket.emitTo(job.outlet_id, ['OutletAdmin'], 'notification', {
         title: 'New Request Access Created',
-        description: 'A new request access has been created in your outlet, check your dashboard to accept the request',
+        description: 'New request access has been created in your outlet, check your dashboard to accept the request',
       });
       return requestAccess;
     } catch (error) {

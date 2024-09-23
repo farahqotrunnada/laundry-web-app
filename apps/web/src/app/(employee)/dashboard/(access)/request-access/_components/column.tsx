@@ -111,7 +111,7 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
           await axios.delete('/request-accesses/' + row.original.request_access_id);
           toast({
             title: 'Request access deleted',
-            description: 'Your request access has been deleted successfully',
+            description: 'Request access has been deleted successfully',
           });
           mutate((key) => Array.isArray(key) && key.includes('/request-accesses'));
         } catch (error: any) {

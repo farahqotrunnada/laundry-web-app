@@ -22,6 +22,7 @@ import { SidebarMenu } from '@/types/navigation';
 export const PROJECT_NAME = process.env.NEXT_PUBLIC_PROJECT_NAME as string;
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL as string;
 export const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL as string;
+export const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL as string;
 
 export const SIDEBAR_LINKS: SidebarMenu[] = [
   {
@@ -156,4 +157,16 @@ export const statusColor: Record<RequestAccessStatus, string> = {
   Pending: 'bg-muted text-muted-foreground hover:bg-muted/50',
   Accepted: 'bg-green-500 hover:bg-green-600 text-white',
   Rejected: 'bg-red-500 hover:bg-red-600 text-white',
+};
+
+export const orderColor: Record<OrderStatus, string> = {
+  WAITING_FOR_PICKUP: 'bg-blue-500 hover:bg-blue-600 text-white',
+  ON_PROGRESS_PICKUP: 'bg-blue-500 hover:bg-blue-600 text-white',
+  ARRIVED_AT_OUTLET: 'bg-violet-500 hover:bg-violet-600 text-white',
+  ON_PROGRESS_WASHING: 'bg-violet-500 hover:bg-violet-600 text-white',
+  ON_PROGRESS_IRONING: 'bg-violet-500 hover:bg-violet-600 text-white',
+  ON_PROGRESS_PACKING: 'bg-violet-500 hover:bg-violet-600 text-white',
+  WAITING_FOR_PAYMENT: 'bg-amber-500 hover:bg-amber-600 text-white',
+  ON_PROGRESS_DROPOFF: 'bg-blue-500 hover:bg-blue-600 text-white',
+  COMPLETED_ORDER: 'bg-green-500 hover:bg-green-600 text-white',
 };
