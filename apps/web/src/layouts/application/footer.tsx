@@ -19,18 +19,15 @@ const Footer: React.FC<FooterProps> = ({ menus }) => {
                 <span>{PROJECT_NAME}</span>
               </Link>
               <p className='max-w-lg text-lg leading-relaxed tracking-tight text-left text-muted-foreground'>
-                Managing a small business today is already tough.
+                Clean Clothes with LaundryXpert. <br />
+                Experience the Difference
               </p>
             </div>
             <div className='flex flex-row gap-20'>
               <div className='flex flex-col max-w-lg text-sm leading-relaxed tracking-tight text-left text-muted-foreground'>
-                <p>1 Tailwind Way</p>
-                <p>Menlo Park</p>
-                <p>CA 94025</p>
-              </div>
-              <div className='flex flex-col max-w-lg text-sm leading-relaxed tracking-tight text-left text-muted-foreground'>
-                <Link href='/'>Terms of service</Link>
-                <Link href='/'>Privacy Policy</Link>
+                <p>South Quarter Building</p>
+                <p>South Jakarta</p>
+                <p>Indonesia</p>
               </div>
             </div>
           </div>

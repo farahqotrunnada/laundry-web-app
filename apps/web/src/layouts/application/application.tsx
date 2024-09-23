@@ -15,34 +15,33 @@ export default async function Application({
 }: ApplicationProps): Promise<React.JSX.Element> {
   const menus: NavigationItem[] = [
     {
-      title: 'Services',
-      description: 'Managing a small business today is already tough.',
+      title: 'Customer Support',
+      description: 'Clean Clothes with LaundryXpert',
       items: [
         {
-          title: 'Reports',
-          href: '/reports',
-          description: 'Overview of all reports',
-        },
-        { title: 'Statistics', href: '/statistics', description: 'Reports on the performance of the business' },
-        {
-          title: 'Dashboards',
-          href: '/dashboards',
-          description: 'Dashboards to monitor the performance of the business',
+          title: 'FAQ',
+          href: '/faq',
+          description: 'Frequently Ask Questions',
         },
         {
-          title: 'Recordings',
-          href: '/recordings',
-          description: 'Recordings of all the business activities',
+          title: 'Contact Support',
+          href: '/support',
+          description: 'Reach out to us directly for personalized assistance with any of your queries.',
+        },
+        {
+          title: 'Help Center',
+          href: '/help',
+          description: 'Find detailed guides and support articles to resolve any issues.',
         },
       ],
     },
     {
       title: 'About',
-      description: 'Managing a small business today is already tough.',
+      description: 'Clean Clothes with LaundryXpert',
       items: [
         { title: 'About us', href: '/about' },
-        { title: 'Fundraising', href: '/fundraising' },
-        { title: 'Investors', href: '/investors' },
+        { title: 'Privacy Policy', href: '/privacy-policy' },
+        { title: 'Terms of Service', href: '/terms-of-service' },
         { title: 'Contact us', href: '/contact' },
       ],
     },
