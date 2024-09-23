@@ -22,6 +22,7 @@ import { SidebarMenu } from '@/types/navigation';
 export const PROJECT_NAME = process.env.NEXT_PUBLIC_PROJECT_NAME as string;
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL as string;
 export const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL as string;
+export const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL as string;
 
 export const SIDEBAR_LINKS: SidebarMenu[] = [
   {
