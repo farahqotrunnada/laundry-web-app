@@ -28,7 +28,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
       <Card>
         <CardHeader>
           <CardTitle className='text-xl font-bold'>Outlet Detail</CardTitle>
-          <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+          <CardDescription>All the details of the outlet.</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -46,7 +46,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
       <Card>
         <CardHeader>
           <CardTitle className='text-xl font-bold'>Order Fee</CardTitle>
-          <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+          <CardDescription>All the details of order fee.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className='flex flex-col space-y-4 text-sm'>
@@ -64,7 +64,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
       <Card>
         <CardHeader>
           <CardTitle className='text-xl font-bold'>Order Progress</CardTitle>
-          <CardDescription>Manage your order progress.</CardDescription>
+          <CardDescription>Monitor your order progress.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className='relative flex flex-col space-y-4'>
@@ -90,7 +90,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
       <Card>
         <CardHeader>
           <CardTitle className='text-xl font-bold'>Order Items</CardTitle>
-          <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+          <CardDescription>Monitor your order items details.</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -125,7 +125,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
       <Card>
         <CardHeader>
           <CardTitle className='text-xl font-bold'>Order Payment</CardTitle>
-          <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+          <CardDescription>All the details of the order payment.</CardDescription>
         </CardHeader>
         <CardContent>
           {!data.data.Payment && (

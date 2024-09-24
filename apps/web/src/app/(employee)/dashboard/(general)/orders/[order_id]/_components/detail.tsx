@@ -54,7 +54,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
         <Card>
           <CardHeader>
             <CardTitle className='text-xl font-bold'>Order Detail</CardTitle>
-            <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+            <CardDescription>All the details of your outlet.</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -74,7 +74,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
         <Card>
           <CardHeader>
             <CardTitle className='text-xl font-bold'>Order Progress</CardTitle>
-            <CardDescription>Manage your order progress.</CardDescription>
+            <CardDescription>Manage the order progress.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className='relative flex flex-col space-y-4'>
@@ -100,17 +100,15 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
         <Card>
           <CardHeader>
             <CardTitle className='text-xl font-bold'>Order Payment</CardTitle>
-            <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+            <CardDescription>All the details of the order payment.</CardDescription>
           </CardHeader>
           <CardContent>
             {!data.data.Payment && (
               <div className='flex items-center justify-center w-full h-52'>
                 <div className='flex flex-col items-center justify-center'>
                   <div className='text-center'>
-                    <p className='font-medium'>Continue payment</p>
-                    <p className='text-sm text-muted-foreground'>
-                      Please complete your payment with your preferred payment method.
-                    </p>
+                    <p className='font-medium'>Not yet paid</p>
+                    <p className='text-sm text-muted-foreground'>Customer has not complete the order payment.</p>
                   </div>
                 </div>
               </div>
@@ -145,7 +143,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
         <Card>
           <CardHeader>
             <CardTitle className='text-xl font-bold'>Order Location</CardTitle>
-            <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+            <CardDescription>Order location details in a interactive map.</CardDescription>
           </CardHeader>
           <CardContent>
             <MapRange
@@ -169,7 +167,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
         <Card>
           <CardHeader>
             <CardTitle className='text-xl font-bold'>Order Items</CardTitle>
-            <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+            <CardDescription>All the details of customer's order items.</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -204,7 +202,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
         <Card>
           <CardHeader>
             <CardTitle className='text-xl font-bold'>Order Fee</CardTitle>
-            <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+            <CardDescription>All the details of customer's order fee.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className='flex flex-col space-y-4 text-sm'>

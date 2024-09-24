@@ -37,7 +37,7 @@ const OutletDetails: React.FC<OutletDetailsProps> = ({ outlet_id, ...props }) =>
         <Card>
           <CardHeader>
             <CardTitle className='text-xl font-bold'>Outlet Details</CardTitle>
-            <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+            <CardDescription>All the details of the outlet.</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -59,7 +59,7 @@ const OutletDetails: React.FC<OutletDetailsProps> = ({ outlet_id, ...props }) =>
         <Card>
           <CardHeader>
             <CardTitle className='text-xl font-bold'>Outlet Location</CardTitle>
-            <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+            <CardDescription>Order location details in a interactive map.</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -78,7 +78,7 @@ const OutletDetails: React.FC<OutletDetailsProps> = ({ outlet_id, ...props }) =>
       <Card>
         <CardHeader>
           <CardTitle className='text-xl font-bold'>Employee Details</CardTitle>
-          <CardDescription>Make sure to add all the details of your outlet.</CardDescription>
+          <CardDescription>All the details of employee registered in the outlet</CardDescription>
         </CardHeader>
 
         <CardContent>
