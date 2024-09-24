@@ -12,7 +12,7 @@ export default async function Page(): Promise<React.JSX.Element> {
       <div className='flex flex-col items-start space-y-2'>
         <h2 className='text-4xl font-bold'>Request Access Page</h2>
         <p className='leading-relaxed tracking-tight text-left text-muted-foreground'>
-          Managing a small business today is already tough. Avoid further complications by ditching outdated.
+          Efficiently manage request access for resolving laundry item quantity discrepancies. Ensuring accurate tracking and timely resolution through open discussions.
         </p>
       </div>
 

@@ -12,7 +12,7 @@ export default async function Page(): Promise<React.JSX.Element> {
       <div className='flex flex-col items-start space-y-2'>
         <h2 className='text-4xl font-bold'>Laundry Items Page</h2>
         <p className='leading-relaxed tracking-tight text-left text-muted-foreground'>
-          Managing a small business today is already tough. Avoid further complications by ditching outdated.
+          Effortlessly manage your laundry items. Add, track, and update clothing categories with ease to keep your operations running smoothly.
         </p>
       </div>
 
