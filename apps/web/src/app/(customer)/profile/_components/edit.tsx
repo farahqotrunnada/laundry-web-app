@@ -96,7 +96,7 @@ const EditProfileForm: React.FC<ProfileFormProps> = ({ ...props }) => {
             name='avatar_url'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Avatar Url</FormLabel>
+                <FormLabel>Avatar</FormLabel>
                 <ImageUpload
                   imageWidth={300}
                   imageHeight={300}

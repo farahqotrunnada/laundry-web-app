@@ -12,7 +12,7 @@ interface PageProps {
 
 export default async function Page(): Promise<React.JSX.Element> {
   return (
-    <div className='grid gap-8 py-20'>
+    <div className='grid gap-8 py-5'>
       <div className='flex flex-col items-start space-y-2' data-aos='fade-up' data-aos-delay={100}>
         <Badge>FAQ</Badge>
         <h1 className='mb-4 text-5xl font-bold'>Frequently Asked Questions</h1>

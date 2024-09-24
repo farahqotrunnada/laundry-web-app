@@ -35,7 +35,7 @@ const ResetPasswordForm: React.FC<ResetPasswordProps> = ({ ...props }) => {
     try {
       await axios.post('/auth/forgot-password', formData);
       toast({
-        title: 'Password reset successful',
+        title: 'Password reset link sent',
         description: "We've sent you an email with a link to reset your password",
       });
     } catch (error: any) {

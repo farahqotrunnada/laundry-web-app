@@ -76,14 +76,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ ...props }) => {
             <FormItem>
               <div className='flex items-center justify-between'>
                 <FormLabel>Password</FormLabel>
-                <Link href='/auth/forgot-password' className='text-sm font-medium hover:text-primary'>
-                  Forgot your password?
-                </Link>
               </div>
               <FormControl>
                 <PasswordInput type='password' placeholder='Enter your password' {...field} />
               </FormControl>
               <FormMessage />
+              <div className='text-right mt-1'>
+                <Link href='/auth/forgot-password' className='text-sm font-medium hover:text-primary'>
+                  Forgot your password?
+                </Link>
+              </div>
             </FormItem>
           )}
         />
