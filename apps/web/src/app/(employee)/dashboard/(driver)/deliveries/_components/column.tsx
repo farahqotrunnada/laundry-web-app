@@ -204,7 +204,7 @@ const TableAction: React.FC<TableActionProps> = ({ row }) => {
         </DetailModal>
         <AddressModal
           title='Delivery Address'
-          description='View the address of this delivery, including the delivery ID, outlet name, type, created and updated date.'
+          description='View the address and contact details of this delivery'
           data={{
             customer: row.original.Order.Customer,
             address: row.original.Order.CustomerAddress,
