@@ -152,12 +152,13 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
               center={{
                 latitude: data.data.CustomerAddress.latitude,
                 longitude: data.data.CustomerAddress.longitude,
+                name: data.data.CustomerAddress.name,
               }}
               points={[
                 {
-                  name: data.data.Outlet.name,
                   latitude: data.data.Outlet.latitude,
                   longitude: data.data.Outlet.longitude,
+                  name: data.data.Outlet.name,
                 },
               ]}
               className='w-full aspect-square lg:aspect-[4/3]'

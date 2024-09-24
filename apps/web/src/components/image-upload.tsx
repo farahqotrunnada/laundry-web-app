@@ -39,6 +39,26 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       const file = event.target.files && event.target.files[0];
       if (!file) return;
 
+      const size = file.size;
+      if (size > 1024 * 1024 * 1) {
+        toast({
+          variant: 'destructive',
+          title: 'Error uploading image',
+          description: 'Image size should be less than 1MB',
+        });
+        return;
+      }
+
+      const mime = file.type;
+      if (!mime.startsWith('image/')) {
+        toast({
+          variant: 'destructive',
+          title: 'Error uploading image',
+          description: 'Image type should be png, jpeg, jpg or gif',
+        });
+        return;
+      }
+
       const { data } = await axios.post<{
         mesage: string;
         data: {
@@ -50,6 +70,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       }>('/upload/sign', {
         asset_folder,
         eager,
+        size,
+        mime,
       });
 
       const { api_key, timestamp, signature, cloud_name } = data.data;
@@ -103,7 +125,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         <Input
           ref={ref}
           type='file'
-          accept='image/*'
+          accept='image/png, image/jpeg, image/jpg. image/gif'
           className='hidden'
           placeholder='Upload your user avatar'
           onChange={handleFileChange}

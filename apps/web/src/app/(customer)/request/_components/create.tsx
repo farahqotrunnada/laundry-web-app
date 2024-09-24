@@ -262,6 +262,7 @@ const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
                 address && {
                   latitude: address.latitude,
                   longitude: address.longitude,
+                  name: address.name,
                 }
               }
               points={

@@ -325,3 +325,19 @@ model RequestAccess {
 
   @@map("request_access")
 }
+
+enum EmailType {
+  Verification
+  PasswordReset
+  EmailChange
+}
+
+model EmailLog {
+  email_log_id String    @id @default(cuid())
+  email        String
+  type         EmailType
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  @@map("email_log")
+}

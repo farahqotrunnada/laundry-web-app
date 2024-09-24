@@ -11,13 +11,13 @@ import { Icon } from 'leaflet';
 import { Location } from '@/types/location';
 import { cn } from '@/lib/utils';
 
+interface NamedLocation extends Location {
+  name: string;
+}
+
 interface MapProps {
-  center?: Location;
-  points?: Array<{
-    latitude: number;
-    longitude: number;
-    name: string;
-  }>;
+  center?: NamedLocation;
+  points?: NamedLocation[];
   className?: string;
 }
 
@@ -30,7 +30,7 @@ const UserIcon = new Icon({
   shadowSize: [41, 41],
 });
 
-const MapRange: React.FC<MapProps> = ({ center = DEFAULT_LOCATION, points = [], className }) => {
+const MapRange: React.FC<MapProps> = ({ center = DEFAULT_LOCATION as NamedLocation, points = [], className }) => {
   const [map, setMap] = React.useState<any>(null);
 
   React.useEffect(() => {
@@ -49,7 +49,7 @@ const MapRange: React.FC<MapProps> = ({ center = DEFAULT_LOCATION, points = [], 
         url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
       />
       <Marker position={[center.latitude, center.longitude]} icon={UserIcon}>
-        <Popup>Your Location</Popup>
+        <Popup>{center.name}</Popup>
       </Marker>
       {points.map((point, index) => (
         <Marker key={index} position={[point.latitude, point.longitude]}>

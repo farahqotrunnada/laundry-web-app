@@ -97,18 +97,13 @@ export default class OrderItemAction {
           description: 'New washing job has been created in your outlet, check your dashboard to accept the job',
         });
 
+        this.socket.emitToCustomer(order.Customer.user_id, 'notification', {
+          title: 'Your order has been updated',
+          description: 'Your order has been updated, you can pay the order now, check your dashboard',
+        });
+
         return updated;
       }
-
-      this.socket.emitTo(order.outlet_id, ['OutletAdmin', 'WashingWorker'], 'notification', {
-        title: 'Order Updated',
-        description: 'Order with ID ' + order.order_id + ' has been updated',
-      });
-
-      this.socket.emitToCustomer(order.Customer.user_id, 'notification', {
-        title: 'Your order has been updated',
-        description: 'Your order has been updated, you can proceed to pay the order',
-      });
 
       return updated;
     } catch (error) {

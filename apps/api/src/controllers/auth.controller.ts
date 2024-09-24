@@ -73,6 +73,41 @@ export default class AuthController {
     }
   };
 
+  forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email } = await yup
+        .object({
+          email: yup.string().email().required(),
+        })
+        .validate(req.body);
+
+      await this.authAction.forgotPassword(email);
+
+      return res.status(200).json(
+        new ApiResponse('Password reset email sent', {
+          email,
+        })
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { user_id } = req.user as EmailTokenPayload;
+      const { access_token } = await this.authAction.resetPassword(user_id);
+
+      const url = new URL(FRONTEND_URL);
+      url.pathname = '/auth/set-password';
+      url.searchParams.set('token', access_token);
+
+      return res.redirect(url.toString());
+    } catch (error) {
+      next(error);
+    }
+  };
+
   verify = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { user_id } = req.user as EmailTokenPayload;
