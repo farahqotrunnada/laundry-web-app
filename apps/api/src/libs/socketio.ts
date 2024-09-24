@@ -31,4 +31,8 @@ export class Socket {
     roles.forEach((role) => rooms.push(outlet_id + '-' + role));
     rooms.forEach((room) => this.io.to(room).emit(event, data));
   }
+
+  public emitToCustomer(user_id: string, event: string, data: any): void {
+    this.io.to(user_id).emit(event, data);
+  }
 }

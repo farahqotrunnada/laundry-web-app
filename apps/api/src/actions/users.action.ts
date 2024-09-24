@@ -15,7 +15,9 @@ export default class UserAction {
   ) => {
     try {
       let filter;
-      let order;
+      let order = {
+        ['created_at' as keyof Prisma.UserSelect]: 'desc',
+      };
 
       if (id && value) {
         filter = {
@@ -24,16 +26,13 @@ export default class UserAction {
       }
 
       if (key && desc) {
-        order = [
-          {
-            [key as keyof Prisma.UserSelect]: desc === 'true' ? 'desc' : 'asc',
-          },
-        ];
+        order = {
+          [key as keyof Prisma.UserSelect]: desc === 'true' ? 'desc' : 'asc',
+        };
       }
 
       const query = {
         where: filter,
-        orderBy: order,
       };
 
       const [users, count] = await prisma.$transaction([
@@ -41,6 +40,7 @@ export default class UserAction {
           ...query,
           skip: (page - 1) * limit,
           take: limit,
+          orderBy: order,
         }),
         prisma.user.count(query),
       ]);

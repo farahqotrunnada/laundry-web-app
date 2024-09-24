@@ -7,10 +7,10 @@ import { NavigationItem } from '@/types/navigation';
 import { PROJECT_NAME } from '@/lib/constant';
 
 interface HeaderProps {
-  menus: NavigationItem[];
+  //
 }
 
-const Header: React.FC<HeaderProps> = ({ menus }) => {
+const Header: React.FC<HeaderProps> = () => {
   return (
     <header className='z-40 w-full'>
       <div className='container relative flex flex-row items-center gap-4 min-h-20 lg:grid lg:grid-cols-2'>
@@ -21,7 +21,7 @@ const Header: React.FC<HeaderProps> = ({ menus }) => {
           </div>
         </Link>
 
-        <AccountMenu menus={menus} />
+        <AccountMenu />
       </div>
     </header>
   );

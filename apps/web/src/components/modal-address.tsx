@@ -16,7 +16,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MapLoader } from './loader/map';
 import dynamic from 'next/dynamic';
-import { useLocation } from '@/hooks/use-location';
 import { Customer, User } from '@/types/user';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
@@ -33,11 +32,9 @@ interface AddressModalProps extends React.PropsWithChildren {
 }
 
 const AddressModal: React.FC<AddressModalProps> = ({ title, description, data, children }) => {
-  const { state } = useLocation();
-
-  const MapRange = React.useMemo(
+  const Map = React.useMemo(
     () =>
-      dynamic(() => import('@/components/map-range'), {
+      dynamic(() => import('@/components/map'), {
         loading: () => <MapLoader />,
         ssr: false,
       }),
@@ -58,20 +55,12 @@ const AddressModal: React.FC<AddressModalProps> = ({ title, description, data, c
           <div className='grid gap-4 px-1 py-2 text-sm'>
             <div className='flex flex-col space-y-2'>
               <Label className='block'>Location</Label>
-              <MapRange
-                center={
-                  state && {
-                    latitude: state.latitude,
-                    longitude: state.longitude,
-                  }
-                }
-                points={[
-                  {
-                    latitude: data.address.latitude,
-                    longitude: data.address.longitude,
-                    name: 'Customer Location',
-                  },
-                ]}
+              <Map
+                location={{
+                  latitude: data.address.latitude,
+                  longitude: data.address.longitude,
+                }}
+                setLocation={() => {}}
                 className='w-full aspect-video'
               />
             </div>

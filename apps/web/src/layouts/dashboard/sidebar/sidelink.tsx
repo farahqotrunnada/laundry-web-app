@@ -10,9 +10,10 @@ import { useAuth } from '@/hooks/use-auth';
 
 interface SidebarMenuProps extends React.PropsWithChildren {
   link: SidebarMenu;
+  onClick?: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
 }
 
-const SidebarLink: React.FC<SidebarMenuProps> = ({ link }) => {
+const SidebarLink: React.FC<SidebarMenuProps> = ({ link, onClick }) => {
   const active = useActivePath();
   const { user } = useAuth();
 
@@ -26,6 +27,7 @@ const SidebarLink: React.FC<SidebarMenuProps> = ({ link }) => {
   return (
     <Link
       href={link.href}
+      onClick={onClick}
       className={cn(
         'items-center gap-3 rounded-lg p-3 text-muted-foreground transition-all hover:text-primary hidden',
         active(link.active || link.href) && 'bg-accent text-foreground hover:text-foreground',

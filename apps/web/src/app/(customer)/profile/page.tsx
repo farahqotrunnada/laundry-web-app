@@ -2,15 +2,15 @@ import * as React from 'react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-import EditProfileForm from './_components/edit';
-import ChangePasswordForm from './_components/change-password';
 import ChangeEmailForm from './_components/change-email';
+import ChangePasswordForm from './_components/change-password';
+import EditProfileForm from './_components/edit';
 
 interface PageProps {
   //
 }
 
-export default async function Page({ ...props }: PageProps): Promise<React.JSX.Element> {
+export default async function Page(): Promise<React.JSX.Element> {
   return (
     <div className='grid gap-8'>
       <Card>

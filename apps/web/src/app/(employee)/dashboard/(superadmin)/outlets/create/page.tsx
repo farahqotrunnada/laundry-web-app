@@ -6,7 +6,7 @@ interface PageProps {
   //
 }
 
-export default async function Page({ ...props }: PageProps): Promise<React.JSX.Element> {
+export default async function Page(): Promise<React.JSX.Element> {
   return (
     <>
       <div className='flex flex-col items-start space-y-2'>

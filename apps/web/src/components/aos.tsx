@@ -12,6 +12,7 @@ const AosProvider: React.FC<AOSProps> = ({ children }) => {
   React.useEffect(() => {
     Aos.init({
       once: true,
+      easing: 'ease-in-out',
     });
   }, []);
 

@@ -23,7 +23,11 @@ export default class OrderAction {
   ) => {
     try {
       let filter;
-      let order;
+      let order = {
+        ['created_at' as keyof Prisma.OrderSelect]: 'desc',
+      };
+
+      console.log(order);
 
       if (id && value) {
         filter = {
@@ -32,11 +36,9 @@ export default class OrderAction {
       }
 
       if (key && desc) {
-        order = [
-          {
-            [key as keyof Prisma.OrderSelect]: desc === 'true' ? 'desc' : 'asc',
-          },
-        ];
+        order = {
+          [key as keyof Prisma.OrderSelect]: desc === 'true' ? 'desc' : 'asc',
+        };
       }
 
       let query;
@@ -44,7 +46,6 @@ export default class OrderAction {
       if (role === 'SuperAdmin') {
         query = {
           where: filter,
-          orderBy: order,
         };
       } else {
         query = {
@@ -60,7 +61,6 @@ export default class OrderAction {
               },
             },
           },
-          orderBy: order,
         };
       }
 
@@ -87,6 +87,7 @@ export default class OrderAction {
               },
             },
           },
+          orderBy: order,
         } as Prisma.OrderFindManyArgs),
 
         prisma.order.count(query as Prisma.OrderCountArgs),
@@ -106,6 +107,9 @@ export default class OrderAction {
       if (!customer) throw new ApiError(404, 'Customer not found');
 
       let filter: Prisma.OrderWhereInput | undefined;
+      let order = {
+        ['created_at' as keyof Prisma.OrderSelect]: 'desc',
+      };
 
       if (type === 'Ongoing') {
         filter = {
@@ -123,7 +127,7 @@ export default class OrderAction {
         };
       }
 
-      const orders = await prisma.order.findMany({
+      const orders = (await prisma.order.findMany({
         where: {
           customer_id: customer.customer_id,
           ...filter,
@@ -137,10 +141,8 @@ export default class OrderAction {
             },
           },
         },
-        orderBy: {
-          created_at: 'desc',
-        },
-      });
+        orderBy: order,
+      })) as Prisma.OrderFindManyArgs;
 
       return orders;
     } catch (error) {

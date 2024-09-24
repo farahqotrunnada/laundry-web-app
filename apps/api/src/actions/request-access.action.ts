@@ -23,7 +23,9 @@ export default class RequestAccessAction {
   ) => {
     try {
       let filter;
-      let order;
+      let order = {
+        ['created_at' as keyof Prisma.RequestAccessSelect]: 'desc',
+      };
 
       if (id && value) {
         filter = {
@@ -32,11 +34,9 @@ export default class RequestAccessAction {
       }
 
       if (key && desc) {
-        order = [
-          {
-            [key as keyof Prisma.RequestAccessSelect]: desc === 'true' ? 'desc' : 'asc',
-          },
-        ];
+        order = {
+          [key as keyof Prisma.RequestAccessSelect]: desc === 'true' ? 'desc' : 'asc',
+        };
       }
 
       let query;
@@ -44,7 +44,6 @@ export default class RequestAccessAction {
       if (role === 'SuperAdmin') {
         query = {
           where: filter,
-          orderBy: order,
         };
       } else if (role === 'OutletAdmin') {
         query = {
@@ -60,7 +59,6 @@ export default class RequestAccessAction {
               },
             },
           },
-          orderBy: order,
         };
       } else {
         query = {
@@ -72,7 +70,6 @@ export default class RequestAccessAction {
               },
             },
           },
-          orderBy: order,
         };
       }
 
@@ -95,6 +92,7 @@ export default class RequestAccessAction {
               },
             },
           },
+          orderBy: order,
         } as Prisma.RequestAccessFindManyArgs),
 
         prisma.requestAccess.count(query as Prisma.RequestAccessCountArgs),

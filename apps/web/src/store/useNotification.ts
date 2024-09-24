@@ -24,13 +24,13 @@ export const useNotificationStore = create<NotificationState>()(
         set((state) => {
           return {
             notifications: [
-              ...state.notifications,
               {
                 id: new Date().getTime().toString(),
                 title,
                 description,
                 variant,
               },
+              ...state.notifications,
             ],
           };
         });
@@ -52,7 +52,7 @@ export const useNotificationStore = create<NotificationState>()(
     }),
     {
       name: 'notification',
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ notifications: state.notifications }),
     }
   )

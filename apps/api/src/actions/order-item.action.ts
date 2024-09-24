@@ -27,6 +27,7 @@ export default class OrderItemAction {
           OrderProgress: true,
           OrderItem: true,
           Payment: true,
+          Customer: true,
         },
       });
 
@@ -102,6 +103,11 @@ export default class OrderItemAction {
       this.socket.emitTo(order.outlet_id, ['OutletAdmin', 'WashingWorker'], 'notification', {
         title: 'Order Updated',
         description: 'Order with ID ' + order.order_id + ' has been updated',
+      });
+
+      this.socket.emitToCustomer(order.Customer.user_id, 'notification', {
+        title: 'Your order has been updated',
+        description: 'Your order has been updated, you can proceed to pay the order',
       });
 
       return updated;

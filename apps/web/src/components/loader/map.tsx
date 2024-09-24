@@ -1,5 +1,12 @@
-import { Skeleton } from '@/components/ui/skeleton';
+import * as React from 'react';
 
-export const MapLoader = () => {
-  return <Skeleton className='w-full aspect-video rounded-lg' />;
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
+
+interface LoaderProps {
+  className?: string;
+}
+
+export const MapLoader: React.FC<LoaderProps> = ({ className }) => {
+  return <Skeleton className={cn('w-full rounded-lg aspect-video', className)} />;
 };
