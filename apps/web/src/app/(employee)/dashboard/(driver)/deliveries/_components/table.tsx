@@ -163,9 +163,9 @@ const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
 
   const [filtered, center] = React.useMemo(() => {
     if (!data) return [null, null];
-    if (data.data.deliveries.length === 0) return [null, null];
-
     const temp = data.data.deliveries.filter((delivery) => delivery.progress !== 'Completed');
+
+    if (temp.length === 0) return [null, null];
     const latitude = temp.reduce((acc, curr) => acc + Number(curr.Order.CustomerAddress.latitude), 0);
     const longitude = temp.reduce((acc, curr) => acc + Number(curr.Order.CustomerAddress.longitude), 0);
 
