@@ -69,7 +69,7 @@ const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {
   const onSubmit = async (formData: yup.InferType<typeof requestOrderSchema>) => {
     confirm({
       title: 'Create Order',
-      description: 'Are you sure you want to request this order? make sure the details are correct.',
+      description: 'Are you sure you want to request this order? Make sure the details are correct.',
     })
       .then(async () => {
         try {
