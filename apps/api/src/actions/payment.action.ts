@@ -178,6 +178,7 @@ export default class PaymentAction {
         },
         include: {
           OrderProgress: true,
+          Customer: true,
         },
       });
 
@@ -242,6 +243,11 @@ export default class PaymentAction {
           },
         });
       }
+
+      this.socket.emitToCustomer(order.Customer.user_id, 'notification', {
+        title: 'Order Paid',
+        description: 'Order has been paid successfully',
+      });
     } catch (error) {
       throw error;
     }

@@ -25,7 +25,9 @@ export default class DeliveryAction {
   ) => {
     try {
       let filter;
-      let order;
+      let order = {
+        ['created_at' as keyof Prisma.DeliverySelect]: 'desc',
+      };
 
       if (id && value) {
         filter = {
@@ -44,7 +46,6 @@ export default class DeliveryAction {
       if (role === 'SuperAdmin') {
         query = {
           where: filter,
-          orderBy: order,
         };
       } else {
         query = {
@@ -72,7 +73,6 @@ export default class DeliveryAction {
               },
             ],
           },
-          orderBy: order,
         };
       }
 
@@ -109,6 +109,7 @@ export default class DeliveryAction {
               },
             },
           },
+          orderBy: order,
         } as Prisma.DeliveryFindManyArgs),
 
         prisma.delivery.count(query as Prisma.DeliveryCountArgs),
@@ -191,6 +192,11 @@ export default class DeliveryAction {
       this.socket.emitTo(order.outlet_id, ['OutletAdmin', 'Driver'], 'notification', {
         title: 'Delivery Requested',
         description: 'New delivery has been requested in your outlet, check your dashboard to accept the delivery',
+      });
+
+      this.socket.emitToCustomer(user_id, 'notification', {
+        title: 'Order Requested',
+        description: 'Your order has been requested, the driver will pick it up soon',
       });
     } catch (error) {
       throw error;

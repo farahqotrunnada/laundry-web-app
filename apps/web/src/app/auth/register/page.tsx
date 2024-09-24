@@ -8,7 +8,7 @@ interface PageProps {
   //
 }
 
-export default async function Page({ ...props }: PageProps): Promise<React.JSX.Element> {
+export default async function Page(): Promise<React.JSX.Element> {
   return (
     <div className='grid gap-6'>
       <div className='grid gap-2 text-center'>

@@ -1,3 +1,4 @@
+import { Role } from '@/types/user';
 import { clsx, type ClassValue } from 'clsx';
 import moment from 'moment';
 import { twMerge } from 'tailwind-merge';
@@ -50,3 +51,22 @@ export function formatHour(value: number) {
     unitDisplay: 'long',
   }).format(value);
 }
+
+export const getRedirect = (role: Role) => {
+  switch (role) {
+    case 'SuperAdmin':
+      return '/dashboard/reports';
+    case 'OutletAdmin':
+      return '/dashboard/reports';
+    case 'Driver':
+      return '/dashboard/deliveries';
+    case 'IroningWorker':
+      return '/dashboard/jobs';
+    case 'PackingWorker':
+      return '/dashboard/jobs';
+    case 'WashingWorker':
+      return '/dashboard/jobs';
+    default:
+      return '/dashboard/orders';
+  }
+};

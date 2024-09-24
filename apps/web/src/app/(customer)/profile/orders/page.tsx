@@ -6,6 +6,6 @@ interface PageProps {
   //
 }
 
-export default async function Page({ ...props }: PageProps): Promise<React.JSX.Element> {
+export default async function Page(): Promise<React.JSX.Element> {
   redirect('/orders/all');
 }

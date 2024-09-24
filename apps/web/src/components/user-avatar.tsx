@@ -15,6 +15,7 @@ import { AVATAR_LINKS } from '@/lib/constant';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { UserToken } from '@/types/user';
+import { getRedirect } from '@/lib/utils';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -81,7 +82,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user }) => {
           );
         })}
         {user && user.role !== 'Customer' ? (
-          <Link href='/dashboard'>
+          <Link href={getRedirect(user.role)}>
             <DropdownMenuItem className='cursor-pointer'>
               <div className='flex items-center justify-between w-full'>
                 <span>Dashboard</span>

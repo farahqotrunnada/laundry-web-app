@@ -15,7 +15,9 @@ export class OutletEmployeeAction {
   ) => {
     try {
       let filter;
-      let order;
+      let order = {
+        ['created_at' as keyof Prisma.UserSelect]: 'desc',
+      };
 
       if (id && value) {
         filter = {
@@ -24,11 +26,9 @@ export class OutletEmployeeAction {
       }
 
       if (key && desc) {
-        order = [
-          {
-            [key as keyof Prisma.UserSelect]: desc === 'true' ? 'desc' : 'asc',
-          },
-        ];
+        order = {
+          [key as keyof Prisma.UserSelect]: desc === 'true' ? 'desc' : 'asc',
+        };
       }
 
       const query = {
@@ -38,7 +38,6 @@ export class OutletEmployeeAction {
             outlet_id: outlet_id,
           },
         },
-        orderBy: order,
       };
 
       const [users, count] = await prisma.$transaction([
@@ -53,9 +52,10 @@ export class OutletEmployeeAction {
               },
             },
           },
-        }),
+          orderBy: order,
+        } as Prisma.UserFindManyArgs),
 
-        prisma.user.count(query),
+        prisma.user.count(query as Prisma.UserCountArgs),
       ]);
 
       return [users, count];

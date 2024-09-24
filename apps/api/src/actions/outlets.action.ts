@@ -17,7 +17,9 @@ export default class OutletsAction {
   ) => {
     try {
       let filter;
-      let order;
+      let order = {
+        ['created_at' as keyof Prisma.OutletSelect]: 'desc',
+      };
 
       if (id && value) {
         filter = {
@@ -26,16 +28,13 @@ export default class OutletsAction {
       }
 
       if (key && desc) {
-        order = [
-          {
-            [key as keyof Prisma.OutletSelect]: desc === 'true' ? 'desc' : 'asc',
-          },
-        ];
+        order = {
+          [key as keyof Prisma.OutletSelect]: desc === 'true' ? 'desc' : 'asc',
+        };
       }
 
       const query = {
         where: filter,
-        orderBy: order,
       };
 
       const [outlets, count] = await prisma.$transaction([
@@ -43,8 +42,10 @@ export default class OutletsAction {
           ...query,
           skip: (page - 1) * limit,
           take: limit,
-        }),
-        prisma.outlet.count(query),
+          orderBy: order,
+        } as Prisma.OutletFindManyArgs),
+
+        prisma.outlet.count(query as Prisma.OutletCountArgs),
       ]);
 
       return [outlets, count];
@@ -219,6 +220,10 @@ export default class OutletsAction {
 
   nearest = async (customer_address_id: string) => {
     try {
+      let order = {
+        ['created_at' as keyof Prisma.CustomerAdressSelect]: 'desc',
+      };
+
       const address = await prisma.customerAdress.findUnique({
         where: {
           customer_address_id,
@@ -254,10 +259,8 @@ export default class OutletsAction {
             },
           ],
         },
-        orderBy: {
-          created_at: 'asc',
-        },
-      });
+        orderBy: order,
+      } as Prisma.OutletFindManyArgs);
 
       const distances = outlets.map((outlet) => ({
         outlet,

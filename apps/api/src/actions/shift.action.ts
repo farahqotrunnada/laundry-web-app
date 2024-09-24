@@ -1,14 +1,17 @@
 import ApiError from '@/utils/error.util';
+import { Prisma } from '@prisma/client';
 import prisma from '@/libs/prisma';
 
 export class ShiftAction {
   index = async () => {
     try {
+      let order = {
+        ['start' as keyof Prisma.ShiftSelect]: 'desc',
+      };
+
       const shifts = await prisma.shift.findMany({
-        orderBy: {
-          start: 'asc',
-        },
-      });
+        orderBy: order,
+      } as Prisma.ShiftFindManyArgs);
 
       return shifts;
     } catch (error) {

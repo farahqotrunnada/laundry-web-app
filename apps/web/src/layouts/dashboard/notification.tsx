@@ -7,9 +7,8 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { Button } from '@/components/ui/button';
-import { Employee } from '@/types/user';
+import { Employee, Role, User, UserToken } from '@/types/user';
 import { SOCKET_URL } from '@/lib/constant';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { fetcher } from '@/lib/axios';
 import { io } from 'socket.io-client';
 import { useAuth } from '@/hooks/use-auth';
@@ -40,9 +39,10 @@ const Notification: React.FC<NotificationProps> = ({ ...props }) => {
   }>(user && user.role !== 'SuperAdmin' && user.role !== 'Customer' && '/profile/employee', fetcher);
 
   React.useEffect(() => {
-    if (user && user.role !== 'Customer') {
-      let room = user.role;
+    if (user) {
+      let room: Role | UserToken['user_id'] = user.role;
       if (data) room = data.data.outlet_id + '-' + user.role;
+      if (user.role === 'Customer') room = user.user_id;
 
       socket.emit('room', room);
       socket.on('notification', ({ title, description, variant = 'default' }: Toast) => {
@@ -86,7 +86,7 @@ const Notification: React.FC<NotificationProps> = ({ ...props }) => {
             <span>Mark all as read</span>
           </Button>
 
-          <ScrollArea className='h-screen'>
+          <div className='h-full overflow-y-scroll max-h-modal hide-scrollbar'>
             <div className='grid gap-4'>
               {notifications.map((notification) => (
                 <div key={notification.title} className='relative p-6 border rounded-lg bg-card'>
@@ -114,7 +114,7 @@ const Notification: React.FC<NotificationProps> = ({ ...props }) => {
                 </div>
               ))}
             </div>
-          </ScrollArea>
+          </div>
         </div>
       </SheetContent>
     </Sheet>

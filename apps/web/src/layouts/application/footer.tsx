@@ -1,24 +1,24 @@
 import AppIcon from '@/components/app-icon';
 import Link from 'next/link';
 import { NavigationItem } from '@/types/navigation';
-import { PROJECT_NAME } from '@/lib/constant';
+import { APPLICATION_MENU, PROJECT_NAME } from '@/lib/constant';
 
 interface FooterProps {
-  menus: NavigationItem[];
+  //
 }
 
-const Footer: React.FC<FooterProps> = ({ menus }) => {
+const Footer: React.FC<FooterProps> = () => {
   return (
-    <div className='w-full py-14 lg:py-30 bg-muted'>
+    <div className='w-full py-14 lg:py-30 bg-foreground dark:bg-background'>
       <div className='container mx-auto'>
         <div className='grid items-center gap-10 lg:grid-cols-2'>
           <div className='flex flex-col items-start gap-8'>
-            <div className='flex flex-col gap-2'>
+            <div className='flex flex-col gap-2 text-background dark:text-foreground'>
               <Link href='/' className='flex items-center gap-2 text-lg font-semibold'>
                 <AppIcon className='w-6 h-6' />
                 <span>{PROJECT_NAME}</span>
               </Link>
-              <p className='max-w-lg text-lg leading-relaxed tracking-tight text-left text-muted-foreground'>
+              <p className='max-w-lg text-sm leading-relaxed tracking-tight text-left text-muted-foreground'>
                 Clean Clothes with LaundryXpert. <br />
                 Experience the Difference
               </p>
@@ -35,14 +35,14 @@ const Footer: React.FC<FooterProps> = ({ menus }) => {
             </div>
           </div>
           <div className='grid items-start grid-cols-2 gap-10 lg:grid-cols-3'>
-            {menus.map((item) => (
+            {APPLICATION_MENU.map((item) => (
               <div key={item.title} className='flex flex-col items-start gap-1 text-base'>
                 <div className='flex flex-col gap-2'>
-                  <p>{item.title}</p>
+                  <span className='font-medium text-background dark:text-foreground'>{item.title}</span>
                   {item.items &&
                     item.items.map((subItem) => (
                       <Link key={subItem.title} href={subItem.href} className='flex items-center justify-between'>
-                        <span className='text-muted-foreground'>{subItem.title}</span>
+                        <span className='text-sm text-muted-foreground'>{subItem.title}</span>
                       </Link>
                     ))}
                 </div>

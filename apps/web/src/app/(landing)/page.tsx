@@ -11,7 +11,7 @@ interface PageProps {
   //
 }
 
-export default async function Page({ ...props }: PageProps): Promise<React.JSX.Element> {
+export default async function Page(): Promise<React.JSX.Element> {
   const images = fs.readdirSync('./public/logos');
 
   return (

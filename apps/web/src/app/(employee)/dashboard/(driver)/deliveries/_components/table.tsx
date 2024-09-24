@@ -25,6 +25,9 @@ import ToggleColumn from '@/components/table/column-toggle';
 import columns from './column';
 import { useDebounceValue } from 'usehooks-ts';
 import { useDeliveries } from '@/hooks/use-deliveries';
+import dynamic from 'next/dynamic';
+import { MapLoader } from '@/components/loader/map';
+import { useLocation } from '@/hooks/use-location';
 
 interface DataTableProps<TData, TValue> {
   data: TData[];
@@ -148,8 +151,17 @@ const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
   });
 
   const [filter] = useDebounceValue<ColumnFiltersState>(columnFilters, 500);
-
   const { data, error, isLoading } = useDeliveries(filter, pagination, sorting);
+
+  const { state } = useLocation();
+  const MapRange = React.useMemo(
+    () =>
+      dynamic(() => import('@/components/map-range'), {
+        loading: () => <MapLoader className='w-full aspect-[4/1]' />,
+        ssr: false,
+      }),
+    []
+  );
 
   React.useEffect(() => {
     if (search.has('page')) {
@@ -202,17 +214,36 @@ const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
   if (error || !data) return <div>failed to load deliveries data, retrying...</div>;
 
   return (
-    <DataTable
-      columns={columns}
-      data={data.data.deliveries}
-      pageCount={Math.ceil(data.data.count / pagination.pageSize)}
-      sorting={sorting}
-      onSortingChange={setSorting}
-      pagination={pagination}
-      onPaginationChange={setPagination}
-      columnFilters={columnFilters}
-      setColumnFilters={setColumnFilters}
-    />
+    <>
+      <MapRange
+        center={
+          state.latitude && state.longitude
+            ? {
+                latitude: state.latitude,
+                longitude: state.longitude,
+              }
+            : undefined
+        }
+        points={data.data.deliveries.map((delivery) => ({
+          latitude: delivery.Order.CustomerAddress.latitude,
+          longitude: delivery.Order.CustomerAddress.longitude,
+          name: delivery.Order.Customer.User.fullname,
+        }))}
+        className='w-full aspect-[4/1]'
+      />
+
+      <DataTable
+        columns={columns}
+        data={data.data.deliveries}
+        pageCount={Math.ceil(data.data.count / pagination.pageSize)}
+        sorting={sorting}
+        onSortingChange={setSorting}
+        pagination={pagination}
+        onPaginationChange={setPagination}
+        columnFilters={columnFilters}
+        setColumnFilters={setColumnFilters}
+      />
+    </>
   );
 };
 

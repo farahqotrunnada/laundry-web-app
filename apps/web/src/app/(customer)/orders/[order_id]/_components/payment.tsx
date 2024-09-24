@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import ImageUpload from '@/components/image-upload';
 import Loader from '@/components/loader/loader';
-import { Loader2 } from 'lucide-react';
+import { Banknote, CreditCard, Loader2, LucideIcon, WalletCards } from 'lucide-react';
 import { PaymentMethod } from '@/types/payment';
 import axios from '@/lib/axios';
 import { formatCurrency } from '@/lib/utils';
@@ -25,10 +25,25 @@ interface OrderPaymentProps {
   order_id: string;
 }
 
-const methods: PaymentMethod[] = ['Manual', 'PaymentGateway'];
+const methods: Record<
+  PaymentMethod,
+  {
+    label: string;
+    icon: LucideIcon;
+  }
+> = {
+  Manual: {
+    label: 'Manual',
+    icon: Banknote,
+  },
+  PaymentGateway: {
+    label: 'Payment Gateway',
+    icon: WalletCards,
+  },
+};
 
 const paymentSchema = yup.object({
-  method: yup.string().oneOf(methods).required(),
+  method: yup.string().oneOf(Object.keys(methods)).required(),
   receipt_url: yup
     .string()
     .url()
@@ -48,7 +63,7 @@ const OrderPayment: React.FC<OrderPaymentProps> = ({ order_id, ...props }) => {
   const form = useForm<yup.InferType<typeof paymentSchema>>({
     resolver: yupResolver(paymentSchema),
     defaultValues: {
-      method: 'Manual',
+      method: 'PaymentGateway',
       receipt_url: '',
     },
   });
@@ -154,11 +169,18 @@ const OrderPayment: React.FC<OrderPaymentProps> = ({ order_id, ...props }) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {methods.map((method) => (
-                      <SelectItem key={method} value={method}>
-                        {method}
-                      </SelectItem>
-                    ))}
+                    {Object.entries(methods).map(([method, value]) => {
+                      const Icon = value.icon;
+
+                      return (
+                        <SelectItem key={method} value={method}>
+                          <div className='flex items-center'>
+                            <Icon className='mr-2 size-5 text-primary' />
+                            <span>{value.label}</span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
                 <FormMessage />

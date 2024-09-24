@@ -1,39 +1,56 @@
-'use client';
+import * as React from 'react';
 
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+
+import { Badge } from '@/components/ui/badge';
+import { FAQS } from '@/lib/constant';
 import Link from 'next/link';
-import Image from 'next/image';
 
-const construction = '/static/img-cunstruct.svg';
-const constructionBottom = '/static/img-cunstruct-bottom.svg';
+interface PageProps {
+  //
+}
 
-export default function UnderConstructionPage() {
+export default async function Page(): Promise<React.JSX.Element> {
   return (
-    <div className='min-h-screen bg-no-repeat bg-cover flex items-center'>
-      <div className='container mx-auto flex flex-col justify-center items-center min-h-screen px-4'>
-        <div
-          className='w-full flex flex-wrap justify-center items-center py-4 bg-no-repeat bg-bottom'
-          style={{ backgroundImage: `url(${constructionBottom})`, backgroundSize: '100%' }}>
-          <div className='w-full md:w-1/2 flex flex-col justify-center items-center space-y-4'>
-            <h1 className='text-3xl md:text-5xl font-extrabold text-center mb-4 whitespace-nowrap'>
-              Under Construction
-            </h1>
-            <p className='text-gray-600 dark:text-gray-300 text-center w-4/5'>
-              Hey! Please check out this page later. We are doing some maintenance on it right now.
-            </p>
-            <Link href='/' passHref>
-              <button className='bg-blue-600 text-white py-2 px-6 rounded-md mt-4 mb-7'>Back To Home</button>
-            </Link>
-          </div>
-          <div className='w-full md:w-1/2 flex justify-center'>
-            <Image
-              src={construction}
-              alt='Under Construction'
-              width={396}
-              height={370}
-              className='w-full max-w-xs md:max-w-md h-auto'
-            />
-          </div>
-        </div>
+    <div className='grid gap-8 py-20'>
+      <div className='flex flex-col items-start space-y-2' data-aos='fade-up' data-aos-delay={100}>
+        <Badge>FAQ</Badge>
+        <h1 className='mb-4 text-5xl font-bold'>Frequently Asked Questions</h1>
+        <p className='text-sm text-muted-foreground'>
+          Find answers to common questions about LaundryXpert services. If you can't find what you're looking for,
+          please contact our customer support.
+        </p>
+      </div>
+
+      <Accordion type='single' collapsible className='w-full'>
+        {FAQS.map((faq, index) => {
+          const Icon = faq.icon;
+
+          return (
+            <AccordionItem value={index.toString()} key={index} data-aos='fade-up' data-aos-delay={100 + index * 100}>
+              <AccordionTrigger className='hover:no-underline hover:text-primary'>
+                <div className='flex items-center gap-4'>
+                  <Icon className='size-5' />
+                  <span>{faq.question}</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <p className='text-muted-foreground'>{faq.answer}</p>
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
+      </Accordion>
+
+      <div className='flex flex-col items-start space-y-4' data-aos='fade-up' data-aos-delay={100 + FAQS.length * 100}>
+        <h2 className='text-xl font-bold'>Still have questions?</h2>
+        <p className='text-sm text-muted-foreground'>
+          If you couldn't find the answer to your question in our FAQ, please don't hesitate to reach out to our
+          customer support team. We're here to help! contat us at{' '}
+          <Link href='mailto:support@Laundryxpert.online' className='text-primary'>
+            support@Laundryxpert.online
+          </Link>
+        </p>
       </div>
     </div>
   );

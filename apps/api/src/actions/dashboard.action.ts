@@ -52,7 +52,7 @@ export class DashboardAction {
         selected_id = outlet.outlet_id;
       }
 
-      if (outlet_id === 'All') {
+      if (selected_id === 'All') {
         orders = await prisma.$queryRaw(
           Prisma.sql`
             SELECT

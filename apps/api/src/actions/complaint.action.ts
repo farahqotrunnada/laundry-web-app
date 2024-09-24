@@ -23,7 +23,9 @@ export class ComplaintAction {
   ) => {
     try {
       let filter;
-      let order;
+      let order = {
+        ['created_at' as keyof Prisma.ComplaintSelect]: 'desc',
+      };
 
       if (id && value) {
         filter = {
@@ -32,11 +34,9 @@ export class ComplaintAction {
       }
 
       if (key && desc) {
-        order = [
-          {
-            [key as keyof Prisma.ComplaintSelect]: desc === 'true' ? 'desc' : 'asc',
-          },
-        ];
+        order = {
+          [key as keyof Prisma.ComplaintSelect]: desc === 'true' ? 'desc' : 'asc',
+        };
       }
 
       let query;
@@ -44,7 +44,6 @@ export class ComplaintAction {
       if (role === 'SuperAdmin') {
         query = {
           where: filter,
-          orderBy: order,
         };
       } else if (role === 'OutletAdmin') {
         query = {
@@ -62,7 +61,6 @@ export class ComplaintAction {
               },
             },
           },
-          orderBy: order,
         };
       } else {
         query = {
@@ -74,7 +72,6 @@ export class ComplaintAction {
               },
             },
           },
-          orderBy: order,
         };
       }
 
@@ -96,6 +93,7 @@ export class ComplaintAction {
               },
             },
           },
+          orderBy: order,
         } as Prisma.ComplaintFindManyArgs),
 
         prisma.complaint.count(query as Prisma.ComplaintCountArgs),

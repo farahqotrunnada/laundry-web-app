@@ -6,6 +6,7 @@ import AppIcon from '@/components/app-icon';
 import Link from 'next/link';
 import SidebarLink from '@/layouts/dashboard/sidebar/sidelink';
 import { cn } from '@/lib/utils';
+import SidebarCard from './card';
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   //
@@ -30,7 +31,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className, ...props }) => {
           </nav>
         </div>
 
-        <div className='p-4 mt-auto'>{/* <SidebarCard /> */}</div>
+        <div className='p-4 mt-auto'>
+          <SidebarCard />
+        </div>
       </div>
     </div>
   );

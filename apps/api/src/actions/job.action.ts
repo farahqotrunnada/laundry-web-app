@@ -29,7 +29,9 @@ export default class JobAction {
   ) => {
     try {
       let filter;
-      let order;
+      let order = {
+        ['created_at' as keyof Prisma.JobSelect]: 'desc',
+      };
 
       if (id && value) {
         filter = {
@@ -54,7 +56,6 @@ export default class JobAction {
       if (role === 'SuperAdmin') {
         query = {
           where: filter,
-          orderBy: order,
         };
       } else {
         query = {
@@ -83,7 +84,6 @@ export default class JobAction {
             ],
             type: mapper[role],
           },
-          orderBy: order,
         };
       }
 
@@ -107,6 +107,7 @@ export default class JobAction {
             },
             RequestAccess: true,
           },
+          orderBy: order,
         } as Prisma.JobFindManyArgs),
 
         prisma.job.count(query as Prisma.JobCountArgs),
