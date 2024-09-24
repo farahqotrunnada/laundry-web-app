@@ -40,7 +40,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ ...props }) => {
       await signin(formData);
       toast({
         title: 'Login successful',
-        description: 'logged in successfully',
+        description: 'Logged in successfully',
       });
     } catch (error: any) {
       toast({

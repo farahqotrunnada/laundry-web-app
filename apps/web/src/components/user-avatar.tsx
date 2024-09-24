@@ -33,7 +33,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ user }) => {
       await signout();
       toast({
         title: 'Signout successful',
-        description: 'logged out successfully',
+        description: 'Logged out successfully',
       });
       router.push('/');
     } catch (error: any) {
