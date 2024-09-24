@@ -29,6 +29,6 @@ export function generateRefreshToken(payload: RefreshTokenPayload) {
 
 export function generateEmailToken(payload: EmailTokenPayload) {
   return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: '30m',
+    expiresIn: '1h',
   });
 }

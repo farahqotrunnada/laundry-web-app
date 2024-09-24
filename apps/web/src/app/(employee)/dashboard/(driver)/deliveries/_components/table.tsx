@@ -20,13 +20,14 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { DataTablePagination } from '@/components/table/pagination';
 import { Input } from '@/components/ui/input';
+import { MapLoader } from '@/components/loader/map';
 import TableLoader from '@/components/loader/table';
 import ToggleColumn from '@/components/table/column-toggle';
 import columns from './column';
+import dynamic from 'next/dynamic';
 import { useDebounceValue } from 'usehooks-ts';
 import { useDeliveries } from '@/hooks/use-deliveries';
-import dynamic from 'next/dynamic';
-import { MapLoader } from '@/components/loader/map';
+import { useLocation } from '@/hooks/use-location';
 
 interface DataTableProps<TData, TValue> {
   data: TData[];
@@ -141,6 +142,7 @@ const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
   const router = useRouter();
   const pathname = usePathname();
   const search = useSearchParams();
+  const { state } = useLocation();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -161,19 +163,21 @@ const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
     []
   );
 
-  const [filtered, center] = React.useMemo(() => {
-    if (!data) return [null, null];
-    const temp = data.data.deliveries.filter((delivery) => delivery.progress !== 'Completed');
-
-    if (temp.length === 0) return [null, null];
-    const latitude = temp.reduce((acc, curr) => acc + Number(curr.Order.CustomerAddress.latitude), 0);
-    const longitude = temp.reduce((acc, curr) => acc + Number(curr.Order.CustomerAddress.longitude), 0);
-
-    const center = {
-      latitude: latitude / temp.length,
-      longitude: longitude / temp.length,
-    };
-    return [temp, center];
+  const filtered = React.useMemo(() => {
+    if (!data) return null;
+    return [
+      ...new Set(
+        data.data.deliveries
+          .filter((delivery) => delivery.progress !== 'Completed')
+          .map((delivery) => {
+            return {
+              latitude: delivery.Order.CustomerAddress.latitude,
+              longitude: delivery.Order.CustomerAddress.longitude,
+              name: delivery.Order.Customer.User.fullname,
+            };
+          })
+      ),
+    ];
   }, [data]);
 
   React.useEffect(() => {
@@ -228,14 +232,13 @@ const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
 
   return (
     <>
-      {filtered && center && (
+      {filtered && state && (
         <MapRange
-          center={center}
-          points={filtered.map((delivery) => ({
-            latitude: delivery.Order.CustomerAddress.latitude,
-            longitude: delivery.Order.CustomerAddress.longitude,
-            name: delivery.Order.Customer.User.fullname,
-          }))}
+          center={{
+            ...state,
+            name: 'Your Current Location',
+          }}
+          points={filtered}
           className='w-full aspect-[4/1]'
         />
       )}

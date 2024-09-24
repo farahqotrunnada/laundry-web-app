@@ -8,45 +8,40 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
+import axios from '@/lib/axios';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { PasswordInput } from '@/components/password-input';
-import Link from 'next/link';
 
-interface LoginFormProps {
+interface ResetPasswordProps {
   //
 }
 
-const loginSchema = yup.object({
+const resetPasswordSchema = yup.object({
   email: yup.string().email().required(),
-  password: yup.string().required(),
 });
 
-const LoginForm: React.FC<LoginFormProps> = ({ ...props }) => {
+const ResetPasswordForm: React.FC<ResetPasswordProps> = ({ ...props }) => {
   const { toast } = useToast();
-  const { signin } = useAuth();
 
-  const form = useForm<yup.InferType<typeof loginSchema>>({
-    resolver: yupResolver(loginSchema),
+  const form = useForm<yup.InferType<typeof resetPasswordSchema>>({
+    resolver: yupResolver(resetPasswordSchema),
     defaultValues: {
       email: '',
-      password: '',
     },
   });
 
-  const onSubmit = async (formData: yup.InferType<typeof loginSchema>) => {
+  const onSubmit = async (formData: yup.InferType<typeof resetPasswordSchema>) => {
     try {
-      await signin(formData);
+      await axios.post('/auth/forgot-password', formData);
       toast({
-        title: 'Login successful',
-        description: 'Logged in successfully',
+        title: 'Password reset successful',
+        description: "We've sent you an email with a link to reset your password",
       });
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Login failed',
+        title: 'Reset password failed',
         description: error.message,
       });
     }
@@ -69,32 +64,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ ...props }) => {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name='password'
-          render={({ field }) => (
-            <FormItem>
-              <div className='flex items-center justify-between'>
-                <FormLabel>Password</FormLabel>
-                <Link href='/auth/forgot-password' className='text-sm font-medium hover:text-primary'>
-                  Forgot your password?
-                </Link>
-              </div>
-              <FormControl>
-                <PasswordInput type='password' placeholder='Enter your password' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <Button type='submit' className='w-full' disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting && <Loader2 className='mr-2 size-4 animate-spin' />}
-          Login
+          Reset Password
         </Button>
       </form>
     </Form>
   );
 };
 
-export default LoginForm;
+export default ResetPasswordForm;

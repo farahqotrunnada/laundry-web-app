@@ -24,11 +24,16 @@ export default class AuthRouter {
   private initializeRoutes(): void {
     this.router.post('/login', this.authController.login);
     this.router.post('/register', this.authController.register);
-    this.router.get('/verify', this.authMiddleware.query, this.authController.verify);
-    this.router.get('/confirm-email', this.authMiddleware.query, this.authController.confirmEmail);
+    this.router.post('/forgot-password', this.authController.forgotPassword);
     this.router.post('/set-password', this.authMiddleware.body, this.authController.setPassword);
+
+    this.router.get('/verify', this.authMiddleware.query, this.authController.verify);
+    this.router.get('/reset-password', this.authMiddleware.query, this.authController.resetPassword);
+    this.router.get('/confirm-email', this.authMiddleware.query, this.authController.confirmEmail);
+
     this.router.post('/logout', this.authController.logout);
     this.router.post('/refresh', this.authMiddleware.cookie, this.authController.refresh);
+
     this.router.get('/google', passport.authenticate('google', options));
     this.router.get('/google/callback', passport.authenticate('google', options), this.authController.callback);
 

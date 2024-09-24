@@ -17,12 +17,12 @@ import {
 
 import { User } from '@prisma/client';
 
-interface EmailChangeEmailProps {
+interface PasswordResetEmail {
   user: User;
   url: string;
 }
 
-export const EmailChangeEmail = ({ user, url }: EmailChangeEmailProps) => {
+export const PasswordResetEmail = ({ user, url }: PasswordResetEmail) => {
   const logo = process.env.BACKEND_URL + '/static/logo.png';
 
   return (
@@ -36,7 +36,7 @@ export const EmailChangeEmail = ({ user, url }: EmailChangeEmailProps) => {
               <Heading className='text-2xl font-bold'>{process.env.PROJECT_NAME}</Heading>
 
               <Text className='text-zinc-500'>
-                Hello {user.fullname}, you are receiving this email because you changed your email address on
+                Hello {user.fullname}, you are receiving this email because you requested to reset your password on
                 LaundryXpress, here are the details of your account.
               </Text>
 
@@ -56,13 +56,12 @@ export const EmailChangeEmail = ({ user, url }: EmailChangeEmailProps) => {
               </Section>
 
               <Text className='text-zinc-500'>
-                Please click the button below to verify your new email address, if this was not you, please ignore this
-                email.
+                Please click the button below to reset your password, if this is not you, please ignore this email.
               </Text>
 
               <Section className='flex justify-start mt-8'>
                 <Link href={url} className='font-medium text-center px-6 py-3 rounded-lg bg-[#2563eb] text-white block'>
-                  Verify Email Change
+                  Reset Password
                 </Link>
               </Section>
             </Section>
@@ -73,7 +72,7 @@ export const EmailChangeEmail = ({ user, url }: EmailChangeEmailProps) => {
   );
 };
 
-EmailChangeEmail.PreviewProps = {
+PasswordResetEmail.PreviewProps = {
   user: {
     fullname: 'Alan Turing',
     phone: '+1 (555) 555-5555',
@@ -81,6 +80,6 @@ EmailChangeEmail.PreviewProps = {
     avatar_url: 'https://avatars.githubusercontent.com/u/275474?v=4',
   },
   url: 'https://laundry.express/auth/verify?token=abc',
-} as EmailChangeEmailProps;
+} as PasswordResetEmail;
 
-export default EmailChangeEmail;
+export default PasswordResetEmail;

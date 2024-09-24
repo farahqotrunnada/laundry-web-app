@@ -94,6 +94,43 @@ export default class AuthAction {
     }
   };
 
+  forgotPassword = async (email: string) => {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (!user) throw new ApiError(404, 'User not found');
+
+      await this.emailAction.sendForgotPasswordEmail(user);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  resetPassword = async (user_id: string) => {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { user_id },
+      });
+
+      if (!user) throw new ApiError(404, 'User not found');
+
+      const access_token = generateAccessToken({
+        user_id: user.user_id,
+        fullname: user.fullname,
+        email: user.email,
+        avatar_url: user.avatar_url,
+        role: user.role,
+        is_verified: user.is_verified,
+      });
+
+      return { access_token };
+    } catch (error) {
+      throw error;
+    }
+  };
+
   verify = async (user_id: string) => {
     try {
       const user = await prisma.user.findUnique({
@@ -116,12 +153,7 @@ export default class AuthAction {
         is_verified: updated.is_verified,
       });
 
-      const refresh_token = generateRefreshToken({
-        user_id: updated.user_id,
-        email: updated.email,
-      });
-
-      return { access_token, refresh_token };
+      return { access_token };
     } catch (error) {
       throw error;
     }
@@ -165,6 +197,9 @@ export default class AuthAction {
     try {
       const user = await prisma.user.findUnique({
         where: { user_id },
+        include: {
+          Customer: true,
+        },
       });
 
       if (!user) throw new ApiError(404, 'User not found');
@@ -175,11 +210,13 @@ export default class AuthAction {
         data: { password: hashed },
       });
 
-      await prisma.customer.create({
-        data: {
-          user_id,
-        },
-      });
+      if (!user.Customer) {
+        await prisma.customer.create({
+          data: {
+            user_id,
+          },
+        });
+      }
 
       const access_token = generateAccessToken({
         user_id: user.user_id,

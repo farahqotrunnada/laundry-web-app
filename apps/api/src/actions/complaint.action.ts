@@ -243,39 +243,50 @@ export class ComplaintAction {
       });
 
       if (!complaint) throw new ApiError(404, 'Complaint not found');
+
+      let updated;
+
       if (user_id === complaint.Customer.User.user_id || role === 'SuperAdmin') {
-        const updated = await prisma.complaint.update({
+        updated = await prisma.complaint.update({
           where: { complaint_id },
           data: {
             description,
             resolution,
           },
         });
+      } else {
+        const employee = await prisma.employee.findUnique({
+          where: {
+            user_id,
+          },
+          include: {
+            Outlet: true,
+          },
+        });
 
-        return updated;
+        if (!employee) throw new ApiError(404, 'Employee not found');
+        if (!employee.Outlet) throw new ApiError(404, 'Outlet not found');
+        if (complaint.Order.Outlet.outlet_id !== employee.Outlet.outlet_id) {
+          throw new ApiError(404, 'You are not authorized to update this complaint');
+        }
+
+        updated = await prisma.complaint.update({
+          where: { complaint_id },
+          data: {
+            description,
+            resolution,
+          },
+        });
       }
 
-      const employee = await prisma.employee.findUnique({
-        where: {
-          user_id,
-        },
-        include: {
-          Outlet: true,
-        },
+      this.socket.emitTo(complaint.Order.Outlet.outlet_id, ['OutletAdmin'], 'notification', {
+        title: 'Complaint Updated',
+        description: 'Your complaint has been updated, check your dashboard to see the details',
       });
 
-      if (!employee) throw new ApiError(404, 'Employee not found');
-      if (!employee.Outlet) throw new ApiError(404, 'Outlet not found');
-      if (complaint.Order.Outlet.outlet_id !== employee.Outlet.outlet_id) {
-        throw new ApiError(404, 'You are not authorized to update this complaint');
-      }
-
-      const updated = await prisma.complaint.update({
-        where: { complaint_id },
-        data: {
-          description,
-          resolution,
-        },
+      this.socket.emitToCustomer(complaint.Customer.user_id, 'notification', {
+        title: 'Complaint Updated',
+        description: 'Your complaint has been updated, check your dashboard to see the details',
       });
 
       return updated;
