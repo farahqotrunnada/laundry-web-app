@@ -31,7 +31,7 @@ const SidebarDrawer: React.FC<DrawerProps> = ({ ...props }) => {
           <span>{PROJECT_NAME}</span>
         </Link>
 
-        <nav className='grid items-start gap-1 mt-6 text-sm font-medium'>
+        <nav className='grid items-start gap-1 mt-6 overflow-y-auto text-sm font-medium hide-scrollbar'>
           {SIDEBAR_LINKS.map((link) => (
             <SidebarLink
               key={link.title}
