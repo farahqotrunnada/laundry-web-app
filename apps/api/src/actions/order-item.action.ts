@@ -99,7 +99,7 @@ export default class OrderItemAction {
 
         this.socket.emitToCustomer(order.Customer.user_id, 'notification', {
           title: 'Your order has been updated',
-          description: 'Your order has been updated, you can pay the order now, check your dashboard',
+          description: 'Your order has been updated. Please continue to pay, otherwise order can not be delivered.',
         });
 
         return updated;
