@@ -12,7 +12,8 @@ export default async function Page(): Promise<React.JSX.Element> {
       <div className='flex flex-col items-start space-y-2'>
         <h2 className='text-4xl font-bold'>Complaint Page</h2>
         <p className='leading-relaxed tracking-tight text-left text-muted-foreground'>
-          Managing a small business today is already tough. Avoid further complications by ditching outdated.
+          Manage customer complaints efficiently. View, edit, and resolve customer issues, ensuring prompt responses and
+          maintaining high customer satisfaction by addressing concerns quickly
         </p>
       </div>
 

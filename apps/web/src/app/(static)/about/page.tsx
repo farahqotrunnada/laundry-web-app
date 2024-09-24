@@ -14,7 +14,7 @@ interface PageProps {
 
 export default async function Page(): Promise<React.JSX.Element> {
   return (
-    <div className='grid gap-8 py-20'>
+    <div className='grid gap-8 py-5'>
       <div className='grid items-center gap-8 lg:grid-cols-2'>
         <div className='flex flex-col items-start space-y-4' data-aos='fade-up' data-aos-delay={100}>
           <Badge>About Us</Badge>
@@ -49,7 +49,7 @@ export default async function Page(): Promise<React.JSX.Element> {
       </div>
 
       <div data-aos='fade-up'>
-        <h2 className='mb-6 text-3xl font-bold'>What We Offer</h2>
+        <h2 className='mb-6 pt-4 text-3xl font-bold'>What We Offer</h2>
         <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
           {ABOUT_FEATURE.map((feature, index) => (
             <Card key={index} data-aos='fade-up' data-aos-delay={200 + index * 100}>

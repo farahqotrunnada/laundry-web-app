@@ -1,6 +1,5 @@
 import AppIcon from '@/components/app-icon';
 import Link from 'next/link';
-import { NavigationItem } from '@/types/navigation';
 import { APPLICATION_MENU, PROJECT_NAME } from '@/lib/constant';
 
 interface FooterProps {
@@ -9,11 +8,11 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = () => {
   return (
-    <div className='w-full py-14 lg:py-30 bg-foreground dark:bg-background'>
+    <div className='w-full py-14 lg:py-30 bg-foreground bg-muted dark:bg-background'>
       <div className='container mx-auto'>
         <div className='grid items-center gap-10 lg:grid-cols-2'>
           <div className='flex flex-col items-start gap-8'>
-            <div className='flex flex-col gap-2 text-background dark:text-foreground'>
+            <div className='flex flex-col gap-2 dark:text-foreground'>
               <Link href='/' className='flex items-center gap-2 text-lg font-semibold'>
                 <AppIcon className='w-6 h-6' />
                 <span>{PROJECT_NAME}</span>
@@ -38,7 +37,7 @@ const Footer: React.FC<FooterProps> = () => {
             {APPLICATION_MENU.map((item) => (
               <div key={item.title} className='flex flex-col items-start gap-1 text-base'>
                 <div className='flex flex-col gap-2'>
-                  <span className='font-medium text-background dark:text-foreground'>{item.title}</span>
+                  <span className='font-medium dark:text-foreground'>{item.title}</span>
                   {item.items &&
                     item.items.map((subItem) => (
                       <Link key={subItem.title} href={subItem.href} className='flex items-center justify-between'>

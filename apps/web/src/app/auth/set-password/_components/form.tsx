@@ -63,7 +63,7 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ ...props }) => {
       await verify(formData);
       toast({
         title: 'Password set successfully',
-        description: 'Please login with your new password',
+        description: 'Your password has been updated successfully.',
       });
       router.push('/');
     } catch (error: any) {
