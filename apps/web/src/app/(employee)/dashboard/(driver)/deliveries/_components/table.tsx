@@ -27,7 +27,6 @@ import { useDebounceValue } from 'usehooks-ts';
 import { useDeliveries } from '@/hooks/use-deliveries';
 import dynamic from 'next/dynamic';
 import { MapLoader } from '@/components/loader/map';
-import { useLocation } from '@/hooks/use-location';
 
 interface DataTableProps<TData, TValue> {
   data: TData[];
@@ -153,7 +152,6 @@ const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
   const [filter] = useDebounceValue<ColumnFiltersState>(columnFilters, 500);
   const { data, error, isLoading } = useDeliveries(filter, pagination, sorting);
 
-  const { state } = useLocation();
   const MapRange = React.useMemo(
     () =>
       dynamic(() => import('@/components/map-range'), {
@@ -162,6 +160,21 @@ const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
       }),
     []
   );
+
+  const [filtered, center] = React.useMemo(() => {
+    if (!data) return [null, null];
+    if (data.data.deliveries.length === 0) return [null, null];
+
+    const temp = data.data.deliveries.filter((delivery) => delivery.progress !== 'Completed');
+    const latitude = temp.reduce((acc, curr) => acc + Number(curr.Order.CustomerAddress.latitude), 0);
+    const longitude = temp.reduce((acc, curr) => acc + Number(curr.Order.CustomerAddress.longitude), 0);
+
+    const center = {
+      latitude: latitude / temp.length,
+      longitude: longitude / temp.length,
+    };
+    return [temp, center];
+  }, [data]);
 
   React.useEffect(() => {
     if (search.has('page')) {
@@ -215,22 +228,17 @@ const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
 
   return (
     <>
-      <MapRange
-        center={
-          state.latitude && state.longitude
-            ? {
-                latitude: state.latitude,
-                longitude: state.longitude,
-              }
-            : undefined
-        }
-        points={data.data.deliveries.map((delivery) => ({
-          latitude: delivery.Order.CustomerAddress.latitude,
-          longitude: delivery.Order.CustomerAddress.longitude,
-          name: delivery.Order.Customer.User.fullname,
-        }))}
-        className='w-full aspect-[4/1]'
-      />
+      {filtered && center && (
+        <MapRange
+          center={center}
+          points={filtered.map((delivery) => ({
+            latitude: delivery.Order.CustomerAddress.latitude,
+            longitude: delivery.Order.CustomerAddress.longitude,
+            name: delivery.Order.Customer.User.fullname,
+          }))}
+          className='w-full aspect-[4/1]'
+        />
+      )}
 
       <DataTable
         columns={columns}

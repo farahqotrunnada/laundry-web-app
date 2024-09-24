@@ -23,15 +23,15 @@ const Sidebar: React.FC<SidebarProps> = ({ className, ...props }) => {
           </Link>
         </div>
 
-        <div className='flex-1'>
-          <nav className='grid items-start gap-1 px-4 text-sm font-medium '>
+        <div className='flex-1 overflow-y-auto hide-scrollbar'>
+          <nav className='grid items-start gap-1 px-4 text-sm font-medium'>
             {SIDEBAR_LINKS.map((link) => (
               <SidebarLink key={link.title} link={link} />
             ))}
           </nav>
         </div>
 
-        <div className='p-4 mt-auto'>
+        <div className='p-4'>
           <SidebarCard />
         </div>
       </div>
