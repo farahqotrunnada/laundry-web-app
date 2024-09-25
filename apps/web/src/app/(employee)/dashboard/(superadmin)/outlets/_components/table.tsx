@@ -52,7 +52,9 @@ const DataTable = <TData, TValue>({
   pagination,
   onPaginationChange,
 }: DataTableProps<TData, TValue>) => {
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+    outlet_id: false,
+  });
 
   const table = useReactTable({
     data: data,

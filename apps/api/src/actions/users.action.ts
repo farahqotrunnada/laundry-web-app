@@ -41,6 +41,13 @@ export default class UserAction {
           skip: (page - 1) * limit,
           take: limit,
           orderBy: order,
+          select: {
+            user_id: true,
+            fullname: true,
+            email: true,
+            phone: true,
+            role: true,
+          },
         }),
         prisma.user.count(query),
       ]);

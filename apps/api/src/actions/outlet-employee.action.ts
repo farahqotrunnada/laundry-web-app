@@ -45,7 +45,12 @@ export class OutletEmployeeAction {
           ...query,
           skip: (page - 1) * limit,
           take: limit,
-          include: {
+          select: {
+            user_id: true,
+            fullname: true,
+            email: true,
+            phone: true,
+            role: true,
             Employee: {
               include: {
                 Shift: true,
@@ -81,6 +86,14 @@ export class OutletEmployeeAction {
       });
 
       if (user) throw new ApiError(400, 'Email already used by another user');
+
+      const shift = await prisma.shift.findFirst({
+        where: {
+          shift_id,
+        },
+      });
+
+      if (!shift) throw new ApiError(400, 'Shift not found');
 
       const hashed = await generateHash(password);
       const created = await prisma.user.create({
@@ -153,6 +166,14 @@ export class OutletEmployeeAction {
       });
 
       if (!user) throw new ApiError(404, 'User not found');
+
+      const shift = await prisma.shift.findFirst({
+        where: {
+          shift_id,
+        },
+      });
+
+      if (!shift) throw new ApiError(400, 'Shift not found');
 
       const updated = await prisma.user.update({
         where: {

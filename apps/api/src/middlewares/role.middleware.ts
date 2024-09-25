@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { AccessTokenPayload } from '@/type/jwt';
 import ApiError from '@/utils/error.util';
 import { Role } from '@prisma/client';
+import { checkShift } from '@/utils/shift.util';
 import moment from 'moment';
 import prisma from '@/libs/prisma';
 
@@ -29,7 +30,7 @@ export class RoleMiddleware {
       const start = moment(employee.Shift.start, 'HH:mm');
       const end = moment(employee.Shift.end, 'HH:mm');
 
-      if (!current.isBetween(start, end)) {
+      if (!checkShift(start, end, current)) {
         const message = 'Your shift start at ' + start.format('HH:mm') + ' and end at ' + end.format('HH:mm');
         throw new ApiError(403, message);
       }

@@ -101,15 +101,16 @@ const OrderPayment: React.FC<OrderPaymentProps> = ({ order_id, ...props }) => {
       .then(async () => {
         try {
           const { data } = await axios.post('/profile/orders/' + order_id + '/payment', formData);
-
-          toast({
-            title: 'Order payment updated',
-            description: 'Order payment has been updated successfully',
-          });
-
           const method = data.data.method;
-          if (method === 'Manual') router.push('/orders');
-          else if (method === 'PaymentGateway') window.location.href = data.data.payment_url;
+
+          if (method === 'Manual') {
+            toast({
+              title: 'Order payment updated',
+              description: 'Order payment has been updated successfully',
+            });
+            router.push('/orders');
+            return;
+          } else if (method === 'PaymentGateway') window.location.href = data.data.payment_url;
         } catch (error: any) {
           toast({
             variant: 'destructive',

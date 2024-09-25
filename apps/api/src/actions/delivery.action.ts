@@ -280,6 +280,7 @@ export default class DeliveryAction {
         },
         include: {
           Outlet: true,
+          Customer: true,
         },
       });
 
@@ -292,6 +293,11 @@ export default class DeliveryAction {
 
       if (status === OrderStatus.COMPLETED_ORDER) {
         this.socket.emitTo(order.outlet_id, ['OutletAdmin'], 'notification', {
+          title: 'Order Completed',
+          description: 'Order has been completed and accepted by the customer, check your dashboard to see the results',
+        });
+
+        this.socket.emitToCustomer(order.Customer.user_id, 'notification', {
           title: 'Order Completed',
           description: 'Order has been completed, check your dashboard to see the results',
         });
