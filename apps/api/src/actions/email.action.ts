@@ -83,12 +83,12 @@ export default class EmailAction {
         },
       });
 
-      // if (log && moment().diff(log.created_at, 'hours') < 1) {
-      //   throw new ApiError(
-      //     429,
-      //     'There is already a request for password reset sent to this email address. Please wait for a few hours before requesting another reset.'
-      //   );
-      // }
+      if (log && moment().diff(log.created_at, 'hours') < 1) {
+        throw new ApiError(
+          429,
+          'There is already a request for password reset sent to this email address. Please wait for a few hours before requesting another reset.'
+        );
+      }
 
       const email_token = generateEmailToken({
         user_id,
