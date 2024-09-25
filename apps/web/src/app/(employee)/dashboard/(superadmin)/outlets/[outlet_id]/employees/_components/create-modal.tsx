@@ -178,7 +178,7 @@ const CreateEmployeeModal: React.FC<CreateEmployeeModalProps> = ({ outlet_id, ..
                           </FormControl>
                           <SelectContent>
                             {!shifts || shifts.data.length === 0 ? (
-                              <SelectItem value=''>No shifts found</SelectItem>
+                              <SelectItem value='empty'>No shifts found</SelectItem>
                             ) : (
                               shifts.data.map((shift) => (
                                 <SelectItem key={shift.shift_id} value={shift.shift_id}>

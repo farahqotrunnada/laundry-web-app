@@ -22,6 +22,15 @@ import { useToast } from '@/hooks/use-toast';
 
 const columns: ColumnDef<Outlet>[] = [
   {
+    accessorKey: 'outlet_id',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='Outlet ID' />;
+    },
+    cell: ({ row }) => {
+      return <span className='font-medium uppercase text-muted-foreground'>{row.original.outlet_id}</span>;
+    },
+  },
+  {
     accessorKey: 'name',
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='Outlet Name' />;

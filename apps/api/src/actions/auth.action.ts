@@ -3,6 +3,7 @@ import { comparePasswords, generateAccessToken, generateHash, generateRefreshTok
 import ApiError from '@/utils/error.util';
 import EmailAction from '@/actions/email.action';
 import { User } from '@prisma/client';
+import { checkShift } from '@/utils/shift.util';
 import moment from 'moment';
 import prisma from '@/libs/prisma';
 
@@ -44,7 +45,7 @@ export default class AuthAction {
         const start = moment(employee.Shift.start, 'HH:mm');
         const end = moment(employee.Shift.end, 'HH:mm');
 
-        if (!current.isBetween(start, end)) {
+        if (!checkShift(start, end, current)) {
           throw new ApiError(
             400,
             'Your shift start at ' + start.format('HH:mm') + ' and end at ' + end.format('HH:mm')

@@ -206,6 +206,12 @@ export default class OutletsAction {
         },
       });
 
+      await prisma.employee.deleteMany({
+        where: {
+          outlet_id,
+        },
+      });
+
       await prisma.outlet.delete({
         where: {
           outlet_id,

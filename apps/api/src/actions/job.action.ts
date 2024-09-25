@@ -229,6 +229,7 @@ export default class JobAction {
           Order: {
             include: {
               OrderItem: true,
+              Customer: true,
             },
           },
         },
@@ -302,6 +303,13 @@ export default class JobAction {
         },
       });
 
+      if (status === OrderStatus.WAITING_FOR_PAYMENT) {
+        this.socket.emitToCustomer(job.Order.Customer.user_id, 'notification', {
+          title: 'Order Awaiting Payment',
+          description: 'Your order is awaiting payment, please pay off the order before the delivery',
+        });
+      }
+
       if (status === OrderStatus.ON_PROGRESS_DROPOFF) {
         await prisma.delivery.create({
           data: {
@@ -315,6 +323,11 @@ export default class JobAction {
         this.socket.emitTo(job.outlet_id, ['OutletAdmin', 'Driver'], 'notification', {
           title: 'Delivery Requested',
           description: 'New delivery has been requested in your outlet, check your dashboard to accept the delivery',
+        });
+
+        this.socket.emitToCustomer(job.Order.Customer.user_id, 'notification', {
+          title: 'Your order ready to be delivered',
+          description: 'Your order is complete and waiting for delivery, check your dashboard to see the results',
         });
       }
 

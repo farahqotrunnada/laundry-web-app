@@ -30,6 +30,15 @@ const columns: ColumnDef<
   }
 >[] = [
   {
+    accessorKey: 'user_id',
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title='User ID' />;
+    },
+    cell: ({ row }) => {
+      return <span className='font-medium uppercase text-muted-foreground'>{row.original.user_id}</span>;
+    },
+  },
+  {
     accessorKey: 'fullname',
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title='User Name' />;
