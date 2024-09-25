@@ -306,7 +306,7 @@ export default class JobAction {
       if (status === OrderStatus.WAITING_FOR_PAYMENT) {
         this.socket.emitToCustomer(job.Order.Customer.user_id, 'notification', {
           title: 'Order Awaiting Payment',
-          description: 'Your order is awaiting payment, please pay off the order before the delivery',
+          description: 'Your order is awaiting payment, please pay off the order before we can proceed with delivery.',
         });
       }
 
@@ -327,7 +327,7 @@ export default class JobAction {
 
         this.socket.emitToCustomer(job.Order.Customer.user_id, 'notification', {
           title: 'Your order ready to be delivered',
-          description: 'Your order is complete and waiting for delivery, check your dashboard to see the results',
+          description: 'Your order is complete and waiting for delivery, check your account to see the progress',
         });
       }
 

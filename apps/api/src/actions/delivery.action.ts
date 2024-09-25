@@ -299,7 +299,7 @@ export default class DeliveryAction {
 
         this.socket.emitToCustomer(order.Customer.user_id, 'notification', {
           title: 'Order Completed',
-          description: 'Order has been completed, check your dashboard to see the results',
+          description: 'Order has been completed! Have a nice laundry day.',
         });
       }
 

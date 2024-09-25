@@ -98,8 +98,8 @@ export default class OrderItemAction {
         });
 
         this.socket.emitToCustomer(order.Customer.user_id, 'notification', {
-          title: 'Your order has been updated',
-          description: 'Your order has been updated. Please continue to pay, otherwise order can not be delivered.',
+          title: 'Your order has been processed at outlet.',
+          description: 'It is awaiting payment, please pay off the order before the delivery.',
         });
 
         return updated;
