@@ -1,15 +1,7 @@
 import moment from 'moment';
 
 export const checkShift = (start: moment.Moment, end: moment.Moment, current: moment.Moment) => {
-  start = moment(start).utc();
-  end = moment(end).utc();
-
-  console.log({
-    start: start,
-    end: end,
-    current: current,
-  });
-
-  if (end.isBefore(start)) return current.isSameOrAfter(start) || current.isBefore(end);
-  return current.isSameOrAfter(start) && current.isBefore(end);
+  const temp = current.add(7, 'hours'); // utc offset ('+07:00');
+  if (end.isBefore(start)) return temp.isSameOrAfter(start) || temp.isBefore(end);
+  return temp.isSameOrAfter(start) && temp.isBefore(end);
 };
