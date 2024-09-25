@@ -54,6 +54,7 @@ export default class App {
 
     this.socket.on('connection', (socket) => {
       socket.on('room', (room: string) => {
+        socket.leaveAll();
         socket.join(room);
       });
 
