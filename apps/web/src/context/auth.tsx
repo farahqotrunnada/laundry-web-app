@@ -6,6 +6,7 @@ import { UserToken } from '@/types/user';
 import axios from '@/lib/axios';
 import { jwtDecode } from 'jwt-decode';
 import { useLocalStorage } from 'usehooks-ts';
+import { useNotificationStore } from '@/store/useNotification';
 
 interface AccessTokenPayload extends UserToken {
   exp: number;
@@ -39,8 +40,9 @@ const AuthContext = React.createContext<AuthContextProps>({
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [token, setToken] = useLocalStorage<string | null>('access_token', null);
+  const { purge } = useNotificationStore();
   const [user, setUser] = React.useState<UserToken | null>(null);
+  const [token, setToken] = useLocalStorage<string | null>('access_token', null);
 
   React.useEffect(() => {
     const parseToken = (token: string) => {
@@ -99,6 +101,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signout = async () => {
     await axios.post('/auth/logout');
     setToken(null);
+    purge();
   };
 
   const google = async () => {
