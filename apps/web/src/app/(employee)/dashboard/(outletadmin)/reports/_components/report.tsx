@@ -12,6 +12,7 @@ import { Outlet } from '@/types/outlet';
 import { fetcher } from '@/lib/axios';
 import { useAuth } from '@/hooks/use-auth';
 import useSWR from 'swr';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface ReportProps {
   //
@@ -31,8 +32,27 @@ export interface ReportData {
 }
 
 const Report: React.FC<ReportProps> = ({ ...props }) => {
-  const [selected, setSelected] = React.useState<string>('All');
   const { user } = useAuth();
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const search = useSearchParams();
+
+  const [selected, setSelected] = React.useState<string>('All');
+
+  React.useEffect(() => {
+    if (search.has('outlet_id')) {
+      setSelected(search.get('outlet_id') as string);
+    }
+  }, [search, setSelected]);
+
+  React.useEffect(() => {
+    const params = new URLSearchParams();
+    params.set('outlet_id', selected);
+    const out = params.toString();
+
+    router.push(pathname + '?' + out);
+  }, [router, pathname, selected]);
 
   const { data: outlets } = useSWR<{
     message: string;
@@ -75,7 +95,7 @@ const Report: React.FC<ReportProps> = ({ ...props }) => {
   return (
     <>
       {user && user.role === 'SuperAdmin' && outlets && (
-        <Select onValueChange={(value) => setSelected(value)}>
+        <Select value={selected} onValueChange={(value) => setSelected(value)}>
           <SelectTrigger>
             <SelectValue placeholder='Select outlet' />
           </SelectTrigger>
