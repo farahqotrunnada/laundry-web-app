@@ -292,7 +292,7 @@ export default class JobAction {
       const statusMapper: Record<JobType, OrderStatus> = {
         Washing: OrderStatus.ON_PROGRESS_IRONING,
         Ironing: OrderStatus.ON_PROGRESS_PACKING,
-        Packing: job.Order.is_payable ? OrderStatus.WAITING_FOR_PAYMENT : OrderStatus.ON_PROGRESS_DROPOFF,
+        Packing: job.Order.is_payable ? OrderStatus.WAITING_FOR_PAYMENT : OrderStatus.WAITING_FOR_DROPOFF,
       };
       const status = statusMapper[job.type];
 
@@ -310,7 +310,7 @@ export default class JobAction {
         });
       }
 
-      if (status === OrderStatus.ON_PROGRESS_DROPOFF) {
+      if (status === OrderStatus.WAITING_FOR_DROPOFF) {
         await prisma.delivery.create({
           data: {
             order_id: job.order_id,

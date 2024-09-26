@@ -1,10 +1,11 @@
 import '@/app/globals.css';
 
-import { FRONTEND_URL, PROJECT_NAME } from '@/lib/constant';
+import { FRONTEND_URL, PROJECT_NAME, UMAMI_ID } from '@/lib/constant';
 
 import { Inter } from 'next/font/google';
 import type { Metadata } from 'next';
 import Provider from '@/app/providers';
+import Script from 'next/script';
 import { cn } from '@/lib/utils';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -38,7 +39,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={cn(inter.className)}>
-        <Provider>{children}</Provider>
+        <Provider>
+          {children}
+          {UMAMI_ID && <Script defer src='https://cloud.umami.is/script.js' data-website-id={UMAMI_ID} />}
+        </Provider>
       </body>
     </html>
   );

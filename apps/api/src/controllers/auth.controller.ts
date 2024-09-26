@@ -29,7 +29,7 @@ export default class AuthController {
 
       res.cookie('refresh_token', refresh_token, {
         httpOnly: true,
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
         sameSite: 'strict',
         secure: process.env.NODE_ENV === 'production',
       });
@@ -130,7 +130,7 @@ export default class AuthController {
 
       res.cookie('refresh_token', refresh_token, {
         httpOnly: true,
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
         sameSite: 'strict',
         secure: process.env.NODE_ENV === 'production',
       });
@@ -169,7 +169,7 @@ export default class AuthController {
 
       res.cookie('refresh_token', refresh_token, {
         httpOnly: true,
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
         sameSite: 'strict',
         secure: process.env.NODE_ENV === 'production',
       });
@@ -219,7 +219,7 @@ export default class AuthController {
 
       res.cookie('refresh_token', refresh_token, {
         httpOnly: true,
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
         sameSite: 'strict',
         secure: process.env.NODE_ENV === 'production',
       });
