@@ -299,8 +299,7 @@ export default class DeliveryAction {
 
         this.socket.emitToCustomer(order.Customer.user_id, 'notification', {
           title: 'Order Completed',
-          description:
-            'Your has been delivered to your address, please confirm your order in your dashboard if you have already received it',
+          description: 'Your order has been delivered to your address, please confirm if you have already received it',
         });
       }
 

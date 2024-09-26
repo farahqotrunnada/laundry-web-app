@@ -74,15 +74,15 @@ const ConfirmOrderItemsForm: React.FC<OrderItemsFormProps> = ({ job_id, ...props
         try {
           await axios.post('/jobs/' + job_id + '/confirm', formData);
           toast({
-            title: 'Order confirmed',
-            description: 'Order has been confirmed successfully',
+            title: 'Job completed',
+            description: 'Job has been completed successfully',
           });
           mutate((key) => Array.isArray(key) && key.includes('/jobs'));
           router.push('/dashboard/jobs');
         } catch (error: any) {
           toast({
             variant: 'destructive',
-            title: 'Failed to confirm order',
+            title: 'Failed to confirm job',
             description: error.message,
           });
         }
