@@ -9,7 +9,7 @@ const Feature: React.FC<FeatureProps> = ({ ...props }) => {
   return (
     <div {...props}>
       <div className='flex flex-col items-center space-y-2'>
-        <h2 className='text-4xl font-bold'>Wha&apos;s Included in the Service?</h2>
+        <h2 className='text-4xl font-bold'>What&apos;s Included in the Service?</h2>
         <p className='leading-relaxed tracking-tight text-left text-muted-foreground'>
           Managing a small business today is already tough. Avoid further complications by ditching outdated.
         </p>
