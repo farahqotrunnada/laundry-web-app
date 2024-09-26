@@ -24,6 +24,10 @@ import { MoreHorizontal } from 'lucide-react';
 import { OrderStatusMapper, orderColor } from '@/lib/constant';
 import { Outlet } from '@/types/outlet';
 import { useCustomerOrders } from '@/hooks/use-customer-orders';
+import { useToast } from '@/hooks/use-toast';
+import useConfirm from '@/hooks/use-confirm';
+import { useSWRConfig } from 'swr';
+import axios from '@/lib/axios';
 
 interface CustomerOrderTableProps {
   type: 'All' | 'Ongoing' | 'Paid' | 'Completed';
@@ -93,6 +97,38 @@ interface TableActionProps {
 }
 
 const TableAction: React.FC<TableActionProps> = ({ order }) => {
+  const received = order.OrderProgress && order.OrderProgress.find((progress) => progress.status === 'RECEIVED_ORDER');
+
+  const { toast } = useToast();
+  const { confirm } = useConfirm();
+  const { mutate } = useSWRConfig();
+
+  const confirmOrder = async (order_id: string) => {
+    confirm({
+      title: 'Confirm Order',
+      description: 'Are you sure you want to confirm this order?',
+    })
+      .then(async () => {
+        try {
+          await axios.post('/profile/orders/' + order_id + '/confirm');
+          toast({
+            title: 'Order Confirmed',
+            description: 'Order has been confirmed successfully',
+          });
+          mutate((key) => Array.isArray(key) && key.includes('/profile/orders'));
+        } catch (error: any) {
+          toast({
+            variant: 'destructive',
+            title: 'Failed to confirm order',
+            description: error.message,
+          });
+        }
+      })
+      .catch(() => {
+        //
+      });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -101,6 +137,12 @@ const TableAction: React.FC<TableActionProps> = ({ order }) => {
             <>
               <div className='absolute top-0 right-0 -m-0.5 rounded-full bg-primary size-2 animate-ping' />
               <div className='absolute top-0 right-0 -m-0.5 rounded-full bg-primary size-2' />
+            </>
+          )}
+          {order.is_completed && !received && (
+            <>
+              <div className='absolute top-0 right-0 -m-0.5 rounded-full bg-red-500 size-2 animate-ping' />
+              <div className='absolute top-0 right-0 -m-0.5 rounded-full bg-red-500 size-2 ' />
             </>
           )}
           <span className='sr-only'>Open menu</span>
@@ -118,6 +160,11 @@ const TableAction: React.FC<TableActionProps> = ({ order }) => {
           <Link href={'/orders/' + order.order_id + '/payment'} className='w-full'>
             <DropdownMenuItem className='text-primary'>Process Payment</DropdownMenuItem>
           </Link>
+        )}
+        {order.is_completed && !received && (
+          <DropdownMenuItem className='w-full' onClick={() => confirmOrder(order.order_id)}>
+            Confirm Order
+          </DropdownMenuItem>
         )}
         {order.is_completed && !order.Complaint && <CreateComplaintModal order_id={order.order_id} />}
       </DropdownMenuContent>

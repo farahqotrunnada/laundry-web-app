@@ -21,7 +21,7 @@ axios.interceptors.request.use(
 const intercept = () => {
   const interceptor = axios.interceptors.response.use(
     (response) => response,
-    (error) => {
+    async (error) => {
       if (error.response.status !== 401) {
         return Promise.reject((error.response && error.response.data) || 'Wrong Services');
       }

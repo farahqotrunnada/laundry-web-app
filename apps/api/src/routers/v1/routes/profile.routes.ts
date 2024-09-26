@@ -40,6 +40,7 @@ export default class ProfileRouter {
     this.router.get('/orders', this.orderController.customer);
     this.router.get('/orders/:order_id', this.orderController.show);
     this.router.post('/orders/:order_id/payment', this.paymentController.create);
+    this.router.post('/orders/:order_id/confirm', this.orderController.confirm);
 
     this.router.get('/addresses', this.addressController.index);
     this.router.post('/addresses', this.addressController.create);

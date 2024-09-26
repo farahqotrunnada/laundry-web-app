@@ -85,4 +85,22 @@ export default class OrderController {
       next(error);
     }
   };
+
+  confirm = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { user_id } = req.user as AccessTokenPayload;
+
+      const { order_id } = await yup
+        .object({
+          order_id: yup.string().required(),
+        })
+        .validate(req.params);
+
+      await this.orderAction.confirm(user_id, order_id);
+
+      return res.status(200).json(new ApiResponse('Order confirmed successfully'));
+    } catch (error) {
+      next(error);
+    }
+  };
 }

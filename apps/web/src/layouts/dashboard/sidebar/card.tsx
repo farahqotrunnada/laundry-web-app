@@ -3,9 +3,9 @@ import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/use-auth';
-import { User2 } from 'lucide-react';
 import Link from 'next/link';
+import { User2 } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
 
 interface SidebarCardProps {
   //
@@ -20,11 +20,9 @@ const SidebarCard: React.FC<SidebarCardProps> = ({ ...props }) => {
     <Card>
       <CardHeader>
         <CardTitle className='text-base'>Welcome Back</CardTitle>
-        <CardDescription>
-          <p className='text-sm text-muted-foreground'>
-            Hello, <span className='text-primary'>{user.fullname}</span>! You're currently login with {user.role}{' '}
-            privileges.
-          </p>
+        <CardDescription className='text-sm text-muted-foreground'>
+          Hello, <span className='text-primary'>{user.fullname}</span>! You're currently login with {user.role}{' '}
+          privileges.
         </CardDescription>
       </CardHeader>
       <CardContent>

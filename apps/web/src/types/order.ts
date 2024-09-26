@@ -6,8 +6,10 @@ export type OrderStatus =
   | 'ON_PROGRESS_IRONING'
   | 'ON_PROGRESS_PACKING'
   | 'WAITING_FOR_PAYMENT'
+  | 'WAITING_FOR_DROPOFF'
   | 'ON_PROGRESS_DROPOFF'
-  | 'COMPLETED_ORDER';
+  | 'COMPLETED_ORDER'
+  | 'RECEIVED_ORDER';
 
 export type OrderProgress = {
   order_progrses_id: string;

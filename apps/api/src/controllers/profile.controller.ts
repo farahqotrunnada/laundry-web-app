@@ -109,7 +109,7 @@ export default class ProfileController {
 
       res.cookie('refresh_token', access_token, {
         httpOnly: true,
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
         sameSite: 'strict',
         secure: process.env.NODE_ENV === 'production',
       });

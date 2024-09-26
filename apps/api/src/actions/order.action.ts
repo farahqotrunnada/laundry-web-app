@@ -2,6 +2,7 @@ import { Prisma, Role } from '@prisma/client';
 
 import ApiError from '@/utils/error.util';
 import { Socket } from '@/libs/socketio';
+import moment from 'moment';
 import prisma from '@/libs/prisma';
 
 export default class OrderAction {
@@ -228,6 +229,128 @@ export default class OrderAction {
       }
 
       return order;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  check = async () => {
+    try {
+      const toComplete = await prisma.order.findMany({
+        where: {
+          OrderProgress: {
+            some: {
+              status: 'COMPLETED_ORDER',
+              created_at: {
+                lt: moment().subtract(48, 'hours').toISOString(),
+              },
+            },
+            none: {
+              status: 'RECEIVED_ORDER',
+            },
+          },
+        },
+        include: {
+          Customer: true,
+        },
+      });
+
+      await prisma.orderProgress.createMany({
+        data: toComplete.map((order) => ({
+          order_id: order.order_id,
+          status: 'RECEIVED_ORDER',
+        })),
+      });
+
+      toComplete.forEach(async (order) => {
+        this.socket.emitTo(order.outlet_id, ['OutletAdmin'], 'notification', {
+          title: 'Order Automatically Received',
+          description: 'Order has been automatically received because it has been completed for more than 48 hours',
+        });
+
+        this.socket.emitToCustomer(order.Customer.user_id, 'notification', {
+          title: 'Order Automatically Received',
+          description:
+            'Your order has been automatically received because it has been completed for more than 48 hours',
+        });
+      });
+
+      const toReceive = await prisma.order.findMany({
+        where: {
+          OrderProgress: {
+            some: {
+              status: 'COMPLETED_ORDER',
+            },
+            none: {
+              status: 'RECEIVED_ORDER',
+            },
+          },
+        },
+        include: {
+          Customer: true,
+        },
+      });
+
+      toReceive.forEach(async (order) => {
+        const created = moment(order.created_at);
+        const diff = moment().diff(created, 'hours');
+
+        if (diff % 12 === 0) {
+          this.socket.emitToCustomer(order.Customer.user_id, 'notification', {
+            title: 'Confirm Your Order',
+            description:
+              'If you have already received your order, please confirm it in your dashboard, otherwise it will be automatically received in 48 hours',
+          });
+        }
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  confirm = async (user_id: string, order_id: string) => {
+    try {
+      const order = await prisma.order.findUnique({
+        where: {
+          order_id,
+          is_completed: true,
+          Customer: {
+            User: {
+              user_id,
+            },
+          },
+          OrderProgress: {
+            some: {
+              status: 'COMPLETED_ORDER',
+            },
+            none: {
+              status: 'RECEIVED_ORDER',
+            },
+          },
+        },
+        include: {
+          Customer: true,
+        },
+      });
+
+      if (!order) throw new ApiError(404, 'Order not found');
+
+      await prisma.orderProgress.create({
+        data: {
+          order_id: order.order_id,
+          status: 'RECEIVED_ORDER',
+        },
+      });
+
+      this.socket.emitTo(order.outlet_id, ['OutletAdmin'], 'notification', {
+        title: 'Order Confirmed',
+        description: 'An Order has been confirmed, check your dashboard to see the results',
+      });
+
+      this.socket.emitToCustomer(order.Customer.user_id, 'notification', {
+        title: 'Order Confirmed',
+        description: 'Your order has been confirmed, check your dashboard to see the results',
+      });
     } catch (error) {
       throw error;
     }

@@ -40,6 +40,7 @@ export const PROJECT_NAME = process.env.NEXT_PUBLIC_PROJECT_NAME as string;
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL as string;
 export const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL as string;
 export const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL as string;
+export const UMAMI_ID = process.env.NEXT_PUBLIC_UMAMI_ID as string;
 
 export const SIDEBAR_LINKS: SidebarMenu[] = [
   {
@@ -148,8 +149,10 @@ export const OrderStatusMapper: Record<OrderStatus, string> = {
   ON_PROGRESS_IRONING: 'Laundry Sedang Disetrika',
   ON_PROGRESS_PACKING: 'Laundry Sedang Di Packing',
   WAITING_FOR_PAYMENT: 'Menunggu Pembayaran',
+  WAITING_FOR_DROPOFF: 'Menunggu Pengiriman Ke Customer',
   ON_PROGRESS_DROPOFF: 'Laundry Dikirim Ke Customer',
-  COMPLETED_ORDER: 'Laundry Telah Diterima Customer',
+  COMPLETED_ORDER: 'Laundry Telah Sampai Customer',
+  RECEIVED_ORDER: 'Laundry Diterima Customer',
 };
 
 export const DEFAULT_LOCATION: Location = {
@@ -177,8 +180,10 @@ export const orderColor: Record<OrderStatus, string> = {
   ON_PROGRESS_IRONING: 'bg-violet-500 hover:bg-violet-600 text-white',
   ON_PROGRESS_PACKING: 'bg-violet-500 hover:bg-violet-600 text-white',
   WAITING_FOR_PAYMENT: 'bg-amber-500 hover:bg-amber-600 text-white',
+  WAITING_FOR_DROPOFF: 'bg-blue-500 hover:bg-blue-600 text-white',
   ON_PROGRESS_DROPOFF: 'bg-blue-500 hover:bg-blue-600 text-white',
   COMPLETED_ORDER: 'bg-green-500 hover:bg-green-600 text-white',
+  RECEIVED_ORDER: 'bg-green-500 hover:bg-green-600 text-white',
 };
 
 export const APPLICATION_MENU: NavigationItem[] = [

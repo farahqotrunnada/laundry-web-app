@@ -5,6 +5,7 @@ import express, { Express, NextFunction, Request, Response } from 'express';
 
 import ApiError from '@/utils/error.util';
 import type { Server as HttpServer } from 'http';
+import OrderAction from './actions/order.action';
 import PassportConfig from '@/libs/passport';
 import { Prisma } from '@prisma/client';
 import { Socket } from './libs/socketio';
@@ -12,6 +13,7 @@ import { ValidationError } from 'yup';
 import cookie from 'cookie-parser';
 import cors from 'cors';
 import { createServer } from 'http';
+import cron from 'node-cron';
 import morgan from 'morgan';
 import path from 'path';
 import v1Router from '@/routers/v1/index.routes';
@@ -21,6 +23,7 @@ export default class App {
   private server: HttpServer;
   private socket: Socket;
   private passport: PassportConfig;
+  private orderAction: OrderAction;
 
   constructor() {
     this.app = express();
@@ -33,6 +36,7 @@ export default class App {
       },
     });
     this.passport = new PassportConfig();
+    this.orderAction = new OrderAction();
 
     this.configure();
     this.routes();
@@ -120,6 +124,11 @@ export default class App {
       .then(() => {
         this.server.listen(PORT, () => {
           console.log(`  ➜  [API] Local:   http://localhost:${PORT}/`);
+        });
+
+        // run every hour at minute 00
+        cron.schedule('0 * * * *', async () => {
+          await this.orderAction.check();
         });
       })
       .catch((error) => {
