@@ -21,14 +21,14 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
   const { data, error, isLoading } = useOrderDetail(order_id);
 
   if (isLoading) return <Loader />;
-  if (error || !data) return <div>failed to load order data, retrying...</div>;
+  if (error || !data) return <div>Failed to load order data, retrying...</div>;
 
   return (
     <div className='grid items-start gap-8 '>
       <Card>
         <CardHeader>
-          <CardTitle className='text-xl font-bold'>Outlet Detail</CardTitle>
-          <CardDescription>All the details of the outlet.</CardDescription>
+          <CardTitle className='text-xl font-bold'>Order Detail</CardTitle>
+          <CardDescription>All the details of the order.</CardDescription>
         </CardHeader>
 
         <CardContent>

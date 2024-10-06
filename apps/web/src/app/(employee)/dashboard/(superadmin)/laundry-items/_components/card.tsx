@@ -59,7 +59,7 @@ const Action: React.FC<ActionProps> = ({ item, className }) => {
     confirm({
       variant: 'destructive',
       title: 'Delete Laundry Item',
-      description: `Are you sure you want to delete this laundry item? make sure the details are correct, this action
+      description: `Are you sure you want to delete this laundry item? Make sure the details are correct, this action
       will also delete all order items associated with this laundry item.`,
     }).then(async () => {
       try {

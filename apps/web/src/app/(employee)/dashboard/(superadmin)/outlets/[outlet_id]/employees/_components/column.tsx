@@ -108,7 +108,7 @@ const Action: React.FC<ActionProps> = ({ outlet_id, user_id }) => {
     confirm({
       variant: 'destructive',
       title: 'Delete Employee',
-      description: `Are you sure you want to delete this employee? make sure the details are correct, this action
+      description: `Are you sure you want to delete this employee? Make sure the details are correct, this action
       will also delete all related resources that associated with this employee, i.e. orders, deliveries, jobs, etc.`,
     })
       .then(async () => {

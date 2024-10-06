@@ -205,7 +205,7 @@ const RequestAccessTable: React.FC<RequestAccessTableProps> = ({ ...props }) => 
   }, [router, pathname, pagination, sorting, filter]);
 
   if (isLoading) return <TableLoader />;
-  if (error || !data) return <div>failed to load Request Access data, retrying...</div>;
+  if (error || !data) return <div>Failed to load Request Access data, retrying...</div>;
 
   return (
     <DataTable

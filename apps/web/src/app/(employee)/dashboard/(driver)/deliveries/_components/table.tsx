@@ -228,7 +228,7 @@ const DeliveryTable: React.FC<DevlieryTableProps> = ({ ...props }) => {
   }, [router, pathname, pagination, sorting, filter]);
 
   if (isLoading) return <TableLoader />;
-  if (error || !data) return <div>failed to load deliveries data, retrying...</div>;
+  if (error || !data) return <div>Failed to load deliveries data, retrying...</div>;
 
   return (
     <>

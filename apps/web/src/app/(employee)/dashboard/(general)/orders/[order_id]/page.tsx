@@ -21,9 +21,9 @@ export default async function Page({ params, ...props }: PageProps): Promise<Rea
     return (
       <>
         <div className='flex flex-col items-start space-y-2'>
-          <h2 className='text-4xl font-bold'>Order Items </h2>
+          <h2 className='text-4xl font-bold'>Order Details </h2>
           <p className='leading-relaxed tracking-tight text-left text-muted-foreground'>
-            Managing a small business today is already tough. Avoid further complications by ditching outdated.
+            Managing order details, location, order progress, items, fee, and payment to ensure a comprehensive service.
           </p>
         </div>
 

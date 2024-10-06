@@ -96,7 +96,7 @@ const OrderPayment: React.FC<OrderPaymentProps> = ({ order_id, ...props }) => {
   const onSubmit = async (formData: yup.InferType<typeof paymentSchema>) => {
     confirm({
       title: 'Pay Order',
-      description: 'Are you sure you want to pay this order? make sure the details are correct.',
+      description: 'Are you sure you want to pay this order? Make sure the details are correct.',
     })
       .then(async () => {
         try {
@@ -127,7 +127,7 @@ const OrderPayment: React.FC<OrderPaymentProps> = ({ order_id, ...props }) => {
   const method = form.watch('method');
 
   if (isLoading) return <Loader />;
-  if (error || !data) return <div>failed to load order data, retrying...</div>;
+  if (error || !data) return <div>Failed to load order data, retrying...</div>;
 
   return (
     <Form {...form}>

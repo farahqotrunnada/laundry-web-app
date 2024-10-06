@@ -52,7 +52,7 @@ const CreateRequestAccessModal: React.FC<CreateRequestAccessModalProps> = ({ ...
   const onSubmit = async (formData: yup.InferType<typeof requestAccessSchema>) => {
     confirm({
       title: 'Create Request Access',
-      description: 'Are you sure you want to create this request access? make sure the details are correct.',
+      description: 'Are you sure you want to create this request access? Make sure the details are correct.',
     })
       .then(async () => {
         try {

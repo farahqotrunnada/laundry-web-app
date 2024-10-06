@@ -203,7 +203,7 @@ const EmployeesTable: React.FC<EmployeesTableProps> = ({ outlet_id, ...props }) 
   }, [router, pathname, pagination, sorting, filter]);
 
   if (isLoading) return <TableLoader />;
-  if (error || !data) return <div>failed to load user data, retrying...</div>;
+  if (error || !data) return <div>Failed to load user data, retrying...</div>;
 
   return (
     <>

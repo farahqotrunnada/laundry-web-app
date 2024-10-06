@@ -48,7 +48,7 @@ const CreateComplaintModal: React.FC<CreateComplaintModalProps> = ({ order_id, .
   const onSubmit = async (formData: yup.InferType<typeof complaintSchema>) => {
     confirm({
       title: 'Create Complaint',
-      description: 'Are you sure you want to create this complaint? make sure the details are correct.',
+      description: 'Are you sure you want to create this complaint? Make sure the details are correct.',
     })
       .then(async () => {
         try {

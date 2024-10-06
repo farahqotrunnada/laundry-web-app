@@ -66,7 +66,7 @@ const Action: React.FC<ActionProps> = ({ className, shift }) => {
     confirm({
       variant: 'destructive',
       title: 'Delete Shift',
-      description: `Are you sure you want to delete this shift? make sure the details are correct, this action
+      description: `Are you sure you want to delete this shift? Make sure the details are correct, this action
       will also delete all resources associated with this shift.`,
     }).then(async () => {
       try {

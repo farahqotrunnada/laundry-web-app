@@ -82,7 +82,7 @@ const EditOutletForm: React.FC<EditOutletProps> = ({ outlet_id }) => {
   const onSubmit = async (formData: yup.InferType<typeof outletSchema>) => {
     confirm({
       title: 'Update Outlet',
-      description: 'Are you sure you want to update this outlet? make sure the details are correct.',
+      description: 'Are you sure you want to update this outlet? Make sure the details are correct.',
     })
       .then(async () => {
         try {
@@ -107,7 +107,7 @@ const EditOutletForm: React.FC<EditOutletProps> = ({ outlet_id }) => {
   };
 
   if (isLoading) return <Loader />;
-  if (error || !data) return <div>failed to load outlet data, retrying...</div>;
+  if (error || !data) return <div>Failed to load outlet data, retrying...</div>;
 
   return (
     <Form {...form}>

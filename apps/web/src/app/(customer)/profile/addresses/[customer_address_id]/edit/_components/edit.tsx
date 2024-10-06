@@ -78,7 +78,7 @@ const EditAddressForm: React.FC<EditAddressFormProps> = ({ customer_address_id, 
   const onSubmit = async (formData: yup.InferType<typeof addressSchema>) => {
     confirm({
       title: 'Update Address',
-      description: 'Are you sure you want to update this address? make sure the details are correct.',
+      description: 'Are you sure you want to update this address? Make sure the details are correct.',
     })
       .then(async () => {
         try {

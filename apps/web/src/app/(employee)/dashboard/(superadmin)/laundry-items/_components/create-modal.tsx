@@ -54,7 +54,7 @@ const CreateLaundryItemModal: React.FC<CreateLaundryItemProps> = ({ ...props }) 
   const onSubmit = async (formData: yup.InferType<typeof laundryItemSchema>) => {
     confirm({
       title: 'Create Laundry Item',
-      description: 'Are you sure you want to create this laundry item? make sure the details are correct.',
+      description: 'Are you sure you want to create this laundry item? Make sure the details are correct.',
     })
       .then(async () => {
         try {

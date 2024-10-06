@@ -73,7 +73,7 @@ const CreateOutletForm: React.FC<OutletCreateProps> = ({ ...props }) => {
   const onSubmit = async (formData: yup.InferType<typeof outletSchema>) => {
     confirm({
       title: 'Create Outlet',
-      description: 'Are you sure you want to create this outlet? make sure the details are correct.',
+      description: 'Are you sure you want to create this outlet? Make sure the details are correct.',
     })
       .then(async () => {
         try {

@@ -15,7 +15,7 @@ const ShiftGrid: React.FC<ShiftGridProps> = ({ ...props }) => {
   const { data, error, isLoading } = useShifts();
 
   if (isLoading) return <Loader />;
-  if (error || !data) return <div>failed to load shifts, retrying...</div>;
+  if (error || !data) return <div>Failed to load shifts, retrying...</div>;
 
   return (
     <div className='w-full'>

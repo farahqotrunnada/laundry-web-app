@@ -5,15 +5,18 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { AccessTokenPayload } from '@/type/jwt';
 import ApiResponse from '@/utils/response.util';
 import { AuthMiddleware } from '@/middlewares/auth.middleware';
+import { RoleMiddleware } from '@/middlewares/role.middleware';
 import { DashboardAction } from '@/actions/dashboard.action';
 
 export default class DashboardRouter {
   private router: Router;
+  private roleMiddleware: RoleMiddleware;
   private authMiddleware: AuthMiddleware;
   private dashboardAction: DashboardAction;
 
   constructor() {
     this.router = Router();
+    this.roleMiddleware = new RoleMiddleware();
     this.authMiddleware = new AuthMiddleware();
     this.dashboardAction = new DashboardAction();
     this.initializeRoutes();
@@ -21,6 +24,8 @@ export default class DashboardRouter {
 
   private initializeRoutes(): void {
     this.router.use(this.authMiddleware.header);
+    this.router.use(this.roleMiddleware.role(['OutletAdmin', 'SuperAdmin']));
+
     this.router.get('/data', async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { user_id, role } = req.user as AccessTokenPayload;

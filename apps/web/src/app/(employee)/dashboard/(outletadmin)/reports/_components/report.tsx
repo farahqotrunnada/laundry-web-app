@@ -90,7 +90,7 @@ const Report: React.FC<ReportProps> = ({ ...props }) => {
   }, []);
 
   if (isLoading) return <Loader />;
-  if (error || !report) return <div>failed to load orders data, retrying...</div>;
+  if (error || !report) return <div>Failed to load orders data, retrying...</div>;
 
   return (
     <>

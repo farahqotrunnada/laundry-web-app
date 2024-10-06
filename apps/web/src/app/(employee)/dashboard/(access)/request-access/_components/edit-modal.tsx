@@ -58,7 +58,7 @@ const EditRequestAccessModal: React.FC<EditRequestAccessModalProps> = ({ request
   const onSubmit = async (formData: yup.InferType<typeof requestAccessSchema>) => {
     confirm({
       title: 'Update Request Access',
-      description: 'Are you sure you want to update this request access? make sure the details are correct.',
+      description: 'Are you sure you want to update this request access? Make sure the details are correct.',
     })
       .then(async () => {
         try {

@@ -46,7 +46,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
   }, [error, router]);
 
   if (isLoading) return <Loader />;
-  if (error || !data) return <div>failed to load order data, retrying...</div>;
+  if (error || !data) return <div>Failed to load order data, retrying...</div>;
 
   return (
     <div className='grid items-start gap-8 lg:grid-cols-5'>
@@ -54,7 +54,7 @@ const OrderDetail: React.FC<ComponentProps> = ({ order_id, ...props }) => {
         <Card>
           <CardHeader>
             <CardTitle className='text-xl font-bold'>Order Detail</CardTitle>
-            <CardDescription>All the details of your outlet.</CardDescription>
+            <CardDescription>All the details of the order.</CardDescription>
           </CardHeader>
 
           <CardContent>
