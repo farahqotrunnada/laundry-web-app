@@ -226,7 +226,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ outlet_id, user_i
                 </DialogClose>
                 <Button type='submit' disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting && <Loader2 className='mr-2 size-4 animate-spin' />}
-                  Create Employee
+                  Update Employee
                 </Button>
               </DialogFooter>
             </form>
