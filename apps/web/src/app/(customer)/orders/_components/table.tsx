@@ -37,7 +37,7 @@ const CustomerOrderTable: React.FC<CustomerOrderTableProps> = ({ type, ...props 
   const { data, error, isLoading } = useCustomerOrders(type);
 
   if (isLoading) return <Loader />;
-  if (error || !data) return <div>failed to load orders data, retrying...</div>;
+  if (error || !data) return <div>Failed to load orders data, retrying...</div>;
 
   return (
     <div className='border rounded-md'>

@@ -194,7 +194,7 @@ const OrderTable = () => {
   }, [router, pathname, pagination, sorting, filter]);
 
   if (isLoading) return <TableLoader />;
-  if (error || !data) return <div>failed to load orders data, retrying...</div>;
+  if (error || !data) return <div>Failed to load orders data, retrying...</div>;
 
   return (
     <DataTable

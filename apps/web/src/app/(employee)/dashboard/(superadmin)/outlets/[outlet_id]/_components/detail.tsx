@@ -29,7 +29,7 @@ const OutletDetails: React.FC<OutletDetailsProps> = ({ outlet_id, ...props }) =>
   );
 
   if (isLoading) return <Loader />;
-  if (error || !data) return <div>failed to load outlet data, retrying...</div>;
+  if (error || !data) return <div>Failed to load outlet data, retrying...</div>;
 
   return (
     <div className='grid items-start gap-8'>

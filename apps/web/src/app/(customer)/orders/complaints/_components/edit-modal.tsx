@@ -51,7 +51,7 @@ const EditComplaintModal: React.FC<EditComplaintModalProps> = ({ complaint, ...p
   const onSubmit = async (formData: yup.InferType<typeof complaintSchema>) => {
     confirm({
       title: 'Update Complaint',
-      description: 'Are you sure you want to update this complaint? make sure the details are correct.',
+      description: 'Are you sure you want to update this complaint? Make sure the details are correct.',
     })
       .then(async () => {
         try {

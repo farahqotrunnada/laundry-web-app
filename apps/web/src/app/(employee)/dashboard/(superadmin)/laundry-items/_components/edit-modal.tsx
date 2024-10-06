@@ -53,7 +53,7 @@ const EditLaundryItemModal: React.FC<EditLaundryItemModalProps> = ({ item, ...pr
   const onSubmit = async (formData: yup.InferType<typeof laundryItemSchema>) => {
     confirm({
       title: 'Update Laundry Item',
-      description: 'Are you sure you want to update this laundry item? make sure the details are correct.',
+      description: 'Are you sure you want to update this laundry item? Make sure the details are correct.',
     })
       .then(async () => {
         try {

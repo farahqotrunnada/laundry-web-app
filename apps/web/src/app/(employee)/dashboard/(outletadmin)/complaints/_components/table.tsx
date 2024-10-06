@@ -197,7 +197,7 @@ const ComplaintTable: React.FC<ComplaintTableProps> = ({ ...props }) => {
   }, [router, pathname, pagination, sorting, filter]);
 
   if (isLoading) return <TableLoader />;
-  if (error || !data) return <div>failed to load complaints data, retrying...</div>;
+  if (error || !data) return <div>Failed to load complaints data, retrying...</div>;
 
   return (
     <DataTable

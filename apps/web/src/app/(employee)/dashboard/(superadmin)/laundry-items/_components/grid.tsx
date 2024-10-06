@@ -15,7 +15,7 @@ const LaundryItemGrid: React.FC<LaundryItemGridProps> = ({ ...props }) => {
   const { data, error, isLoading } = useLaundryItems();
 
   if (isLoading) return <Loader />;
-  if (error || !data) return <div>failed to load laundry items data, retrying...</div>;
+  if (error || !data) return <div>Failed to load laundry items data, retrying...</div>;
 
   return (
     <div className='w-full'>

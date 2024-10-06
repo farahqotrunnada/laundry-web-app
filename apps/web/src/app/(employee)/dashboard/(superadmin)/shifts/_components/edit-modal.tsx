@@ -64,7 +64,7 @@ const EditShiftModal: React.FC<EditShiftProps> = ({ shift, ...props }) => {
   const onSubmit = async (formData: yup.InferType<typeof shiftSchema>) => {
     confirm({
       title: 'Update Shift',
-      description: 'Are you sure you want to edit this shift? make sure the details are correct.',
+      description: 'Are you sure you want to edit this shift? Make sure the details are correct.',
     })
       .then(async () => {
         try {

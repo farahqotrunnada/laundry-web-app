@@ -199,7 +199,7 @@ const JobTable: React.FC<JobTableProps> = ({ ...props }) => {
   }, [router, pathname, pagination, sorting, filter]);
 
   if (isLoading) return <TableLoader />;
-  if (error || !data) return <div>failed to load jobs data, retrying...</div>;
+  if (error || !data) return <div>Failed to load jobs data, retrying...</div>;
 
   return (
     <DataTable

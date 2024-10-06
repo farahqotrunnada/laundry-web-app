@@ -349,7 +349,7 @@ export default class OrderAction {
 
       this.socket.emitToCustomer(order.Customer.user_id, 'notification', {
         title: 'Order Confirmed',
-        description: 'Your order has been confirmed, check your dashboard to see the results',
+        description: 'Your order has been confirmed, check your account to see the results',
       });
     } catch (error) {
       throw error;

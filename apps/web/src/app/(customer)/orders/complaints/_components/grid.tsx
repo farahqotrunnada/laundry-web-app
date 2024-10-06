@@ -31,7 +31,7 @@ const CustomerComplaintGrid: React.FC<CustomerComplaintTableProps> = ({ ...props
   const { data, error, isLoading } = useCustomerComplaints();
 
   if (isLoading) return <Loader />;
-  if (error || !data) return <div>failed to load complaints data, retrying...</div>;
+  if (error || !data) return <div>Failed to load complaints data, retrying...</div>;
 
   if (data.data.length === 0) {
     return (
@@ -51,7 +51,7 @@ const CustomerComplaintGrid: React.FC<CustomerComplaintTableProps> = ({ ...props
       {data.data.map((complaint, idx) => (
         <div key={idx} className='relative flex flex-col p-4 space-y-4 border rounded-lg bg-background'>
           <div className='flex flex-col space-y-1'>
-            <div className='text-sm font-medium'>Description</div>
+            <div className='text-sm font-medium'>Order ID</div>
             <Link href={'/orders/' + complaint.order_id} className='text-sm text-primary'>
               {complaint.order_id}
             </Link>

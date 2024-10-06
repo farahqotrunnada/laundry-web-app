@@ -281,12 +281,12 @@ export class ComplaintAction {
 
       this.socket.emitTo(complaint.Order.Outlet.outlet_id, ['OutletAdmin'], 'notification', {
         title: 'Complaint Updated',
-        description: 'Your complaint has been updated, check your dashboard to see the details',
+        description: 'The complaint has been updated, check your dashboard to see the details',
       });
 
       this.socket.emitToCustomer(complaint.Customer.user_id, 'notification', {
         title: 'Complaint Updated',
-        description: 'Your complaint has been updated, check your dashboard to see the details',
+        description: 'Your complaint has been updated, check your account to see the details',
       });
 
       return updated;

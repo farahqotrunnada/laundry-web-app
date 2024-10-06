@@ -93,7 +93,7 @@ const CustomerAddressTable: React.FC<AddressListProps> = ({ ...props }) => {
   };
 
   if (isLoading) return <Skeleton className='w-full h-32 rounded-lg' />;
-  if (error || !data) return <div>failed to load</div>;
+  if (error || !data) return <div>Failed to load</div>;
 
   return (
     <div className='border rounded-md'>

@@ -70,7 +70,7 @@ const CreateAddressForm: React.FC<CreateAddressFormProps> = ({ ...props }) => {
   const onSubmit = async (formData: yup.InferType<typeof addressSchema>) => {
     confirm({
       title: 'Create Address',
-      description: 'Are you sure you want to create this address? make sure the details are correct.',
+      description: 'Are you sure you want to create this address? Make sure the details are correct.',
     })
       .then(async () => {
         try {

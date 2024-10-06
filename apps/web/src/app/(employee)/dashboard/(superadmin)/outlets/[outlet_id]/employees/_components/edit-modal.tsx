@@ -80,7 +80,7 @@ const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({ outlet_id, user_i
   const onSubmit = async (formData: yup.InferType<typeof updateEmployeeSchema>) => {
     confirm({
       title: 'Update Employee',
-      description: 'Are you sure you want to update this employee? make sure the details are correct.',
+      description: 'Are you sure you want to update this employee? Make sure the details are correct.',
     })
       .then(async () => {
         try {

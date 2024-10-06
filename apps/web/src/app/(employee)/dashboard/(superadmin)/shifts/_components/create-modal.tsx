@@ -63,7 +63,7 @@ const CreateShiftModal: React.FC<CreateShiftProps> = ({ ...props }) => {
   const onSubmit = async (formData: yup.InferType<typeof shiftSchema>) => {
     confirm({
       title: 'Create Shift',
-      description: 'Are you sure you want to create this shift? make sure the details are correct.',
+      description: 'Are you sure you want to create this shift? Make sure the details are correct.',
     })
       .then(async () => {
         try {

@@ -29,8 +29,8 @@ interface RequestOrderFormProps {
 }
 
 const requestOrderSchema = yup.object({
-  customer_address_id: yup.string().required(),
-  outlet_id: yup.string().required(),
+  customer_address_id: yup.string().required("Address is required"),
+  outlet_id: yup.string().required("Outlet is required"),
 });
 
 const CreateRequestForm: React.FC<RequestOrderFormProps> = ({ ...props }) => {

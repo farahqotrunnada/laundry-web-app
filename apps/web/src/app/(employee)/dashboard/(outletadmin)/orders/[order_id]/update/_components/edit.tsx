@@ -81,7 +81,7 @@ const EditOrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...props 
   const onSubmit = async (formData: yup.InferType<typeof orderItemsSchema>) => {
     confirm({
       title: 'Update Order Items',
-      description: 'Are you sure you want to update this order? make sure the details are correct.',
+      description: 'Are you sure you want to update this order? Make sure the details are correct.',
     })
       .then(async () => {
         try {
@@ -133,7 +133,7 @@ const EditOrderItemsForm: React.FC<OrderItemsFormProps> = ({ order_id, ...props 
   };
 
   if (isLoading) return <Loader />;
-  if (error || !data) return <div>failed to load laundry items data, retrying...</div>;
+  if (error || !data) return <div>Failed to load laundry items data, retrying...</div>;
 
   return (
     <Form {...form}>

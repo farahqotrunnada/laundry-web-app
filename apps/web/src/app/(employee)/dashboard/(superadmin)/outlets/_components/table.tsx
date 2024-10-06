@@ -205,7 +205,7 @@ const OutletTable = () => {
   }, [router, pathname, pagination, sorting, filter]);
 
   if (isLoading) return <TableLoader />;
-  if (error || !data) return <div>failed to load outlet data, retrying...</div>;
+  if (error || !data) return <div>Failed to load outlet data, retrying...</div>;
 
   return (
     <DataTable

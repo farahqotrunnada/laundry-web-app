@@ -78,7 +78,7 @@ const CreateEmployeeModal: React.FC<CreateEmployeeModalProps> = ({ outlet_id, ..
   const onSubmit = async (formData: yup.InferType<typeof createUserSchema>) => {
     confirm({
       title: 'Create Employee',
-      description: 'Are you sure you want to create this employee? make sure the details are correct.',
+      description: 'Are you sure you want to create this employee? Make sure the details are correct.',
     })
       .then(async () => {
         try {

@@ -53,7 +53,7 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ ...props }) => 
   const onSubmit = async (formData: yup.InferType<typeof passwordSchema>) => {
     confirm({
       title: 'Change Password',
-      description: 'Are you sure you want to change your password? make sure the details are correct.',
+      description: 'Are you sure you want to change your password? Make sure the details are correct.',
     })
       .then(async () => {
         try {
