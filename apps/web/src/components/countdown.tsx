@@ -13,7 +13,7 @@ function Box({ count, label }: { count: number; label: string }) {
 
 export default function CountDown() {
   const { seconds, minutes, hours, days } = useTimer({
-    expiryTimestamp: new Date('2024-09-30'),
+    expiryTimestamp: new Date('2024-12-30'),
   });
 
   return (
